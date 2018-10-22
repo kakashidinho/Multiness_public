@@ -167,6 +167,8 @@ public class BasePage extends Fragment {
 
   @Override
   public void onConfigurationChanged(Configuration newConfig) {
+    System.out.println("BasePage.onConfigurationChanged()");
+
     super.onConfigurationChanged(newConfig);
 
     // this instance doesn't use default layout with toolbar, ignore

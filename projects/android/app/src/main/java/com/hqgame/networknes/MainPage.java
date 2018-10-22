@@ -95,6 +95,9 @@ public class MainPage extends BaseMenuPage implements PurchasesUpdatedListener {
         mContentView.addView(createConfigDependentView(inflater, null));
 
         setToolBarStyle();
+
+        // check donation button's status again since the view was recreated
+        checkDonationButtonState();
     }
 
     @Override
