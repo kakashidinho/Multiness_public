@@ -38,6 +38,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,20 +57,21 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Set;
+import java.util.TreeSet;
 
 
 public class GameChooserPage extends BaseMenuPage {
     private static final int READ_STORAGE_REQUEST_CODE = 1;
 
-    private static final int MAX_CACHED_FILES = 20;
+    private static final int MAX_CACHED_FILES = 100;
 
-    private HashSet<File> uniqueGamePathList = new HashSet<>();
-    private LinkedHashSet<String> cachedGamePathList = new LinkedHashSet<>();
+    private TreeSet<GameEntry> uniqueGamePathList = new TreeSet<>();
+    private TreeSet<File> cachedGamePathList = new TreeSet<>(new AlphabetFileNameComparator());
     private ArrayAdapter<GameEntry> gameListAdapter;
     private GameAutoSearchTask gameSearchTask = null;
 
@@ -156,8 +158,9 @@ public class GameChooserPage extends BaseMenuPage {
             JSONArray cachedPaths = new JSONArray(cachedPathsStr);
             for (int i = 0; i < cachedPaths.length(); ++i) {
                 String path = cachedPaths.getString(i);
-                if (path != null)
-                    cachedGamePathList.add(path);
+                if (path != null) {
+                    cachedGamePathList.add(new File(path));
+                }
             }
         }
         catch (Exception e) {
@@ -190,7 +193,7 @@ public class GameChooserPage extends BaseMenuPage {
             if (pref.contains(Settings.LEGACY_CACHED_GAME_PATHS_KEY))
                 edit.remove(Settings.LEGACY_CACHED_GAME_PATHS_KEY);
 
-            edit.commit();
+            edit.apply();
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -224,21 +227,7 @@ public class GameChooserPage extends BaseMenuPage {
         gameListAdapter.clear();
         uniqueGamePathList.clear();
 
-        if (false) //disable for now
-        {
-            try {
-                SharedPreferences pref = getContext().getSharedPreferences(Settings.IMMEDIATE_PREF_FILE, Context.MODE_PRIVATE);
-
-                //insert last played game as first element
-                String lastGamePath = pref.getString(Settings.LAST_PLAYED_GAME_KEY, null);
-                if (lastGamePath != null) {
-                    addGameToList(lastGamePath, false);
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        // TODO: move last played game to first of the list
 
         //use cached file list
         addCachedGamePathsToList();
@@ -289,10 +278,16 @@ public class GameChooserPage extends BaseMenuPage {
                             }
                         }
                     });
+            } else {
+                sortGameListView();
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void onAutoSearchCancelled() {
+        sortGameListView();
     }
 
     private void addGameToList(String path, boolean fromCachedList) {
@@ -305,27 +300,35 @@ public class GameChooserPage extends BaseMenuPage {
 
         try {
             // convert to canonical path
-            File file =oriFile.getCanonicalFile();
-            if (uniqueGamePathList.contains(file) || !file.exists())
+            File file = oriFile.getCanonicalFile();
+            GameEntry newGameEntry = new GameEntry(file);
+            if (uniqueGamePathList.contains(newGameEntry))
                 return;
 
-            uniqueGamePathList.add(file);
-            gameListAdapter.add(new GameEntry(file));
+            uniqueGamePathList.add(newGameEntry);
+            gameListAdapter.add(newGameEntry);
 
             if (!fromCachedList && cachedGamePathList.size() < MAX_CACHED_FILES)
-                cachedGamePathList.add(file.getAbsolutePath());
+                cachedGamePathList.add(file);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    private void sortGameListView() {
+        // since the game list is already sorted, but array adapter is not,
+        // we only need to clear and re-add the list to the adapter
+        gameListAdapter.clear();
+        gameListAdapter.addAll(uniqueGamePathList);
+        gameListAdapter.notifyDataSetChanged();
+    }
+
     private void addCachedGamePathsToList() {
-        Iterator<String> ite = cachedGamePathList.iterator();
+        Iterator<File> ite = cachedGamePathList.iterator();
 
         while (ite.hasNext()) {
-            String gamePath = ite.next();
+            File file = ite.next();
             try {
-                File file = new File(gamePath);
                 if (file.exists() && file.canRead())
                     addGameToList(file, true);
                 else
@@ -399,7 +402,7 @@ public class GameChooserPage extends BaseMenuPage {
         }
     }
 
-    static class GameEntry {
+    static class GameEntry implements Comparable<GameEntry> {
         public GameEntry(File file)
         {
             this.file = file;
@@ -432,6 +435,11 @@ public class GameChooserPage extends BaseMenuPage {
             GameEntry rhs = (GameEntry)obj;
 
             return file.equals(rhs.getFile());
+        }
+
+        @Override
+        public int compareTo(@NonNull GameEntry rhs) {
+            return AlphabetFileNameComparator.compareName(file, rhs.getFile());
         }
 
         private File file;
@@ -580,6 +588,11 @@ public class GameChooserPage extends BaseMenuPage {
         @Override
         protected void onCancelled(Void result) {
             dismissProgressDialog();
+
+            GameChooserPage parentActivity = this.parentPageRef.get();
+            if (parentActivity != null) {
+                parentActivity.onAutoSearchCancelled();
+            }
         }
 
         private void dismissProgressDialog() {
@@ -718,5 +731,35 @@ public class GameChooserPage extends BaseMenuPage {
         }
     }
 
+    /* ------------ comparator that compares file name instead of full path ----------*/
+    private static class AlphabetFileNameComparator implements Comparator<File> {
+
+        @Override
+        public int compare(File file1, File file2) {
+            return compareName(file1, file2);
+        }
+
+        public static int compareName(File file1, File file2) {
+            if (file1 == file2)
+                return 0;
+            if (file1 == null)
+                return -1;
+            if (file2 == null)
+                return 1;
+
+            // compare ignore case first
+            int nameCompare = file1.getName().compareToIgnoreCase(file2.getName());
+
+            // if equal, compare case sensitive
+            if (nameCompare == 0)
+                nameCompare = file1.getName().compareTo(file2.getName());
+
+            // if still equal, compare full path
+            if (nameCompare == 0)
+                return file1.compareTo(file2);
+
+            return nameCompare;
+        }
+    }
 
 }
