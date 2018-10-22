@@ -67,3 +67,6 @@ Copyright held by Le Hoang Quyen.
 * Original NES controller icon: Thanks to Ryan Dardis and Creative Stall from the Noun Project. [Creative Commons Attribution 3.0](https://creativecommons.org/licenses/by/3.0/) license.
 * Donation, World and LAN icons: Designed by Freepik and distributed by Flaticon. [Flaticon basic license](https://file000.flaticon.com/downloads/license/license.pdf).
 * Material Design Icons: from Google's https://material.io/tools/icons/?style=baseline. Licensed under Apache License 2.0.
+
+##
+[![donate](https://www.paypalobjects.com/webstatic/en_US/i/btn/png/btn_donate_92x26.png)](https://paypal.me/HQgame)  If you like this project. You can do it via Paypal.
