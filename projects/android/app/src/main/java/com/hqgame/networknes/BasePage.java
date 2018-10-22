@@ -49,9 +49,12 @@ import android.widget.ProgressBar;
 
 import com.google.android.gms.games.GamesClient;
 import com.google.android.gms.games.TurnBasedMultiplayerClient;
+import com.google.android.gms.games.multiplayer.Invitation;
 import com.google.android.gms.games.multiplayer.Multiplayer;
 import com.google.android.gms.games.multiplayer.turnbased.TurnBasedMatch;
+import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 
 import java.util.LinkedList;
@@ -466,6 +469,8 @@ public class BasePage extends Fragment {
   }
 
   public void onGoogleSignedIn(final boolean signedIn) {
+    System.out.println("BasePage.onGoogleSignedIn(" + signedIn + ")");
+
     queueOnResumeTask(new Runnable() {
       @Override
       public void run() {
@@ -481,18 +486,38 @@ public class BasePage extends Fragment {
       final TurnBasedMultiplayerClient multiplayerClient = getBaseActivity().getGoogleMultiplayerClient();
 
       if (gamesClient != null && multiplayerClient != null) {
+        System.out.println("BasePage.handleOnGoogleSignedIn().getActivationHint()");
+
         gamesClient.getActivationHint().addOnCompleteListener(new OnCompleteListener<Bundle>() {
           @Override
           public void onComplete(@NonNull Task<Bundle> task) {
             if (task.isSuccessful()) {
               if (task.getResult() != null) {
                 Bundle data = task.getResult();
+
+                // get match data embedded inside bundle.
                 TurnBasedMatch match = data.getParcelable(Multiplayer.EXTRA_TURN_BASED_MATCH);
                 if (match != null) {
                   onGoogleMatchAccepted(multiplayerClient, match);
+                } else {
+                  System.out.println("BasePage.handleOnGoogleSignedIn().getActivationHint() EXTRA_TURN_BASED_MATCH returned null");
+
+                  // see if there is any invitation embedded inside bundle.
+                  try {
+                    Invitation invitation = data.getParcelable(Multiplayer.EXTRA_INVITATION);
+
+                    // TODO: what to do with invitation?
+
+                    System.out.println("BasePage.handleOnGoogleSignedIn().getActivationHint() EXTRA_INVITATION returned " + invitation);
+                  } catch (Exception e) {
+                    e.printStackTrace();
+                  }
                 }
               }
             } // if (task.isSuccessful())
+            else {
+              System.out.println("BasePage.handleOnGoogleSignedIn().getActivationHint() failed. error=" + task.getException());
+            }
           }
         });
       } // if (gamesClient != null && multiplayerClient != null)
