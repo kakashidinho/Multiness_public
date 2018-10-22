@@ -1,0 +1,19 @@
+platform :ios, '7.0'
+
+target :nestopiaIOS do 
+	pod 'FBSDKCoreKit'
+	pod 'FBSDKShareKit'
+	pod 'FBSDKLoginKit'
+end
+
+target :nestopiaIOS_HDH do
+        pod 'FBSDKCoreKit'   
+        pod 'FBSDKShareKit'
+        pod 'FBSDKLoginKit'
+end
+
+target :nestopiaIOS_copy2 do
+        pod 'FBSDKCoreKit'   
+        pod 'FBSDKShareKit'
+        pod 'FBSDKLoginKit'
+end

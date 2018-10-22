@@ -1,0 +1,825 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		01DB92256AC8093DF124D58D6B4D05C4 /* DownPicker-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = C6B41085823D044ACD62EF92BF495D24 /* DownPicker-dummy.m */; };
+		0DD9417F8BE3EDC3740D753843D7109D /* Pods-DownPicker_Tests-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = BEBA251EF39C565D92F7A84616FD5AAE /* Pods-DownPicker_Tests-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2268A3BACB03EE18745A316CB357E284 /* DownPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 96BD2BF4F6CD19B0377A7677871EED1D /* DownPicker.m */; };
+		2C58971DDA06F8ED782EFD90F5759155 /* Pods-DownPicker_Example-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 5328DD83BB2D5CEBD786563AEAF0BA62 /* Pods-DownPicker_Example-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		394776F33B57AE9559B9A72DF69295C0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E4E89230EF59BC255123B67864ACF77 /* Foundation.framework */; };
+		4004BD43F74D2C32AD29BFC0CDE65E80 /* UIDownPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 23EBF847CD9E00AB7C3E37F9B9B70FAE /* UIDownPicker.m */; };
+		53B9782D2F40D14D76156DBE02D9E194 /* DownPicker.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 8C8A65961042697FE21C252115D1503C /* DownPicker.bundle */; };
+		5DDECED6B504513066B5A6A0B4A10557 /* Pods-DownPicker_Tests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = DA4F2F623A7BEC043BD8E7D53F9B2D28 /* Pods-DownPicker_Tests-dummy.m */; };
+		6A65FCA3EF907CFF4A09A4D4D6085997 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E4E89230EF59BC255123B67864ACF77 /* Foundation.framework */; };
+		708A84A5232458DA5F7A92D38F760E3C /* downArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = AD3F192C0479A4CE850417B500D68376 /* downArrow.png */; };
+		921130776AE750DDA4CF6AF74687C17C /* downArrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7935857F52CA031BA18C70E1E4F95E8E /* downArrow@2x.png */; };
+		B68135688572508793422951A6F69C53 /* DownPicker.h in Headers */ = {isa = PBXBuildFile; fileRef = 15D05FD2C624B0CE09485098EB038DF0 /* DownPicker.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C8653A0DE22B878F1FD2CAEA77A2AFCA /* UIDownPicker.h in Headers */ = {isa = PBXBuildFile; fileRef = 5FEAD8823828F89059AB276F097DB622 /* UIDownPicker.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D7B95969FD99927816EF16D91E60EA0B /* downArrow@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7CE3F499AD141266D8CB61F2EF7A0DB0 /* downArrow@3x.png */; };
+		F32C8BB8AD9844FB2441B34F7F8945A3 /* Pods-DownPicker_Example-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = F29E0B05524060AFE7921D1806A14563 /* Pods-DownPicker_Example-dummy.m */; };
+		F4F617BC0FB3421D55A8064B4D437FA0 /* DownPicker-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 276EFA847C552B689230FB69E978BE78 /* DownPicker-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FB5E5E74D86E9049F75D1C58D40F65E5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E4E89230EF59BC255123B67864ACF77 /* Foundation.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		1CABD50C41AD4BE46885E274B9D30102 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F69ACDA8267D09383E82F875B0B714C8;
+			remoteInfo = "DownPicker-DownPicker";
+		};
+		7EC673B13B01144A889A2D91AF77543A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A8D6C169B703F406C4B4E2AEED7E7D13;
+			remoteInfo = DownPicker;
+		};
+		BCD41EED3A3335312554FF6449241B54 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A8D6C169B703F406C4B4E2AEED7E7D13;
+			remoteInfo = DownPicker;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0B7E448360453B4A1EFF90B713D6DA54 /* Pods-DownPicker_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-DownPicker_Tests.release.xcconfig"; sourceTree = "<group>"; };
+		0D3C4988A7C9C285861D928843390547 /* DownPicker.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DownPicker.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		15D05FD2C624B0CE09485098EB038DF0 /* DownPicker.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = DownPicker.h; sourceTree = "<group>"; };
+		23EBF847CD9E00AB7C3E37F9B9B70FAE /* UIDownPicker.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = UIDownPicker.m; sourceTree = "<group>"; };
+		2590E7F21F0C287562A6C1A449A5978D /* DownPicker.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = DownPicker.modulemap; sourceTree = "<group>"; };
+		276EFA847C552B689230FB69E978BE78 /* DownPicker-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "DownPicker-umbrella.h"; sourceTree = "<group>"; };
+		2AF526195D522F40185B011DADE29180 /* Pods-DownPicker_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-DownPicker_Tests.debug.xcconfig"; sourceTree = "<group>"; };
+		31DF9B3BD1D9638683D7953EBBA42106 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		3AE985AB877A0E07CE44A2ED8BAE210C /* Pods-DownPicker_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-DownPicker_Example.debug.xcconfig"; sourceTree = "<group>"; };
+		3E4E89230EF59BC255123B67864ACF77 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		41B207F9F999F0F80A305520CF1B484F /* Pods-DownPicker_Tests-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-DownPicker_Tests-acknowledgements.markdown"; sourceTree = "<group>"; };
+		43B6F3128FBB389286113D670B464E1C /* Pods-DownPicker_Tests-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-DownPicker_Tests-acknowledgements.plist"; sourceTree = "<group>"; };
+		44B2F4A53046117F16B85F6BE3FCAF25 /* Pods-DownPicker_Tests.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = "Pods-DownPicker_Tests.modulemap"; sourceTree = "<group>"; };
+		5328DD83BB2D5CEBD786563AEAF0BA62 /* Pods-DownPicker_Example-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-DownPicker_Example-umbrella.h"; sourceTree = "<group>"; };
+		5F0C85C3B67707E8340F81CDC11F504F /* Pods-DownPicker_Tests-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-DownPicker_Tests-frameworks.sh"; sourceTree = "<group>"; };
+		5FEAD8823828F89059AB276F097DB622 /* UIDownPicker.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = UIDownPicker.h; sourceTree = "<group>"; };
+		6817BDBC9DA571AACE85E50C5097B15E /* DownPicker-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "DownPicker-prefix.pch"; sourceTree = "<group>"; };
+		6B750085DC77E22C9220294E304BB536 /* DownPicker.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = DownPicker.xcconfig; sourceTree = "<group>"; };
+		6DD81A0007A7749F6DC3FDE6FA86A638 /* Pods-DownPicker_Example-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-DownPicker_Example-frameworks.sh"; sourceTree = "<group>"; };
+		7935857F52CA031BA18C70E1E4F95E8E /* downArrow@2x.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "downArrow@2x.png"; sourceTree = "<group>"; };
+		7CE3F499AD141266D8CB61F2EF7A0DB0 /* downArrow@3x.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "downArrow@3x.png"; sourceTree = "<group>"; };
+		8C798DE3E9265FEBB51C57D7A11E1C50 /* Pods-DownPicker_Example-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-DownPicker_Example-acknowledgements.markdown"; sourceTree = "<group>"; };
+		8C8A65961042697FE21C252115D1503C /* DownPicker.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DownPicker.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		8EE25840C2EA0682F954B5A47F4B4E30 /* Pods-DownPicker_Example-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-DownPicker_Example-acknowledgements.plist"; sourceTree = "<group>"; };
+		905C72C3FA701560679DC2D98A7F3E74 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		96BD2BF4F6CD19B0377A7677871EED1D /* DownPicker.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = DownPicker.m; sourceTree = "<group>"; };
+		9A17E1FA9C52E7A0F6B42EAEBC326A18 /* Pods_DownPicker_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DownPicker_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		9E41F9C510C2CD678DC7AA77274DFE94 /* Pods_DownPicker_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DownPicker_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A6227632B95FD6A9A9B7768998C82314 /* Pods-DownPicker_Example.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = "Pods-DownPicker_Example.modulemap"; sourceTree = "<group>"; };
+		AD3F192C0479A4CE850417B500D68376 /* downArrow.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = downArrow.png; sourceTree = "<group>"; };
+		BA6428E9F66FD5A23C0A2E06ED26CD2F /* Podfile */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		BEBA251EF39C565D92F7A84616FD5AAE /* Pods-DownPicker_Tests-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-DownPicker_Tests-umbrella.h"; sourceTree = "<group>"; };
+		C6B41085823D044ACD62EF92BF495D24 /* DownPicker-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "DownPicker-dummy.m"; sourceTree = "<group>"; };
+		DA4F2F623A7BEC043BD8E7D53F9B2D28 /* Pods-DownPicker_Tests-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-DownPicker_Tests-dummy.m"; sourceTree = "<group>"; };
+		DB0806465D209DF710EEA0F9C92D4D69 /* Pods-DownPicker_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-DownPicker_Example.release.xcconfig"; sourceTree = "<group>"; };
+		DD1DD20A80CEA6E8C6814DF107870107 /* Pods-DownPicker_Example-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-DownPicker_Example-resources.sh"; sourceTree = "<group>"; };
+		EB14E4B055C76110B8C6AA662426656D /* Pods-DownPicker_Tests-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-DownPicker_Tests-resources.sh"; sourceTree = "<group>"; };
+		F2972BDCBA46CC8A49F5B558C7DC4191 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F29E0B05524060AFE7921D1806A14563 /* Pods-DownPicker_Example-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-DownPicker_Example-dummy.m"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		3650E9E359EE2B7F68A9E86772835FA7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9BAE6CA023B69D500CEECE134961AC1F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6A65FCA3EF907CFF4A09A4D4D6085997 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B615FBD489B2E23BC7EB6D3F0A0CE0CF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				394776F33B57AE9559B9A72DF69295C0 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E3B2484AE5E957240D683E043A161254 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FB5E5E74D86E9049F75D1C58D40F65E5 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		022B8C602D3105E307E5CDE205CE85C7 /* Pods-DownPicker_Example */ = {
+			isa = PBXGroup;
+			children = (
+				31DF9B3BD1D9638683D7953EBBA42106 /* Info.plist */,
+				A6227632B95FD6A9A9B7768998C82314 /* Pods-DownPicker_Example.modulemap */,
+				8C798DE3E9265FEBB51C57D7A11E1C50 /* Pods-DownPicker_Example-acknowledgements.markdown */,
+				8EE25840C2EA0682F954B5A47F4B4E30 /* Pods-DownPicker_Example-acknowledgements.plist */,
+				F29E0B05524060AFE7921D1806A14563 /* Pods-DownPicker_Example-dummy.m */,
+				6DD81A0007A7749F6DC3FDE6FA86A638 /* Pods-DownPicker_Example-frameworks.sh */,
+				DD1DD20A80CEA6E8C6814DF107870107 /* Pods-DownPicker_Example-resources.sh */,
+				5328DD83BB2D5CEBD786563AEAF0BA62 /* Pods-DownPicker_Example-umbrella.h */,
+				3AE985AB877A0E07CE44A2ED8BAE210C /* Pods-DownPicker_Example.debug.xcconfig */,
+				DB0806465D209DF710EEA0F9C92D4D69 /* Pods-DownPicker_Example.release.xcconfig */,
+			);
+			name = "Pods-DownPicker_Example";
+			path = "Target Support Files/Pods-DownPicker_Example";
+			sourceTree = "<group>";
+		};
+		316B358036F02614F61D846B610194D3 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8C8A65961042697FE21C252115D1503C /* DownPicker.bundle */,
+				0D3C4988A7C9C285861D928843390547 /* DownPicker.framework */,
+				9E41F9C510C2CD678DC7AA77274DFE94 /* Pods_DownPicker_Example.framework */,
+				9A17E1FA9C52E7A0F6B42EAEBC326A18 /* Pods_DownPicker_Tests.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3BE67960A4151FA1D66166FBEA2C4E9F /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				2590E7F21F0C287562A6C1A449A5978D /* DownPicker.modulemap */,
+				6B750085DC77E22C9220294E304BB536 /* DownPicker.xcconfig */,
+				C6B41085823D044ACD62EF92BF495D24 /* DownPicker-dummy.m */,
+				6817BDBC9DA571AACE85E50C5097B15E /* DownPicker-prefix.pch */,
+				276EFA847C552B689230FB69E978BE78 /* DownPicker-umbrella.h */,
+				905C72C3FA701560679DC2D98A7F3E74 /* Info.plist */,
+			);
+			name = "Support Files";
+			path = "Example/Pods/Target Support Files/DownPicker";
+			sourceTree = "<group>";
+		};
+		42F6B3EF196A09E06C5EC7BED7FFC4DC /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				A7CFC1C1BAB8BD46A5C0542DD2A5681A /* Pod */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		42FE7FD908212A6A787BA1D43FF80024 /* Targets Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				022B8C602D3105E307E5CDE205CE85C7 /* Pods-DownPicker_Example */,
+				5F868BC9C74FFD81412EB5B06504A0D4 /* Pods-DownPicker_Tests */,
+			);
+			name = "Targets Support Files";
+			sourceTree = "<group>";
+		};
+		5F868BC9C74FFD81412EB5B06504A0D4 /* Pods-DownPicker_Tests */ = {
+			isa = PBXGroup;
+			children = (
+				F2972BDCBA46CC8A49F5B558C7DC4191 /* Info.plist */,
+				44B2F4A53046117F16B85F6BE3FCAF25 /* Pods-DownPicker_Tests.modulemap */,
+				41B207F9F999F0F80A305520CF1B484F /* Pods-DownPicker_Tests-acknowledgements.markdown */,
+				43B6F3128FBB389286113D670B464E1C /* Pods-DownPicker_Tests-acknowledgements.plist */,
+				DA4F2F623A7BEC043BD8E7D53F9B2D28 /* Pods-DownPicker_Tests-dummy.m */,
+				5F0C85C3B67707E8340F81CDC11F504F /* Pods-DownPicker_Tests-frameworks.sh */,
+				EB14E4B055C76110B8C6AA662426656D /* Pods-DownPicker_Tests-resources.sh */,
+				BEBA251EF39C565D92F7A84616FD5AAE /* Pods-DownPicker_Tests-umbrella.h */,
+				2AF526195D522F40185B011DADE29180 /* Pods-DownPicker_Tests.debug.xcconfig */,
+				0B7E448360453B4A1EFF90B713D6DA54 /* Pods-DownPicker_Tests.release.xcconfig */,
+			);
+			name = "Pods-DownPicker_Tests";
+			path = "Target Support Files/Pods-DownPicker_Tests";
+			sourceTree = "<group>";
+		};
+		7372B902CB0BDA787D17E6577B6491D1 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				15D05FD2C624B0CE09485098EB038DF0 /* DownPicker.h */,
+				96BD2BF4F6CD19B0377A7677871EED1D /* DownPicker.m */,
+				5FEAD8823828F89059AB276F097DB622 /* UIDownPicker.h */,
+				23EBF847CD9E00AB7C3E37F9B9B70FAE /* UIDownPicker.m */,
+			);
+			path = Classes;
+			sourceTree = "<group>";
+		};
+		7DB346D0F39D3F0E887471402A8071AB = {
+			isa = PBXGroup;
+			children = (
+				BA6428E9F66FD5A23C0A2E06ED26CD2F /* Podfile */,
+				F821188AAD02724E096B700EE8A26758 /* Development Pods */,
+				BC3CA7F9E30CC8F7E2DD044DD34432FC /* Frameworks */,
+				316B358036F02614F61D846B610194D3 /* Products */,
+				42FE7FD908212A6A787BA1D43FF80024 /* Targets Support Files */,
+			);
+			sourceTree = "<group>";
+		};
+		A71A103B8BA274585894E0B9F96C4FD8 /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				AD3F192C0479A4CE850417B500D68376 /* downArrow.png */,
+				7935857F52CA031BA18C70E1E4F95E8E /* downArrow@2x.png */,
+				7CE3F499AD141266D8CB61F2EF7A0DB0 /* downArrow@3x.png */,
+			);
+			path = Assets;
+			sourceTree = "<group>";
+		};
+		A7CFC1C1BAB8BD46A5C0542DD2A5681A /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				A71A103B8BA274585894E0B9F96C4FD8 /* Assets */,
+			);
+			path = Pod;
+			sourceTree = "<group>";
+		};
+		BC3CA7F9E30CC8F7E2DD044DD34432FC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				BF6342C8B29F4CEEA088EFF7AB4DE362 /* iOS */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		BF6342C8B29F4CEEA088EFF7AB4DE362 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				3E4E89230EF59BC255123B67864ACF77 /* Foundation.framework */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
+		CDC88B156CF5C5F1ECAC470EE3EC2896 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				7372B902CB0BDA787D17E6577B6491D1 /* Classes */,
+			);
+			path = Pod;
+			sourceTree = "<group>";
+		};
+		EE9BB179524A62A770DBF10B52142528 /* DownPicker */ = {
+			isa = PBXGroup;
+			children = (
+				CDC88B156CF5C5F1ECAC470EE3EC2896 /* Pod */,
+				42F6B3EF196A09E06C5EC7BED7FFC4DC /* Resources */,
+				3BE67960A4151FA1D66166FBEA2C4E9F /* Support Files */,
+			);
+			name = DownPicker;
+			path = ../..;
+			sourceTree = "<group>";
+		};
+		F821188AAD02724E096B700EE8A26758 /* Development Pods */ = {
+			isa = PBXGroup;
+			children = (
+				EE9BB179524A62A770DBF10B52142528 /* DownPicker */,
+			);
+			name = "Development Pods";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		197BB9AA4A8575AF92ABC8CB3CE6A025 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4F617BC0FB3421D55A8064B4D437FA0 /* DownPicker-umbrella.h in Headers */,
+				B68135688572508793422951A6F69C53 /* DownPicker.h in Headers */,
+				C8653A0DE22B878F1FD2CAEA77A2AFCA /* UIDownPicker.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		793C88309825DD45BB23E44544D0004B /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2C58971DDA06F8ED782EFD90F5759155 /* Pods-DownPicker_Example-umbrella.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EFD44C047E492DA8EE35FC5C9D0A6C2C /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0DD9417F8BE3EDC3740D753843D7109D /* Pods-DownPicker_Tests-umbrella.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		25D9DFAA607A6E261ADE65F6159F2050 /* Pods-DownPicker_Example */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1E793E8996A52EF23CBE33C6CE72A14C /* Build configuration list for PBXNativeTarget "Pods-DownPicker_Example" */;
+			buildPhases = (
+				05675E8CBBF99047611D470CFF24F76A /* Sources */,
+				9BAE6CA023B69D500CEECE134961AC1F /* Frameworks */,
+				793C88309825DD45BB23E44544D0004B /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				0C5F331D0CA683412F769AC7D4E7DEE6 /* PBXTargetDependency */,
+			);
+			name = "Pods-DownPicker_Example";
+			productName = "Pods-DownPicker_Example";
+			productReference = 9E41F9C510C2CD678DC7AA77274DFE94 /* Pods_DownPicker_Example.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		700622A5C0918D3776522F1093E47C8D /* Pods-DownPicker_Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 07E099DD1D64890500B436562888A0AC /* Build configuration list for PBXNativeTarget "Pods-DownPicker_Tests" */;
+			buildPhases = (
+				2DDFCB70F5B0B744542E2CD7B0A56B94 /* Sources */,
+				E3B2484AE5E957240D683E043A161254 /* Frameworks */,
+				EFD44C047E492DA8EE35FC5C9D0A6C2C /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				04A20ACA4C06D651663FADC0CD98CF64 /* PBXTargetDependency */,
+			);
+			name = "Pods-DownPicker_Tests";
+			productName = "Pods-DownPicker_Tests";
+			productReference = 9A17E1FA9C52E7A0F6B42EAEBC326A18 /* Pods_DownPicker_Tests.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		A8D6C169B703F406C4B4E2AEED7E7D13 /* DownPicker */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 21E3F0BC251ECBC15872D06A8AFE333E /* Build configuration list for PBXNativeTarget "DownPicker" */;
+			buildPhases = (
+				E6D287DEFA602F92E19D53F7A2EF636E /* Sources */,
+				B615FBD489B2E23BC7EB6D3F0A0CE0CF /* Frameworks */,
+				7C2D256C3E05ED7A62962A0BBB4504D4 /* Resources */,
+				197BB9AA4A8575AF92ABC8CB3CE6A025 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				4875BA85D4E1ECEC38381D4DAF071E76 /* PBXTargetDependency */,
+			);
+			name = DownPicker;
+			productName = DownPicker;
+			productReference = 0D3C4988A7C9C285861D928843390547 /* DownPicker.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		F69ACDA8267D09383E82F875B0B714C8 /* DownPicker-DownPicker */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FC662E053E9DC13C618D09B2BC8BE510 /* Build configuration list for PBXNativeTarget "DownPicker-DownPicker" */;
+			buildPhases = (
+				D290F8E325D2940A323335C4A0AF3589 /* Sources */,
+				3650E9E359EE2B7F68A9E86772835FA7 /* Frameworks */,
+				A522C95E1F2479ACAD009F7A28ACC219 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "DownPicker-DownPicker";
+			productName = "DownPicker-DownPicker";
+			productReference = 8C8A65961042697FE21C252115D1503C /* DownPicker.bundle */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D41D8CD98F00B204E9800998ECF8427E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0700;
+				LastUpgradeCheck = 0700;
+			};
+			buildConfigurationList = 2D8E8EC45A3A1A1D94AE762CB5028504 /* Build configuration list for PBXProject "Pods" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 7DB346D0F39D3F0E887471402A8071AB;
+			productRefGroup = 316B358036F02614F61D846B610194D3 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A8D6C169B703F406C4B4E2AEED7E7D13 /* DownPicker */,
+				F69ACDA8267D09383E82F875B0B714C8 /* DownPicker-DownPicker */,
+				25D9DFAA607A6E261ADE65F6159F2050 /* Pods-DownPicker_Example */,
+				700622A5C0918D3776522F1093E47C8D /* Pods-DownPicker_Tests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		7C2D256C3E05ED7A62962A0BBB4504D4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				53B9782D2F40D14D76156DBE02D9E194 /* DownPicker.bundle in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A522C95E1F2479ACAD009F7A28ACC219 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				708A84A5232458DA5F7A92D38F760E3C /* downArrow.png in Resources */,
+				921130776AE750DDA4CF6AF74687C17C /* downArrow@2x.png in Resources */,
+				D7B95969FD99927816EF16D91E60EA0B /* downArrow@3x.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		05675E8CBBF99047611D470CFF24F76A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F32C8BB8AD9844FB2441B34F7F8945A3 /* Pods-DownPicker_Example-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2DDFCB70F5B0B744542E2CD7B0A56B94 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5DDECED6B504513066B5A6A0B4A10557 /* Pods-DownPicker_Tests-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D290F8E325D2940A323335C4A0AF3589 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E6D287DEFA602F92E19D53F7A2EF636E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				01DB92256AC8093DF124D58D6B4D05C4 /* DownPicker-dummy.m in Sources */,
+				2268A3BACB03EE18745A316CB357E284 /* DownPicker.m in Sources */,
+				4004BD43F74D2C32AD29BFC0CDE65E80 /* UIDownPicker.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		04A20ACA4C06D651663FADC0CD98CF64 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = DownPicker;
+			target = A8D6C169B703F406C4B4E2AEED7E7D13 /* DownPicker */;
+			targetProxy = 7EC673B13B01144A889A2D91AF77543A /* PBXContainerItemProxy */;
+		};
+		0C5F331D0CA683412F769AC7D4E7DEE6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = DownPicker;
+			target = A8D6C169B703F406C4B4E2AEED7E7D13 /* DownPicker */;
+			targetProxy = BCD41EED3A3335312554FF6449241B54 /* PBXContainerItemProxy */;
+		};
+		4875BA85D4E1ECEC38381D4DAF071E76 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "DownPicker-DownPicker";
+			target = F69ACDA8267D09383E82F875B0B714C8 /* DownPicker-DownPicker */;
+			targetProxy = 1CABD50C41AD4BE46885E274B9D30102 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		03CA91998D6773EC5D02B3DB87B8353E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PREPROCESSOR_DEFINITIONS = "RELEASE=1";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				STRIP_INSTALLED_PRODUCT = NO;
+				SYMROOT = "${SRCROOT}/../build";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		0B57334D6C23DADAA4F7D802A5760EB2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				ONLY_ACTIVE_ARCH = YES;
+				STRIP_INSTALLED_PRODUCT = NO;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		385FE94777975C37DC2FD65467E375F8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2AF526195D522F40185B011DADE29180 /* Pods-DownPicker_Tests.debug.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				INFOPLIST_FILE = "Target Support Files/Pods-DownPicker_Tests/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-DownPicker_Tests/Pods-DownPicker_Tests.modulemap";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_NAME = Pods_DownPicker_Tests;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		56D18D4807C731CAEF46CF828B362C8D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6B750085DC77E22C9220294E304BB536 /* DownPicker.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_PREFIX_HEADER = "Target Support Files/DownPicker/DownPicker-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/DownPicker/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/DownPicker/DownPicker.modulemap";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_NAME = DownPicker;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		65565D9AD5DF371A1A38F877223CBBBB /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6B750085DC77E22C9220294E304BB536 /* DownPicker.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_PREFIX_HEADER = "Target Support Files/DownPicker/DownPicker-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/DownPicker/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/DownPicker/DownPicker.modulemap";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = DownPicker;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		69ECE246DF65193F0D5A11F169129583 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3AE985AB877A0E07CE44A2ED8BAE210C /* Pods-DownPicker_Example.debug.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				INFOPLIST_FILE = "Target Support Files/Pods-DownPicker_Example/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-DownPicker_Example/Pods-DownPicker_Example.modulemap";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_NAME = Pods_DownPicker_Example;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		A258D1CBB5CE2F2FB7A9BBCAA9D957C7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = DB0806465D209DF710EEA0F9C92D4D69 /* Pods-DownPicker_Example.release.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				INFOPLIST_FILE = "Target Support Files/Pods-DownPicker_Example/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-DownPicker_Example/Pods-DownPicker_Example.modulemap";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_NAME = Pods_DownPicker_Example;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		C3E1D0786AF7EDB039629A6CDA0EB325 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6B750085DC77E22C9220294E304BB536 /* DownPicker.xcconfig */;
+			buildSettings = {
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				PRODUCT_NAME = DownPicker;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Debug;
+		};
+		D627854E265E482885F0C2F9BD474B01 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6B750085DC77E22C9220294E304BB536 /* DownPicker.xcconfig */;
+			buildSettings = {
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				PRODUCT_NAME = DownPicker;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Release;
+		};
+		FEF62A4A20157905DD1A49BD09CB32BE /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0B7E448360453B4A1EFF90B713D6DA54 /* Pods-DownPicker_Tests.release.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				INFOPLIST_FILE = "Target Support Files/Pods-DownPicker_Tests/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-DownPicker_Tests/Pods-DownPicker_Tests.modulemap";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_NAME = Pods_DownPicker_Tests;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		07E099DD1D64890500B436562888A0AC /* Build configuration list for PBXNativeTarget "Pods-DownPicker_Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				385FE94777975C37DC2FD65467E375F8 /* Debug */,
+				FEF62A4A20157905DD1A49BD09CB32BE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1E793E8996A52EF23CBE33C6CE72A14C /* Build configuration list for PBXNativeTarget "Pods-DownPicker_Example" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				69ECE246DF65193F0D5A11F169129583 /* Debug */,
+				A258D1CBB5CE2F2FB7A9BBCAA9D957C7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		21E3F0BC251ECBC15872D06A8AFE333E /* Build configuration list for PBXNativeTarget "DownPicker" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				56D18D4807C731CAEF46CF828B362C8D /* Debug */,
+				65565D9AD5DF371A1A38F877223CBBBB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2D8E8EC45A3A1A1D94AE762CB5028504 /* Build configuration list for PBXProject "Pods" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0B57334D6C23DADAA4F7D802A5760EB2 /* Debug */,
+				03CA91998D6773EC5D02B3DB87B8353E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FC662E053E9DC13C618D09B2BC8BE510 /* Build configuration list for PBXNativeTarget "DownPicker-DownPicker" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C3E1D0786AF7EDB039629A6CDA0EB325 /* Debug */,
+				D627854E265E482885F0C2F9BD474B01 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+}

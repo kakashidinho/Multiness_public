@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="google_play_services_app_id" translatable="false">153091773754</string>
+
+    <!-- these are sample AdMob IDs provided by Google, modify them if you want to use your own -->
+    <string name="admob_app_id" translatable="false">ca-app-pub-3940256099942544~3347511713</string>
+    <string name="admob_fullscreen_ad_id" translatable="false">ca-app-pub-3940256099942544/1033173712</string>
+
+    <string name="facebook_app_id" translatable="false">860047480795596</string>
+    <string name="fb_login_protocol_scheme" translatable="false">fb860047480795596</string>
+    <!-- change this id to your AppsFlyer dev key -->
+    <string name="appsflyer_dev_key" translatable="false">0000000000000000000000</string>
+</resources>

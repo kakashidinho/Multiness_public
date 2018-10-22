@@ -1,0 +1,41 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".GamePage">
+    <item android:id="@+id/action_b_turbo" android:title="@string/action_b_turbo"
+        android:orderInCategory="100"
+        app:showAsAction="collapseActionView"
+        android:checkable="true"
+        app:actionViewClass="android.widget.CheckBox"/>
+    <item android:id="@+id/action_a_turbo" android:title="@string/action_a_turbo"
+        android:orderInCategory="100"
+        app:showAsAction="collapseActionView"
+        android:checkable="true"
+        app:actionViewClass="android.widget.CheckBox" />
+    <item android:id="@+id/action_settings" android:title="@string/action_settings"
+        android:orderInCategory="100" app:showAsAction="never" />
+    <group android:id="@+id/menu_game_power_control_group">
+        <item android:id="@+id/action_reset" android:title="@string/action_reset"
+            android:orderInCategory="100" app:showAsAction="never" />
+    </group>
+    <group android:id="@+id/menu_remote_control_group">
+        <item android:id="@+id/action_chat"
+            android:title="@string/chat"
+            android:orderInCategory="100" app:showAsAction="never" />
+        <group android:id="@+id/menu_remote_control_internet_host_group">
+            <item android:id="@+id/action_invite_ingame"
+                android:title="@string/invite_friend"
+                android:orderInCategory="100" app:showAsAction="never" />
+        </group>
+    </group>
+    <group android:id="@+id/menu_save_load_group">
+        <item android:id="@+id/action_load_save" android:title="@string/action_load_save"
+            android:orderInCategory="100" app:showAsAction="never" />
+        <item android:id="@+id/action_save_game" android:title="@string/action_save_game"
+            android:orderInCategory="100" app:showAsAction="never" />
+        <item android:id="@+id/action_quick_load" android:title="@string/action_quick_load"
+            android:orderInCategory="100" app:showAsAction="never" />
+        <item android:id="@+id/action_quick_save" android:title="@string/action_quick_save"
+            android:orderInCategory="100" app:showAsAction="never" />
+    </group>
+</menu>

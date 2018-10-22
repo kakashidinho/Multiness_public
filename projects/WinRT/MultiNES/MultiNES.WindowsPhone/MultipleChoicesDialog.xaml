@@ -1,0 +1,23 @@
+﻿<ContentDialog
+    x:Class="MultiNES.MultipleChoicesDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MultiNES"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    FullSizeDesired="False">
+
+    <StackPanel x:Name="root" 
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Center">
+        <RadioButton 
+            Content="Radio1"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Stretch" FontSize="24"/>
+        <RadioButton 
+            Content="Radio2"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Stretch" FontSize="24"/>
+    </StackPanel>
+</ContentDialog>

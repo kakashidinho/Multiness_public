@@ -1,0 +1,131 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    tools:context=".MainPage">
+
+    <LinearLayout
+        android:id="@+id/btnGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/loginBtnArea"
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal">
+
+        <RelativeLayout
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:paddingBottom="4dp"
+            android:paddingRight="8dp">
+
+
+            <Button
+                android:gravity="center_vertical|left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lan_multiplayer"
+                android:id="@+id/btnLanMultiplayer"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="0dp"
+                android:drawableRight="@drawable/ic_lan_icon"/>
+
+            <Button
+                android:gravity="center_vertical|left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/wifi_direct_multiplayer"
+                android:id="@+id/btnWifiDirect"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_below="@+id/btnLanMultiplayer"
+                android:layout_marginTop="0dp"
+                android:drawableRight="@drawable/ic_wifi_black_36dp"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:paddingBottom="4dp"
+            android:paddingLeft="8dp">
+            <Button
+                android:gravity="center_vertical|left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/singleplayer"
+                android:id="@+id/btnSinglePlayer"
+                android:layout_below="@+id/btnInternet"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="true"
+                android:drawableRight="@drawable/ic_person_black_24px" />
+
+            <Button
+                android:gravity="center_vertical|left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/internet"
+                android:id="@+id/btnInternet"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="true"
+                android:drawableRight="@drawable/ic_internet_icon" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <Button
+        android:gravity="center_vertical|left"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/donate"
+        android:textAllCaps="false"
+        android:id="@+id/btnDonate"
+        android:layout_alignRight="@+id/btnGroup"
+        android:layout_above="@+id/loginBtnArea"
+        android:drawableRight="@drawable/ic_no_ads_icon_36dp"/>
+
+    <RelativeLayout
+        android:id="@+id/loginBtnArea"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+
+        <com.facebook.login.widget.LoginButton
+            android:id="@+id/fb_login_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical"
+            />
+
+        <Button
+            android:id="@+id/google_login_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/btn_google_signin_dark"
+            android:textColor="@color/common_google_signin_btn_text_dark"
+            android:textSize="13sp"
+            android:text="@string/google_signin"
+            android:textAllCaps="false"
+            android:textStyle="bold"
+            />
+
+    </RelativeLayout>
+
+</RelativeLayout>

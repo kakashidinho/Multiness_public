@@ -1,0 +1,327 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\libjpeg">
+      <UniqueIdentifier>{6d637c82-6847-4b2d-810e-16f1ec0a86e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\libpng">
+      <UniqueIdentifier>{265b8af9-2ba4-4455-8802-6d3342c2afd4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\zlib">
+      <UniqueIdentifier>{3fcdd246-d35f-4541-9076-daafa1e6e439}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files\libjpeg">
+      <UniqueIdentifier>{ac1b50a8-d280-4afb-8b6c-62c93c0d1b89}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\libpng">
+      <UniqueIdentifier>{913ae4b8-282b-4776-8985-d5c9d1e92c66}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\zlib">
+      <UniqueIdentifier>{87efb8a2-e52d-4dcb-8bb4-7b7b3d1ff65e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="3STC_DXT.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Bitmap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BMP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DDS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ETC.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ImgByteStream.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="JPEG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="KTX.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PNGImg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PVR.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TGA.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="jpeg-8d\jaricom.c">
+      <Filter>Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="jpeg-8d\jcomapi.c">
+      <Filter>Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="jpeg-8d\jdapimin.c">
+      <Filter>Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="jpeg-8d\jdapistd.c">
+      <Filter>Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="jpeg-8d\jdarith.c">
+      <Filter>Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="jpeg-8d\jdatadst.c">
+      <Filter>Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="jpeg-8d\jdatasrc.c">
+      <Filter>Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="jpeg-8d\jdcoefct.c">
+      <Filter>Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="jpeg-8d\jdcolor.c">
+      <Filter>Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="jpeg-8d\jddctmgr.c">
+      <Filter>Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="jpeg-8d\jdhuff.c">
+      <Filter>Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="jpeg-8d\jdinput.c">
+      <Filter>Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="jpeg-8d\jdmainct.c">
+      <Filter>Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="jpeg-8d\jdmarker.c">
+      <Filter>Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="jpeg-8d\jdmaster.c">
+      <Filter>Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="jpeg-8d\jdmerge.c">
+      <Filter>Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="jpeg-8d\jdpostct.c">
+      <Filter>Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="jpeg-8d\jdsample.c">
+      <Filter>Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="jpeg-8d\jdtrans.c">
+      <Filter>Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="jpeg-8d\jerror.c">
+      <Filter>Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="jpeg-8d\jidctflt.c">
+      <Filter>Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="jpeg-8d\jidctfst.c">
+      <Filter>Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="jpeg-8d\jidctint.c">
+      <Filter>Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="jpeg-8d\jmemansi.c">
+      <Filter>Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="jpeg-8d\jmemmgr.c">
+      <Filter>Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="jpeg-8d\jquant1.c">
+      <Filter>Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="jpeg-8d\jquant2.c">
+      <Filter>Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="jpeg-8d\jutils.c">
+      <Filter>Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="lpng159\png.c">
+      <Filter>Source Files\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="lpng159\pngerror.c">
+      <Filter>Source Files\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="lpng159\pngget.c">
+      <Filter>Source Files\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="lpng159\pngmem.c">
+      <Filter>Source Files\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="lpng159\pngpread.c">
+      <Filter>Source Files\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="lpng159\pngread.c">
+      <Filter>Source Files\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="lpng159\pngrio.c">
+      <Filter>Source Files\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="lpng159\pngrtran.c">
+      <Filter>Source Files\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="lpng159\pngrutil.c">
+      <Filter>Source Files\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="lpng159\pngset.c">
+      <Filter>Source Files\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="lpng159\pngtrans.c">
+      <Filter>Source Files\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib-1.2.6\adler32.c">
+      <Filter>Source Files\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib-1.2.6\compress.c">
+      <Filter>Source Files\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib-1.2.6\crc32.c">
+      <Filter>Source Files\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib-1.2.6\deflate.c">
+      <Filter>Source Files\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib-1.2.6\gzclose.c">
+      <Filter>Source Files\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib-1.2.6\gzlib.c">
+      <Filter>Source Files\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib-1.2.6\gzread.c">
+      <Filter>Source Files\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib-1.2.6\gzwrite.c">
+      <Filter>Source Files\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib-1.2.6\infback.c">
+      <Filter>Source Files\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib-1.2.6\inffast.c">
+      <Filter>Source Files\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib-1.2.6\inflate.c">
+      <Filter>Source Files\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib-1.2.6\inftrees.c">
+      <Filter>Source Files\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib-1.2.6\trees.c">
+      <Filter>Source Files\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib-1.2.6\uncompr.c">
+      <Filter>Source Files\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib-1.2.6\zutil.c">
+      <Filter>Source Files\zlib</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="3STC_DXT.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Bitmap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ETC.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImgByteStream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImgLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JPEG.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PNGImg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jpeg-8d\jconfig.h">
+      <Filter>Header Files\libjpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="jpeg-8d\jdct.h">
+      <Filter>Header Files\libjpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="jpeg-8d\jerror.h">
+      <Filter>Header Files\libjpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="jpeg-8d\jinclude.h">
+      <Filter>Header Files\libjpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="jpeg-8d\jmemsys.h">
+      <Filter>Header Files\libjpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="jpeg-8d\jmorecfg.h">
+      <Filter>Header Files\libjpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="jpeg-8d\jpegint.h">
+      <Filter>Header Files\libjpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="jpeg-8d\jpeglib.h">
+      <Filter>Header Files\libjpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="jpeg-8d\jversion.h">
+      <Filter>Header Files\libjpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="lpng159\png.h">
+      <Filter>Header Files\libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="lpng159\pngconf.h">
+      <Filter>Header Files\libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="lpng159\pnglibconf.h">
+      <Filter>Header Files\libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="lpng159\pngpriv.h">
+      <Filter>Header Files\libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib-1.2.6\crc32.h">
+      <Filter>Header Files\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib-1.2.6\deflate.h">
+      <Filter>Header Files\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib-1.2.6\inffast.h">
+      <Filter>Header Files\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib-1.2.6\inffixed.h">
+      <Filter>Header Files\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib-1.2.6\inflate.h">
+      <Filter>Header Files\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib-1.2.6\inftrees.h">
+      <Filter>Header Files\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib-1.2.6\trees.h">
+      <Filter>Header Files\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib-1.2.6\zconf.h">
+      <Filter>Header Files\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib-1.2.6\zlib.h">
+      <Filter>Header Files\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib-1.2.6\zutil.h">
+      <Filter>Header Files\zlib</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+</Project>

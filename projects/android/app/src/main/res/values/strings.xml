@@ -1,0 +1,178 @@
+<resources>
+    <string name="app_name" translatable="false">Multiness</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="action_reset">Reset Game</string>
+    <string name="action_load_save">Load ...</string>
+    <string name="action_save_game">Save ...</string>
+    <string name="action_quick_load">Quick Load</string>
+    <string name="action_quick_save">Quick Save</string>
+    <string name="action_b_turbo">B is auto</string>
+    <string name="action_a_turbo">A is auto</string>
+    <string name="load">Load</string>
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
+    <string name="retry">Retry</string>
+    <string name="ok">OK</string>
+    <string name="reset">Reset</string>
+    <string name="start">Start</string>
+    <string name="donate">Remove Ads</string>
+    <string name="delete_invitation_msg">Are you sure want to delete this invitation?</string>
+    <string name="file_exist_title">File exists</string>
+    <string name="file_exist_msg">File already exists. Do you want to overwrite it?</string>
+    <string name="file_write_permission_err_msg">You don\'t have permission to write to this path</string>
+    <string name="title_activity_game">Network NES</string>
+    <string name="lan_multiplayer">Multiplayer (LAN)</string>
+    <string name="internet">Multiplayer (Internet)</string>
+    <string name="wifi_direct_multiplayer">Multiplayer (Wifi Direct)</string>
+    <string name="singleplayer">Singleplayer</string>
+    <string name="title_activity_game_chooser">Select Game</string>
+    <string name="auto_search">Auto Search Games</string>
+    <string name="manual_search">Manually Search Games</string>
+    <string name="auto_search_loading">Searching for games ...</string>
+    <string name="cancel">Cancel</string>
+    <string name="title_activity_manual_game_search">Manually Search Games</string>
+    <string name="title_activity_load_save">Load A Save File ...</string>
+    <string name="title_activity_save_game">Choose Destination</string>
+    <string name="loading_msg">Loading ...</string>
+    <string name="title_activity_multiplayer">Multiplayer</string>
+    <string name="host">Player 1 (Host)</string>
+    <string name="client">Player 2 (Guest)</string>
+    <string name="select_player">Select Player</string>
+    <string name="err_no_network">No network connection</string>
+    <string name="host_game">Host New Game</string>
+    <string name="host_lan_game_msg">Enter your network port</string>
+    <string name="host_wifi_direct_game_msg">Enter your room name</string>
+    <string name="connect_game">Connect To Server</string>
+    <string name="connect_game_msg">Enter server\'s IP and port</string>
+    <string name="err_invalid_port">Invalid port</string>
+    <string name="err_invalid_ip">Invalid IP</string>
+    <string name="err_invalid_room_name">Invalid name</string>
+    <string name="err_network_create_failed">Failed to establish network game</string>
+    <string name="connecting_to_host">Connecting to host</string>
+    <string name="connecting_to_cserver">Connecting to NAT server</string>
+    <string name="connected_to">Connected to</string>
+    <string name="has_connected">has connected</string>
+    <string name="has_disconnected">has disconnected</string>
+    <string name="exit">Exit</string>
+    <string name="exit_msg">Do you want to exit?</string>
+    <string name="delete_file_msg">Are you sure want to delete this file?</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="host_internet_fb">P1: Invite A Facebook Friend</string>
+    <string name="join_internet_fb">P2: Join A Facebook invitation</string>
+    <string name="host_internet_google">P1: Invite A Google Player</string>
+    <string name="join_internet_google">P2: Join A Google Invitation</string>
+    <string name="quickjoin_internet_google">P2: Join Random Google Player</string>
+    <string name="must_signin_internet_title">Log in required</string>
+    <string name="must_signin_fb_title_msg">You must log in with Facebook before using Facebook Internet Multiplayer Mode.</string>
+    <string name="must_signin_google_title_msg">You must log in with Google before using Google Internet Multiplayer Mode.</string>
+    <string name="dpad_scale_size_lbl">Onscreen D-pad\'s size</string>
+    <string name="audio_volum_lbl">Audio volume</string>
+    <string name="vibration_lbl">Onscreen buttons\' vibration</string>
+    <string name="voice_lbl">Voice chat in multiplayer</string>
+    <string name="controller_mapping_lbl">Controller\'s mappings</string>
+    <string name="screen_rotate_lbl">In-game display orientation</string>
+    <string name="ui_controls_visiable_lbl">Onscreen buttons\' visibility</string>
+    <string name="game_fullscreen_lbl">Fullscreen In-game display</string>
+    <string name="loading_fb_profile_msg">Loading facebook profile ...</string>
+    <string name="loading_profile_err">Failed to load facebook profile</string>
+    <string name="title_invitations">Invitations</string>
+    <string name="join">Join</string>
+    <string name="send">Send</string>
+    <string name="chat">Chat</string>
+    <string name="invite_friend">Invite Friend</string>
+    <string name="pending">pending</string>
+    <string name="received">received</string>
+    <string name="failed">failed</string>
+    <string name="me">Me</string>
+    <string name="clear">Clear</string>
+    <string name="welcome_back">Welcome back</string>
+    <string name="title_activity_lan_server_chooser_page">Available LAN Servers</string>
+    <string name="title_activity_wifi_direct_server_chooser_page">Available Wifi Servers</string>
+    <string name="manual_connect_lan_btn_txt">Server Not Listed? Click Here</string>
+    <string name="save_succeeded_msg">Savegame written successfully</string>
+    <string name="save_file_load_succeeded_msg">Savegame loaded successfully</string>
+    <string name="save_file_not_available_msg">No quick saved file available to load. Please perform quick save first.</string>
+    <string name="chat_message_too_big_err">The chat message is too big</string>
+    <string name="chat_not_ready_err">There is no active connection</string>
+    <string name="chat_room_lbl">Messages</string>
+    <string name="new_msg_toast_msg">New message available</string>
+    <string name="credits">Credits</string>
+    <string name="icon_credit_title">Nintendo controller icons</string>
+    <string name="icon_credit_msg">Thanks to Ryan Dardis and Creative Stall from the Noun Project</string>
+    <string name="freepik_credit_title">Donation, World and LAN icons</string>
+    <string name="freepik_credit_msg">Designed by Freepik and distributed by Flaticon</string>
+    <string name="google_credit_title">Special thanks</string>
+    <string name="google_credit_msg">Thank Google for various open source icons and resources</string>
+    <string name="contacts">Contacts</string>
+    <string name="new_invite_ingame_title">Invite another friend</string>
+    <string name="kick_and_new_invite_msg">Are you sure want to invite new friend? The current connected friend will be disconnected.</string>
+    <string name="new_invite_ingame_msg">Are you sure want to create new invitation? All previous invitations will be invalid.</string>
+    <string name="no_game_title">No game detected</string>
+    <string name="no_game_msg">It appears that you don\'t have any NES game in your device currently. Do you want to search on the Internet? Type the name of the game you want to find here:</string>
+    <string name="no_game_notes">Notes: After you download a game\'s rom. It will appear automatically on this page regardless of where you store it.</string>
+    <string name="no_game_text_hint">e.g. Mario</string>
+    <string name="dont_show_again">don\'t show again</string>
+    <string name="err_invalid_name">Invalid name</string>
+    <string name="rate_title">Do you like it?</string>
+    <string name="rate_msg">Thank you for using the app. Please take a few minutes to rate it.</string>
+    <string name="rate_btn">Rate</string>
+    <string name="no_rate_btn">No, Thanks</string>
+    <string name="rate_later_btn">Later</string>
+    <string name="controller_mapping_prompt_msg">Press any key to map to the button</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="privacy_policy_msg">https://lehoangquyenblog.wordpress.com/published-games/74-2/multiness-privacy-policy/</string>
+    <string name="read_permission_msg">This app needs permission to read files from internal storage and sdcard so that it can search for and open NES games.</string>
+    <string name="write_permission_msg">This app needs permission to write to internal storage and sdcard so that it can save the game\'s state to outside the app.</string>
+    <string name="record_permission_msg">This app needs permission to record audio for multiplayer\'s voice chat.</string>
+    <string name="location_permission_msg">This app needs permission to know your approximate location for enabling Wifi Direct feature.</string>
+    <string name="location_permission_denied_msg">Without permission to know your approximate location, Wifi Direct feature won\'t work.</string>
+    <string name="google_signin">Log in with Google</string>
+    <string name="google_signout">Log out</string>
+    <string name="google_signed_in_msg">Logged in with Google</string>
+    <string name="google_signout_msg"><![CDATA[<b>%1$s</b>, are you sure want to log out of Google?]]></string>
+    <string name="google_signin_no_permission_err">Login error</string>
+    <string name="google_signin_no_permission_msg">Could not obtain basic Google profile info. Logging out ...</string>
+    <string name="a_google_player">A Google Player</string>
+    <string name="a_fb_player">A Facebook Player</string>
+    <string name="a_player">A Player</string>
+    <string name="generic_err_title">Error</string>
+    <string name="google_invite_ui_generic_err_msg">Failed to process Google Play Games invitation. Error code=%1$d.</string>
+    <string name="google_match_invalid">Invalid game. Possible reason is that the remote player has already closed the game.</string>
+    <string name="google_match_inactive_msg">The game has already ended.</string>
+    <string name="google_match_not_respond_msg">The remote player took too long to respond.</string>
+    <string name="google_match_handshake_invalid_msg">The remote player didn\'t successfully perform handshaking.</string>
+    <string name="google_match_canceled_msg">The remote player has canceled the match.</string>
+    <string name="google_signedout_err_msg">You have logged out. Please log in again.</string>
+    <string name="google_auto_search_games">Searching for available game sessions ...</string>
+    <string name="google_match_invite_postprocessing">Waiting for 2nd player ...</string>
+    <string name="google_signing_in">Logging in with Google ...</string>
+    <string name="name_field">Name:</string>
+    <string name="wifi_direct_not_supported">Wifi Direct is not supported on this device.</string>
+    <string name="wifi_direct_internal_err_msg">Wifi Direct encountered internal driver error.</string>
+    <string name="wifi_direct_creating">Setting up Wifi Direct Server ...</string>
+    <string name="wifi_direct_generic_err_msg">Wifi Direct Error. Error code=%1$d.</string>
+    <string name="donate_msg">I made this app as a hobby. It is free with very minimal ads. Any donations are always welcome. In return, the ads will be removed.</string>
+    <string name="donation_url">https://paypal.me/HQgame</string>
+    <string name="copyright">Copyright</string>
+    <string name="copyright_text" translatable="false">(C) 2016-2018  Le Hoang Quyen</string>
+    <string name="nestopia" translatable="false">Nestopia core</string>
+    <string name="nestopia_copyright_text" translatable="false">(C) 2003-2008 Martin Freij</string>
+    <string name="license" translatable="false">License</string>
+    <string name="raknet_copyright_text" translatable="false">(C) 2014, Oculus VR, Inc</string>
+    <string name="miniupnp_copyright_text" translatable="false">(c) 2005-2017, Thomas BERNARD</string>
+    <string name="no_ads_iap_id" translatable="false">ads.remove</string>
+    <string name="iap_generic_err_msg">Failed to process Payment. Error code=%1$d.</string>
+    <string name="iap_already_owned_msg">You already bought this item.</string>
+
+    <!--
+    <string name="appwarp_connect_error_msg">Failed to connect to Game Server using Google Account. Error code=%1$d. Please try again later.</string>
+    <string name="appwarp_auth_error_msg">Failed to connect to Game Server using Google Account. Probably you already logged in on another device. Please log out from that device first.</string>
+    <string name="appwarp_disconnected_error_msg">Disconnected from Game Server.</string>
+    <string name="appwarp_create_room_error_msg">Failed to send invite to Game Server. Error code=%1$d.</string>
+    <string name="appwarp_join_room_error_msg">Failed to connect to host. Game Server Error code=%1$d.</string>
+    -->
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingBottom="5dp">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_rect_shape"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp">
+        <TextView
+            android:id="@+id/chatMessageTxtView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textIsSelectable="true"
+            android:text="demo"/>
+    </FrameLayout>
+    <TextView
+        android:id="@+id/chatMessageStatusView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="top|end"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="demo"/>
+
+</LinearLayout>

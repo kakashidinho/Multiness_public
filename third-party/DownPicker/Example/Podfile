@@ -1,0 +1,12 @@
+source 'https://github.com/CocoaPods/Specs.git'
+use_frameworks!
+
+target 'DownPicker_Example', :exclusive => true do
+  pod "DownPicker", :path => "../"
+end
+
+target 'DownPicker_Tests', :exclusive => true do
+  pod "DownPicker", :path => "../"
+
+end
+link_with 'DownPicker_Example', 'DownPicker_Tests'

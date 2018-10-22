@@ -1,0 +1,84 @@
+﻿<Page
+    x:Class="MultiNES.LanServerListingPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MultiNES"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <TextBlock
+            x:Uid="LanServerListingLbl"
+            Grid.Row="0" FontSize="26.667"
+            Text="label" HorizontalAlignment="Center"
+            />
+        <local:LanServerListView 
+                Grid.Row="1" 
+                x:Name="listPanel"
+                ScrollViewer.VerticalScrollBarVisibility="Visible" 
+                SelectionMode="Single">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                </Style>
+            </ListView.ItemContainerStyle>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel 
+                            x:Name="ItemContainer"
+                            Margin="10,10">
+
+                        <TextBlock x:Name="Desc" 
+                                   FontSize="18.667" 
+                                   FontWeight="Bold"
+                                   Text="{Binding Desc}"/>
+                        <TextBlock x:Name="Address"
+                                   Text="{Binding AddressStr}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </local:LanServerListView>
+        <Button x:Name="manualBtn" x:Uid="ManualLanBtn"
+                HorizontalAlignment="Stretch" Grid.Row="2" FontSize="16" VerticalAlignment="Stretch" 
+                Margin="10,0">
+            <Button.Flyout>
+                <Flyout x:Name="manualLanDialog">
+                    <StackPanel Margin="10,10">
+                        <TextBlock x:Uid="ManualLanDialogTitle"
+                                   Text="Type Server Address" FontSize="24"
+                                   />
+                        <TextBox x:Name="manualLanAddressTxtBox"
+                                 Text="127.0.0.1"/>
+
+                        <Button
+                            x:Name="manualLanDialogJoinBtn"
+                            x:Uid="ManualLanDialogJoinBtn"
+                            HorizontalAlignment="Center"
+                            />
+
+                    </StackPanel>
+                </Flyout>
+            </Button.Flyout>
+        </Button>
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+            <Button x:Name="joinBtn" x:Uid="JoinLanBtn"
+                    IsEnabled="False"
+                    HorizontalAlignment="Stretch" Grid.Column="0" FontSize="16" VerticalAlignment="Stretch" 
+                    Margin="10,0" />
+            <Button x:Name="refreshBtn" x:Uid="RefreshLanBtn" 
+                    HorizontalAlignment="Stretch" Grid.Column="1" FontSize="16" VerticalAlignment="Stretch" 
+                    Margin="10,0" />
+        </Grid>
+    </Grid>
+</Page>

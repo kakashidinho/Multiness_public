@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{d510fa78-ab38-4c7b-bf61-ba77f2e68080}</ItemsProjectGuid>
+    <ItemsRootNamespace>soxr</ItemsRootNamespace>
+    <ItemsProjectName>soxr.Shared</ItemsProjectName>
+    <CodeSharingProject>248F659F-DAC5-46E8-AC09-60EC9FC95053</CodeSharingProject>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\third-party\soxr\src\data-io.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\third-party\soxr\src\dbesi0.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\third-party\soxr\src\fft4g32.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\third-party\soxr\src\fft4g64.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\third-party\soxr\src\filter.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\third-party\soxr\src\lsr.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\third-party\soxr\src\pffft32s.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\third-party\soxr\src\rate32.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\third-party\soxr\src\rate32s.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\third-party\soxr\src\rate64.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\third-party\soxr\src\simd.c">
+      <ExcludedFromBuild>false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\third-party\soxr\src\soxr.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\third-party\soxr\src\vr32.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\third-party\soxr\src\aliases.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\third-party\soxr\src\ccrw2.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\third-party\soxr\src\data-io.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\third-party\soxr\src\fft4g.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\third-party\soxr\src\fft4g_cache.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\third-party\soxr\src\fifo.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\third-party\soxr\src\filter.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\third-party\soxr\src\filters.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\third-party\soxr\src\half-fir.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\third-party\soxr\src\half_coefs.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\third-party\soxr\src\internal.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\third-party\soxr\src\pffft.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\third-party\soxr\src\poly-fir.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\third-party\soxr\src\poly-fir0.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\third-party\soxr\src\rate.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\third-party\soxr\src\rdft.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\third-party\soxr\src\rint-clip.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\third-party\soxr\src\rint.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\third-party\soxr\src\samplerate.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\third-party\soxr\src\simd-dev.h">
+      <ExcludedFromBuild>false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\third-party\soxr\src\simd.h">
+      <ExcludedFromBuild>false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\third-party\soxr\src\soxr-lsr.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\third-party\soxr\src\soxr.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)soxr-config.h" />
+  </ItemGroup>
+</Project>

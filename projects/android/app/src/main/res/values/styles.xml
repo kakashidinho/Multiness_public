@@ -1,0 +1,29 @@
+<resources>
+    <style name="GameTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:actionOverflowButtonStyle">@style/GameTheme.ActionButtonOverflow</item>
+        <item name="android:buttonStyle">@style/GameTheme.Button</item>
+        <!--For compatibility-->
+        <item name="actionOverflowButtonStyle">@style/GameTheme.ActionButtonOverflow</item>
+        <item name="buttonStyle">@style/GameTheme.Button</item>
+    </style>
+
+    <style name="GameTheme.Button" parent="Base.Widget.AppCompat.Button">
+    </style>
+
+    <!-- non-ingame's toolbar -->
+    <style name="OutGameTheme.ToolBar" parent="ThemeOverlay.AppCompat.Light">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+    </style>
+
+    <!-- transparent background for ingame's toolbar -->
+    <style name="InGameTheme.ToolBar" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+    </style>
+
+    <!--- menu overflow button -->
+    <style name="GameTheme.ActionButtonOverflow" parent="Base.Widget.AppCompat.ActionButton.Overflow">
+        <item name="android:src">@drawable/ic_menu_moreoverflow</item>
+    </style>
+</resources>

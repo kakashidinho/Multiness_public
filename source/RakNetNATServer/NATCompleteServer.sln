@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NATCompleteServer", "NATCompleteServer.vcproj", "{7B6311A8-EF51-448C-97EB-07C8A1C8500F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7B6311A8-EF51-448C-97EB-07C8A1C8500F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7B6311A8-EF51-448C-97EB-07C8A1C8500F}.Debug|Win32.Build.0 = Debug|Win32
+		{7B6311A8-EF51-448C-97EB-07C8A1C8500F}.Release|Win32.ActiveCfg = Release|Win32
+		{7B6311A8-EF51-448C-97EB-07C8A1C8500F}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

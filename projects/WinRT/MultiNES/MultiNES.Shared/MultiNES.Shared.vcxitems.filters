@@ -1,0 +1,242 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Common\DeviceResources.cpp">
+      <Filter>DX</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)nestopiaMain.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\Common.cpp">
+      <Filter>nestopia_mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\Input.cpp">
+      <Filter>nestopia_mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\InputGLES.cpp">
+      <Filter>nestopia_mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\MutableTextureGLES.cpp">
+      <Filter>nestopia_mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\NesSystemWrapper.cpp">
+      <Filter>nestopia_mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\Renderer.cpp">
+      <Filter>nestopia_mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\RendererGLES.cpp">
+      <Filter>nestopia_mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\TextureGLES.cpp">
+      <Filter>nestopia_mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\android\AudioDriver.cpp">
+      <Filter>nestopia_mobile\android</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\android\Game_jni.cpp">
+      <Filter>nestopia_mobile\android</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\winrt\AudioDriver.cpp">
+      <Filter>nestopia_mobile\winrt</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\winrt\Direct3D11Common.cpp">
+      <Filter>nestopia_mobile\winrt</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\winrt\InputD3D11.cpp">
+      <Filter>nestopia_mobile\winrt</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\winrt\MutableTextureD3D11.cpp">
+      <Filter>nestopia_mobile\winrt</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\winrt\NesSystemWrapperWinRT.cpp">
+      <Filter>nestopia_mobile\winrt</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\winrt\RendererD3D11.cpp">
+      <Filter>nestopia_mobile\winrt</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\winrt\TextureD3D11.cpp">
+      <Filter>nestopia_mobile\winrt</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\winrt\WinRTUtils.cpp">
+      <Filter>nestopia_mobile\winrt</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\android\JniUtils.cpp">
+      <Filter>nestopia_mobile\android</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Settings.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Utils.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\DeviceResources.h">
+      <Filter>DX</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\DirectXHelper.h">
+      <Filter>DX</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\StepTimer.h">
+      <Filter>DX</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)nestopiaMain.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\Common.hpp">
+      <Filter>nestopia_mobile</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\Input.hpp">
+      <Filter>nestopia_mobile</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\InputGLES.hpp">
+      <Filter>nestopia_mobile</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\MutableTextureGLES.hpp">
+      <Filter>nestopia_mobile</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\NesSystemWrapper.hpp">
+      <Filter>nestopia_mobile</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\Renderer.hpp">
+      <Filter>nestopia_mobile</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\RendererGLES.hpp">
+      <Filter>nestopia_mobile</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\Texture.hpp">
+      <Filter>nestopia_mobile</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\TextureGLES.hpp">
+      <Filter>nestopia_mobile</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\android\AudioDriver.hpp">
+      <Filter>nestopia_mobile\android</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\android\Game_jni.hpp">
+      <Filter>nestopia_mobile\android</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\iOS\AudioDriver.h">
+      <Filter>nestopia_mobile\iOS</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\iOS\GameViewController.h">
+      <Filter>nestopia_mobile\iOS</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\winrt\AudioDriver.hpp">
+      <Filter>nestopia_mobile\winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\winrt\Direct3D11Common.hpp">
+      <Filter>nestopia_mobile\winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\winrt\InputD3D11.hpp">
+      <Filter>nestopia_mobile\winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\winrt\MutableTextureD3D11.hpp">
+      <Filter>nestopia_mobile\winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\winrt\NesSystemWrapperWinRT.hpp">
+      <Filter>nestopia_mobile\winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\winrt\RendererD3D11.hpp">
+      <Filter>nestopia_mobile\winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\winrt\TextureD3D11.hpp">
+      <Filter>nestopia_mobile\winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\winrt\WinRTUtils.hpp">
+      <Filter>nestopia_mobile\winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\android\JniUtils.hpp">
+      <Filter>nestopia_mobile\android</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Settings.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Utils.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="DX">
+      <UniqueIdentifier>{6a45d91d-3a57-4eb2-963f-15cccaf071dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets">
+      <UniqueIdentifier>{11875625-1dd8-4dec-8765-bf7f653cba36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="nestopia_mobile">
+      <UniqueIdentifier>{e0ae2ae4-b565-453f-9751-8387237c4bf1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="nestopia_mobile\android">
+      <UniqueIdentifier>{14fc30fa-5cd7-46d6-b8f2-56858f3e7ab2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="nestopia_mobile\iOS">
+      <UniqueIdentifier>{5b80eb8a-acb5-401a-93d6-99e39259ab47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="nestopia_mobile\winrt">
+      <UniqueIdentifier>{09fd4aea-c28c-47f4-83b9-064504cfb3b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="nestopia_mobile\winrt\shaders">
+      <UniqueIdentifier>{51fe1680-e6f0-4d42-bf4b-e9f063576334}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="$(MSBuildThisFileDirectory)..\..\..\android\app\src\main\assets\NesDatabase.xml">
+      <Filter>Assets</Filter>
+    </Xml>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\android\app\src\main\assets\AB_button._png">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\android\app\src\main\assets\AB_button_highlight._png">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\android\app\src\main\assets\A_button._png">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\android\app\src\main\assets\A_button_highlight._png">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\android\app\src\main\assets\B_button._png">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\android\app\src\main\assets\B_button_highlight._png">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\android\app\src\main\assets\dpad._png">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\android\app\src\main\assets\dpad_down_highlight._png">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\android\app\src\main\assets\dpad_left_highlight._png">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\android\app\src\main\assets\dpad_right_highlight._png">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\android\app\src\main\assets\dpad_up_highlight._png">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\android\app\src\main\assets\select._png">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\android\app\src\main\assets\select_highlight._png">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\android\app\src\main\assets\start._png">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\android\app\src\main\assets\start_highlight._png">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\iOS\testGames\Battletoads &amp; Double Dragon - The Ultimate Team.zip">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\iOS\AudioDriver.mm">
+      <Filter>nestopia_mobile\iOS</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\iOS\GameViewController.mm">
+      <Filter>nestopia_mobile\iOS</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\winrt\QuadPixelShader.hlsl">
+      <Filter>nestopia_mobile\winrt\shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\winrt\QuadVertexShader.hlsl">
+      <Filter>nestopia_mobile\winrt\shaders</Filter>
+    </FxCompile>
+  </ItemGroup>
+</Project>

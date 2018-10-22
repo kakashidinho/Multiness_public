@@ -1,0 +1,203 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{bbfe12a8-7bf1-4a35-b9bf-75e191aa4c39}</ItemsProjectGuid>
+    <ItemsRootNamespace>MultiNES</ItemsRootNamespace>
+    <ItemsProjectName>MultiNES.Shared</ItemsProjectName>
+    <SharedGUID>11a963d8-55f7-4a29-9437-c9b52bbb0bd5</SharedGUID>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\android\AudioDriver.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\android\Game_jni.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\android\JniUtils.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\Common.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\Input.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\InputGLES.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\MutableTextureGLES.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\NesSystemWrapper.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\Renderer.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\RendererGLES.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\TextureGLES.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\winrt\AudioDriver.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\winrt\Direct3D11Common.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\winrt\InputD3D11.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\winrt\MutableTextureD3D11.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\winrt\NesSystemWrapperWinRT.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\winrt\RendererD3D11.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\winrt\TextureD3D11.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\winrt\WinRTUtils.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Common\DeviceResources.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)nestopiaMain.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Settings.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Utils.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\android\AudioDriver.hpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\android\Game_jni.hpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\android\JniUtils.hpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\Common.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\Input.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\InputGLES.hpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\iOS\AudioDriver.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\iOS\GameViewController.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\MutableTextureGLES.hpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\NesSystemWrapper.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\Renderer.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\RendererGLES.hpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\Texture.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\TextureGLES.hpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\winrt\AudioDriver.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\winrt\Direct3D11Common.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\winrt\InputD3D11.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\winrt\MutableTextureD3D11.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\winrt\NesSystemWrapperWinRT.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\winrt\RendererD3D11.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\winrt\TextureD3D11.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\winrt\WinRTUtils.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\DeviceResources.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\DirectXHelper.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\StepTimer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)nestopiaMain.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Settings.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Utils.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="$(MSBuildThisFileDirectory)..\..\..\android\app\src\main\assets\NesDatabase.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\iOS\AudioDriver.mm">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\iOS\GameViewController.mm">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\android\app\src\main\assets\AB_button._png">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\android\app\src\main\assets\AB_button_highlight._png">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\android\app\src\main\assets\A_button._png">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\android\app\src\main\assets\A_button_highlight._png">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\android\app\src\main\assets\B_button._png">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\android\app\src\main\assets\B_button_highlight._png">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\android\app\src\main\assets\dpad._png">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\android\app\src\main\assets\dpad_down_highlight._png">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\android\app\src\main\assets\dpad_left_highlight._png">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\android\app\src\main\assets\dpad_right_highlight._png">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\android\app\src\main\assets\dpad_up_highlight._png">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\android\app\src\main\assets\select._png">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\android\app\src\main\assets\select_highlight._png">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\android\app\src\main\assets\start._png">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\android\app\src\main\assets\start_highlight._png">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\iOS\testGames\Battletoads &amp; Double Dragon - The Ultimate Team.zip">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\winrt\QuadPixelShader.hlsl">
+      <ShaderType>Pixel</ShaderType>
+      <FileType>Document</FileType>
+    </FxCompile>
+    <FxCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\source\mobile\winrt\QuadVertexShader.hlsl">
+      <ShaderType>Vertex</ShaderType>
+      <FileType>Document</FileType>
+    </FxCompile>
+  </ItemGroup>
+</Project>

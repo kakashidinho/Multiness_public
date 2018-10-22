@@ -1,0 +1,29 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/game_content_frame"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".GamePage">
+
+    <!-- In landscape mode, the invite friend button is just below the toolbar -->
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/game_toolbar"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        layout="@layout/game_toolbar"
+        />
+
+    <include
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/game_toolbar"
+        layout="@layout/invite_friend_ingame_btn"
+        />
+
+</RelativeLayout>

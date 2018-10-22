@@ -1,0 +1,162 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{1ca98c70-fd58-4021-a438-a84753ec20be}</ItemsProjectGuid>
+    <ItemsRootNamespace>ImagesLoaderWinRT</ItemsRootNamespace>
+    <ItemsProjectName>ImagesLoaderWinRT.Shared</ItemsProjectName>
+    <CodeSharingProject>248F659F-DAC5-46E8-AC09-60EC9FC95053</CodeSharingProject>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\HQEngine\HQEngineCommonInternal.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\HQEngine\winstore\HQWinStoreFileSystem.cpp">
+      <CompileAsWinRT>true</CompileAsWinRT>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\HQEngine\winstore\HQWinStoreUtil.cpp">
+      <CompileAsWinRT>true</CompileAsWinRT>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\HQUtil\HQLogStream.cpp">
+      <CompileAsWinRT>true</CompileAsWinRT>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\HQUtil\winstore\HQConditionVariableWinStore.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\HQUtil\winstore\HQMutexWinStore.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\HQUtil\winstore\HQTimerWinStore.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\3STC_DXT.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\Bitmap.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\BMP.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\DDS.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\ETC.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\ImgByteStream.cpp">
+      <CompileAsWinRT>true</CompileAsWinRT>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jaricom.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jcomapi.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jdapimin.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jdapistd.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jdarith.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jdatadst.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jdatasrc.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jdcoefct.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jdcolor.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jddctmgr.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jdhuff.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jdinput.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jdmainct.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jdmarker.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jdmaster.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jdmerge.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jdpostct.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jdsample.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jdtrans.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jerror.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jidctflt.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jidctfst.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jidctint.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jmemansi.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jmemmgr.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jquant1.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jquant2.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jutils.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\JPEG.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\KTX.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lpng159\png.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lpng159\pngerror.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lpng159\pngget.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lpng159\pngmem.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lpng159\pngpread.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lpng159\pngread.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lpng159\pngrio.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lpng159\pngrtran.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lpng159\pngrutil.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lpng159\pngset.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lpng159\pngtrans.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\PNGImg.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\PVR.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\TGA.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\adler32.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\compress.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\crc32.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\deflate.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\gzclose.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\gzlib.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\gzread.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\gzwrite.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\infback.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\inffast.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\inflate.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\inftrees.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\trees.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\uncompr.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\zutil.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\BaseImpl\HQBaseImplCommon.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQAssert.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQAssetDataStreamAndroid.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQAtomic.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQAtomicGCC.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQAtomicWin32.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQBufferedDataStream.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQConditionVariable.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQDataStream.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQDefaultDataStream.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQEngineCommon.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQEngineCustomHeap.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQEngine\HQEngineCommonInternal.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQEngine\HQEnginePCH.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQEngine\winstore\HQWinStoreFileSystem.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQEngine\winstore\HQWinStoreUtil.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQLinkedList.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQLogStream.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQMemAlignment.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQMemoryManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQMutex.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQPlatformDef.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQPrimitiveDataType.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQReferenceCountObj.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQSharedPointer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQTimer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQUtil.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQUtil\HQUtilPCH.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\3STC_DXT.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\Bitmap.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\ETC.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\ImgByteStream.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\ImgLoader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jconfig.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jdct.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jerror.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jinclude.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jmemsys.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jmorecfg.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jpegint.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jpeglib.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jversion.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\JPEG.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\lpng159\png.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\lpng159\pngconf.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\lpng159\pnglibconf.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\lpng159\pngpriv.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\PNGImg.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\crc32.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\deflate.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\inffast.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\inffixed.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\inflate.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\inftrees.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\trees.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\zconf.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\zlib.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\zutil.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)targetver.h" />
+  </ItemGroup>
+</Project>

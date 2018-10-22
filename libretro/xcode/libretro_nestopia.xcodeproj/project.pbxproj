@@ -1,0 +1,344 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0A3894611C7B34AD00B42FF2 /* libretro.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A38945F1C7B34AD00B42FF2 /* libretro.cpp */; };
+		0A3894621C7B34AD00B42FF2 /* libretro.h in Headers */ = {isa = PBXBuildFile; fileRef = 0A3894601C7B34AD00B42FF2 /* libretro.h */; };
+		0A3894721C7B350200B42FF2 /* libcore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A38946A1C7B34BE00B42FF2 /* libcore.a */; };
+		0A3894751C7B353C00B42FF2 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A3894731C7B353C00B42FF2 /* CoreMedia.framework */; };
+		0A3894761C7B353C00B42FF2 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A3894741C7B353C00B42FF2 /* CoreVideo.framework */; };
+		0A3894781C7B354C00B42FF2 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A3894771C7B354C00B42FF2 /* ImageIO.framework */; };
+		0A38947A1C7B355A00B42FF2 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A3894791C7B355A00B42FF2 /* CoreServices.framework */; };
+		0A38947E1C7B356F00B42FF2 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A38947B1C7B356F00B42FF2 /* AVFoundation.framework */; };
+		0A38947F1C7B356F00B42FF2 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A38947C1C7B356F00B42FF2 /* CoreFoundation.framework */; };
+		0A3894801C7B356F00B42FF2 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A38947D1C7B356F00B42FF2 /* Foundation.framework */; };
+		0A3894821C7B35E300B42FF2 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A3894811C7B35E300B42FF2 /* CoreGraphics.framework */; };
+		0A3894841C7B35F600B42FF2 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A3894831C7B35F600B42FF2 /* libz.tbd */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		0A3894691C7B34BE00B42FF2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0A3894631C7B34BE00B42FF2 /* nestopia.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A2036941C7AAE9B0053CFF5;
+			remoteInfo = core;
+		};
+		0A38946B1C7B34BE00B42FF2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0A3894631C7B34BE00B42FF2 /* nestopia.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0A203BCB1C7AC83A0053CFF5;
+			remoteInfo = nestopia;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0A3894521C7B347200B42FF2 /* liblibretro_nestopia.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = liblibretro_nestopia.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		0A38945F1C7B34AD00B42FF2 /* libretro.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = libretro.cpp; path = ../libretro.cpp; sourceTree = "<group>"; };
+		0A3894601C7B34AD00B42FF2 /* libretro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = libretro.h; path = ../libretro.h; sourceTree = "<group>"; };
+		0A3894631C7B34BE00B42FF2 /* nestopia.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = nestopia.xcodeproj; path = ../../projects/nestopia.xcodeproj; sourceTree = "<group>"; };
+		0A3894731C7B353C00B42FF2 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		0A3894741C7B353C00B42FF2 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		0A3894771C7B354C00B42FF2 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
+		0A3894791C7B355A00B42FF2 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
+		0A38947B1C7B356F00B42FF2 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		0A38947C1C7B356F00B42FF2 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		0A38947D1C7B356F00B42FF2 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		0A3894811C7B35E300B42FF2 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		0A3894831C7B35F600B42FF2 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		0A38944F1C7B347200B42FF2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0A3894841C7B35F600B42FF2 /* libz.tbd in Frameworks */,
+				0A3894821C7B35E300B42FF2 /* CoreGraphics.framework in Frameworks */,
+				0A38947E1C7B356F00B42FF2 /* AVFoundation.framework in Frameworks */,
+				0A38947F1C7B356F00B42FF2 /* CoreFoundation.framework in Frameworks */,
+				0A3894801C7B356F00B42FF2 /* Foundation.framework in Frameworks */,
+				0A38947A1C7B355A00B42FF2 /* CoreServices.framework in Frameworks */,
+				0A3894781C7B354C00B42FF2 /* ImageIO.framework in Frameworks */,
+				0A3894751C7B353C00B42FF2 /* CoreMedia.framework in Frameworks */,
+				0A3894761C7B353C00B42FF2 /* CoreVideo.framework in Frameworks */,
+				0A3894721C7B350200B42FF2 /* libcore.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0A3894491C7B347200B42FF2 = {
+			isa = PBXGroup;
+			children = (
+				0A3894831C7B35F600B42FF2 /* libz.tbd */,
+				0A3894811C7B35E300B42FF2 /* CoreGraphics.framework */,
+				0A38947B1C7B356F00B42FF2 /* AVFoundation.framework */,
+				0A38947C1C7B356F00B42FF2 /* CoreFoundation.framework */,
+				0A38947D1C7B356F00B42FF2 /* Foundation.framework */,
+				0A3894791C7B355A00B42FF2 /* CoreServices.framework */,
+				0A3894771C7B354C00B42FF2 /* ImageIO.framework */,
+				0A3894731C7B353C00B42FF2 /* CoreMedia.framework */,
+				0A3894741C7B353C00B42FF2 /* CoreVideo.framework */,
+				0A3894631C7B34BE00B42FF2 /* nestopia.xcodeproj */,
+				0A38945E1C7B348200B42FF2 /* libretro */,
+				0A3894531C7B347200B42FF2 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		0A3894531C7B347200B42FF2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0A3894521C7B347200B42FF2 /* liblibretro_nestopia.dylib */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0A38945E1C7B348200B42FF2 /* libretro */ = {
+			isa = PBXGroup;
+			children = (
+				0A38945F1C7B34AD00B42FF2 /* libretro.cpp */,
+				0A3894601C7B34AD00B42FF2 /* libretro.h */,
+			);
+			name = libretro;
+			sourceTree = "<group>";
+		};
+		0A3894641C7B34BE00B42FF2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0A38946A1C7B34BE00B42FF2 /* libcore.a */,
+				0A38946C1C7B34BE00B42FF2 /* nestopia.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		0A3894501C7B347200B42FF2 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0A3894621C7B34AD00B42FF2 /* libretro.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		0A3894511C7B347200B42FF2 /* libretro_nestopia */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0A38945B1C7B347200B42FF2 /* Build configuration list for PBXNativeTarget "libretro_nestopia" */;
+			buildPhases = (
+				0A38944E1C7B347200B42FF2 /* Sources */,
+				0A38944F1C7B347200B42FF2 /* Frameworks */,
+				0A3894501C7B347200B42FF2 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = libretro_nestopia;
+			productName = libretro_nestopia;
+			productReference = 0A3894521C7B347200B42FF2 /* liblibretro_nestopia.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0A38944A1C7B347200B42FF2 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0720;
+				ORGANIZATIONNAME = "Le Hoang Quyen";
+				TargetAttributes = {
+					0A3894511C7B347200B42FF2 = {
+						CreatedOnToolsVersion = 7.2.1;
+					};
+				};
+			};
+			buildConfigurationList = 0A38944D1C7B347200B42FF2 /* Build configuration list for PBXProject "libretro_nestopia" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 0A3894491C7B347200B42FF2;
+			productRefGroup = 0A3894531C7B347200B42FF2 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 0A3894641C7B34BE00B42FF2 /* Products */;
+					ProjectRef = 0A3894631C7B34BE00B42FF2 /* nestopia.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				0A3894511C7B347200B42FF2 /* libretro_nestopia */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		0A38946A1C7B34BE00B42FF2 /* libcore.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libcore.a;
+			remoteRef = 0A3894691C7B34BE00B42FF2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0A38946C1C7B34BE00B42FF2 /* nestopia.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = nestopia.app;
+			remoteRef = 0A38946B1C7B34BE00B42FF2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXSourcesBuildPhase section */
+		0A38944E1C7B347200B42FF2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0A3894611C7B34AD00B42FF2 /* libretro.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		0A3894591C7B347200B42FF2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = "-Wno-error=c++11-narrowing";
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		0A38945A1C7B347200B42FF2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_CFLAGS = "-Wno-error=c++11-narrowing";
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		0A38945C1C7B347200B42FF2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		0A38945D1C7B347200B42FF2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0A38944D1C7B347200B42FF2 /* Build configuration list for PBXProject "libretro_nestopia" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0A3894591C7B347200B42FF2 /* Debug */,
+				0A38945A1C7B347200B42FF2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0A38945B1C7B347200B42FF2 /* Build configuration list for PBXNativeTarget "libretro_nestopia" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0A38945C1C7B347200B42FF2 /* Debug */,
+				0A38945D1C7B347200B42FF2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 0A38944A1C7B347200B42FF2 /* Project object */;
+}

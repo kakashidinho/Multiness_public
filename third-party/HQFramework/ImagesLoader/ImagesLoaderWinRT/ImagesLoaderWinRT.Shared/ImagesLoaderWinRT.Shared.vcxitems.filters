@@ -1,0 +1,445 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="HQFrameworkBase">
+      <UniqueIdentifier>{aa56f369-c26e-4dc7-a78f-44bf37ce9d0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImagesLoader">
+      <UniqueIdentifier>{5e9e4dae-60e4-47be-a99b-80d53743b2e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImagesLoader\Source Files">
+      <UniqueIdentifier>{56fe8c11-b8a4-4cc0-8f0a-bfc1d841adf9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImagesLoader\Source Files\libjpeg">
+      <UniqueIdentifier>{cde9db7e-963c-4a01-93c5-49c7755a3d08}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImagesLoader\Source Files\libpng">
+      <UniqueIdentifier>{1af8e256-f278-4dc4-873d-049b1bcff82b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImagesLoader\Source Files\zlib">
+      <UniqueIdentifier>{06247f32-6492-4698-a48f-27adccdc8a73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImagesLoader\Header Files">
+      <UniqueIdentifier>{187d20ee-861e-4a75-bf92-4d60b8608611}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImagesLoader\Header Files\libjpeg">
+      <UniqueIdentifier>{b27f3a1e-5f70-40b2-af16-5bb465a97812}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImagesLoader\Header Files\libpng">
+      <UniqueIdentifier>{22c76325-1c2d-45d1-8e2e-1b26c710a130}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImagesLoader\Header Files\zlib">
+      <UniqueIdentifier>{833350a8-bbe4-42e2-b07f-1e61f9840b0e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HQFrameworkBase\HQEngine">
+      <UniqueIdentifier>{60cd44f6-c18a-4424-9bd2-d9485fd632f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HQFrameworkBase\BaseImpl">
+      <UniqueIdentifier>{53f8a46f-4da2-401f-b03e-d915e898f343}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HQFrameworkBase\HQEngine\winstore">
+      <UniqueIdentifier>{96b6064a-4631-4101-b510-9e531b85825f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HQFrameworkBase\HQUtil">
+      <UniqueIdentifier>{05b6c11c-552e-47a1-ad48-15c9bc4234b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HQFrameworkBase\HQUtil\winstore">
+      <UniqueIdentifier>{6d531e70-624e-4b71-9ca2-2019c29e291e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\3STC_DXT.cpp">
+      <Filter>ImagesLoader\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\Bitmap.cpp">
+      <Filter>ImagesLoader\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\BMP.cpp">
+      <Filter>ImagesLoader\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\DDS.cpp">
+      <Filter>ImagesLoader\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\ETC.cpp">
+      <Filter>ImagesLoader\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\ImgByteStream.cpp">
+      <Filter>ImagesLoader\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\JPEG.cpp">
+      <Filter>ImagesLoader\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\KTX.cpp">
+      <Filter>ImagesLoader\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\PNGImg.cpp">
+      <Filter>ImagesLoader\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\PVR.cpp">
+      <Filter>ImagesLoader\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\TGA.cpp">
+      <Filter>ImagesLoader\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jaricom.c">
+      <Filter>ImagesLoader\Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jcomapi.c">
+      <Filter>ImagesLoader\Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jdapimin.c">
+      <Filter>ImagesLoader\Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jdapistd.c">
+      <Filter>ImagesLoader\Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jdarith.c">
+      <Filter>ImagesLoader\Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jdatadst.c">
+      <Filter>ImagesLoader\Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jdatasrc.c">
+      <Filter>ImagesLoader\Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jdcoefct.c">
+      <Filter>ImagesLoader\Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jdcolor.c">
+      <Filter>ImagesLoader\Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jddctmgr.c">
+      <Filter>ImagesLoader\Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jdhuff.c">
+      <Filter>ImagesLoader\Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jdinput.c">
+      <Filter>ImagesLoader\Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jdmainct.c">
+      <Filter>ImagesLoader\Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jdmarker.c">
+      <Filter>ImagesLoader\Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jdmaster.c">
+      <Filter>ImagesLoader\Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jdmerge.c">
+      <Filter>ImagesLoader\Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jdpostct.c">
+      <Filter>ImagesLoader\Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jdsample.c">
+      <Filter>ImagesLoader\Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jdtrans.c">
+      <Filter>ImagesLoader\Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jerror.c">
+      <Filter>ImagesLoader\Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jidctflt.c">
+      <Filter>ImagesLoader\Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jidctfst.c">
+      <Filter>ImagesLoader\Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jidctint.c">
+      <Filter>ImagesLoader\Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jmemansi.c">
+      <Filter>ImagesLoader\Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jmemmgr.c">
+      <Filter>ImagesLoader\Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jquant1.c">
+      <Filter>ImagesLoader\Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jquant2.c">
+      <Filter>ImagesLoader\Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jutils.c">
+      <Filter>ImagesLoader\Source Files\libjpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lpng159\png.c">
+      <Filter>ImagesLoader\Source Files\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lpng159\pngerror.c">
+      <Filter>ImagesLoader\Source Files\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lpng159\pngget.c">
+      <Filter>ImagesLoader\Source Files\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lpng159\pngmem.c">
+      <Filter>ImagesLoader\Source Files\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lpng159\pngpread.c">
+      <Filter>ImagesLoader\Source Files\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lpng159\pngread.c">
+      <Filter>ImagesLoader\Source Files\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lpng159\pngrio.c">
+      <Filter>ImagesLoader\Source Files\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lpng159\pngrtran.c">
+      <Filter>ImagesLoader\Source Files\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lpng159\pngrutil.c">
+      <Filter>ImagesLoader\Source Files\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lpng159\pngset.c">
+      <Filter>ImagesLoader\Source Files\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lpng159\pngtrans.c">
+      <Filter>ImagesLoader\Source Files\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\adler32.c">
+      <Filter>ImagesLoader\Source Files\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\compress.c">
+      <Filter>ImagesLoader\Source Files\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\crc32.c">
+      <Filter>ImagesLoader\Source Files\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\deflate.c">
+      <Filter>ImagesLoader\Source Files\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\gzclose.c">
+      <Filter>ImagesLoader\Source Files\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\gzlib.c">
+      <Filter>ImagesLoader\Source Files\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\gzread.c">
+      <Filter>ImagesLoader\Source Files\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\gzwrite.c">
+      <Filter>ImagesLoader\Source Files\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\infback.c">
+      <Filter>ImagesLoader\Source Files\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\inffast.c">
+      <Filter>ImagesLoader\Source Files\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\inflate.c">
+      <Filter>ImagesLoader\Source Files\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\inftrees.c">
+      <Filter>ImagesLoader\Source Files\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\trees.c">
+      <Filter>ImagesLoader\Source Files\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\uncompr.c">
+      <Filter>ImagesLoader\Source Files\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\zutil.c">
+      <Filter>ImagesLoader\Source Files\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\HQEngine\winstore\HQWinStoreFileSystem.cpp">
+      <Filter>HQFrameworkBase\HQEngine\winstore</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\HQEngine\winstore\HQWinStoreUtil.cpp">
+      <Filter>HQFrameworkBase\HQEngine\winstore</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\HQEngine\HQEngineCommonInternal.cpp">
+      <Filter>HQFrameworkBase\HQEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\HQUtil\HQLogStream.cpp">
+      <Filter>HQFrameworkBase\HQUtil</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\HQUtil\winstore\HQConditionVariableWinStore.cpp">
+      <Filter>HQFrameworkBase\HQUtil\winstore</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\HQUtil\winstore\HQMutexWinStore.cpp">
+      <Filter>HQFrameworkBase\HQUtil\winstore</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\HQUtil\winstore\HQTimerWinStore.cpp">
+      <Filter>HQFrameworkBase\HQUtil\winstore</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\3STC_DXT.h">
+      <Filter>ImagesLoader\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\Bitmap.h">
+      <Filter>ImagesLoader\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\ETC.h">
+      <Filter>ImagesLoader\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\ImgByteStream.h">
+      <Filter>ImagesLoader\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\ImgLoader.h">
+      <Filter>ImagesLoader\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\JPEG.h">
+      <Filter>ImagesLoader\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\PNGImg.h">
+      <Filter>ImagesLoader\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jconfig.h">
+      <Filter>ImagesLoader\Header Files\libjpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jdct.h">
+      <Filter>ImagesLoader\Header Files\libjpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jerror.h">
+      <Filter>ImagesLoader\Header Files\libjpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jinclude.h">
+      <Filter>ImagesLoader\Header Files\libjpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jmemsys.h">
+      <Filter>ImagesLoader\Header Files\libjpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jmorecfg.h">
+      <Filter>ImagesLoader\Header Files\libjpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jpegint.h">
+      <Filter>ImagesLoader\Header Files\libjpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jpeglib.h">
+      <Filter>ImagesLoader\Header Files\libjpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\jpeg-8d\jversion.h">
+      <Filter>ImagesLoader\Header Files\libjpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\lpng159\png.h">
+      <Filter>ImagesLoader\Header Files\libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\lpng159\pngconf.h">
+      <Filter>ImagesLoader\Header Files\libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\lpng159\pnglibconf.h">
+      <Filter>ImagesLoader\Header Files\libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\lpng159\pngpriv.h">
+      <Filter>ImagesLoader\Header Files\libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\crc32.h">
+      <Filter>ImagesLoader\Header Files\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\deflate.h">
+      <Filter>ImagesLoader\Header Files\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\inffast.h">
+      <Filter>ImagesLoader\Header Files\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\inffixed.h">
+      <Filter>ImagesLoader\Header Files\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\inflate.h">
+      <Filter>ImagesLoader\Header Files\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\inftrees.h">
+      <Filter>ImagesLoader\Header Files\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\trees.h">
+      <Filter>ImagesLoader\Header Files\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\zconf.h">
+      <Filter>ImagesLoader\Header Files\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\zlib.h">
+      <Filter>ImagesLoader\Header Files\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\zlib-1.2.6\zutil.h">
+      <Filter>ImagesLoader\Header Files\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQAssetDataStreamAndroid.h">
+      <Filter>HQFrameworkBase</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQBufferedDataStream.h">
+      <Filter>HQFrameworkBase</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQDataStream.h">
+      <Filter>HQFrameworkBase</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQDefaultDataStream.h">
+      <Filter>HQFrameworkBase</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQEngineCommon.h">
+      <Filter>HQFrameworkBase</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQPlatformDef.h">
+      <Filter>HQFrameworkBase</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQPrimitiveDataType.h">
+      <Filter>HQFrameworkBase</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQReferenceCountObj.h">
+      <Filter>HQFrameworkBase</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQEngine\winstore\HQWinStoreFileSystem.h">
+      <Filter>HQFrameworkBase\HQEngine\winstore</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQEngine\winstore\HQWinStoreUtil.h">
+      <Filter>HQFrameworkBase\HQEngine\winstore</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQEngine\HQEngineCommonInternal.h">
+      <Filter>HQFrameworkBase\HQEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQEngine\HQEnginePCH.h">
+      <Filter>HQFrameworkBase\HQEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\BaseImpl\HQBaseImplCommon.h">
+      <Filter>HQFrameworkBase\BaseImpl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)targetver.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQAssert.h">
+      <Filter>HQFrameworkBase</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQSharedPointer.h">
+      <Filter>HQFrameworkBase</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQConditionVariable.h">
+      <Filter>HQFrameworkBase</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQMutex.h">
+      <Filter>HQFrameworkBase</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQTimer.h">
+      <Filter>HQFrameworkBase</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQUtil.h">
+      <Filter>HQFrameworkBase</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQUtil\HQUtilPCH.h">
+      <Filter>HQFrameworkBase\HQUtil</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQLogStream.h">
+      <Filter>HQFrameworkBase</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQEngineCustomHeap.h">
+      <Filter>HQFrameworkBase</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQLinkedList.h">
+      <Filter>HQFrameworkBase</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQMemoryManager.h">
+      <Filter>HQFrameworkBase</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQAtomic.h">
+      <Filter>HQFrameworkBase</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQAtomicGCC.h">
+      <Filter>HQFrameworkBase</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQAtomicWin32.h">
+      <Filter>HQFrameworkBase</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\HQMemAlignment.h">
+      <Filter>HQFrameworkBase</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

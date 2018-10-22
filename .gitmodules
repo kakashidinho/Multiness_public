@@ -1,0 +1,18 @@
+[submodule "RemoteController"]
+	path = third-party/RemoteController
+	url = https://github.com/kakashidinho/RemoteController.git
+[submodule "third-party/libarchive"]
+	path = third-party/libarchive
+	url = https://github.com/libarchive/libarchive.git
+[submodule "third-party/ios_file_browser"]
+	path = third-party/ios_file_browser
+	url = https://github.com/kakashidinho/ios_file_browser.git
+[submodule "third-party/RakNet"]
+	path = third-party/RakNet
+	url = https://github.com/kakashidinho/RakNet.git
+[submodule "third-party/miniupnp"]
+	path = third-party/miniupnp
+	url = https://github.com/kakashidinho/miniupnp.git
+[submodule "third-party/soxr"]
+	path = third-party/soxr
+	url = https://github.com/kakashidinho/soxr.git

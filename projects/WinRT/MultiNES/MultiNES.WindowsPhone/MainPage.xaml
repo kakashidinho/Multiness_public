@@ -1,0 +1,35 @@
+﻿<Page
+    x:Class="MultiNES.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MultiNES"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <StackPanel Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Button x:Name="multiplayerLanBtn" 
+                x:Uid="MultiplayerLanBtn"
+                HorizontalAlignment="Stretch"
+                Margin="10,0,10,0" Width="Auto" Height="67">
+            <Button.Flyout>
+                <Flyout Placement="Bottom" x:Name="multiplayerLanFlyout">
+                    <StackPanel Margin="10,0,10,0" >
+                        <RadioButton 
+                            x:Name="lanP1HostBtn"
+                            x:Uid="LanP1HostBtn"
+                            Content="P1" HorizontalAlignment="Stretch" BorderThickness="0"/>
+                        <RadioButton 
+                            x:Name="lanP2GuestBtn"
+                            x:Uid="LanP2GuestBtn"
+                            Content="P2" HorizontalAlignment="Stretch"/>
+                    </StackPanel>
+                </Flyout>
+            </Button.Flyout>
+        </Button>
+        <Button x:Name="singleplayerBtn" 
+                x:Uid="SingleplayerBtn"
+                HorizontalAlignment="Stretch"
+                Margin="10,0,10,0" Width="Auto" Height="67"/>
+    </StackPanel>
+</Page>

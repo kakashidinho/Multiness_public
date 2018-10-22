@@ -1,0 +1,14 @@
+PODS:
+  - DownPicker (0.1.34)
+
+DEPENDENCIES:
+  - DownPicker (from `../`)
+
+EXTERNAL SOURCES:
+  DownPicker:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  DownPicker: c00ea63f08ae82116cc93d0eba74e86bf3d4c68e
+
+COCOAPODS: 0.39.0

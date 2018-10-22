@@ -1,0 +1,359 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="wrap_content" tools:context=".SettingsPage"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:orientation="vertical"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:orientation="horizontal"
+            android:id="@+id/sound_settings"
+            android:layout_marginTop="0dp">
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:layout_gravity="center"
+                android:layout_margin="16dp"
+                android:src="@drawable/sound_enable_drawable"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_gravity="center"
+                android:layout_weight="8">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="@string/audio_volum_lbl"/>
+
+                <SeekBar
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:id="@+id/sound_settings_bar"
+                    android:layout_weight="1"
+                    android:layout_gravity="center"
+                    android:indeterminate="false"
+                    android:max="100" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <View
+            android:layout_below="@+id/ui_up_container"
+            android:layout_width="match_parent"
+            android:background="@android:color/darker_gray"
+            android:layout_height="1dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:orientation="horizontal"
+            android:id="@+id/voice_settings"
+            android:layout_marginTop="20dp">
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:layout_gravity="center"
+                android:layout_margin="16dp"
+                android:src="@drawable/voice_drawable"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_gravity="center"
+                android:layout_weight="8">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="@string/voice_lbl"/>
+
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:id="@+id/voice_settings_checkbox"
+                    android:layout_weight="1"
+                    android:layout_gravity="left" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <View
+            android:layout_below="@+id/ui_up_container"
+            android:layout_width="match_parent"
+            android:background="@android:color/darker_gray"
+            android:layout_height="1dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp">
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:layout_gravity="center"
+                android:layout_margin="16dp"
+                android:src="@drawable/games_controller_drawable"/>
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="8">
+
+                <Button
+                    android:id="@+id/controller_mapping_btn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="8"
+                    android:gravity="center_vertical"
+                    android:layout_centerVertical="true"
+                    android:text="@string/controller_mapping_lbl"/>
+            </RelativeLayout>
+        </LinearLayout>
+
+        <View
+            android:layout_below="@+id/ui_up_container"
+            android:layout_width="match_parent"
+            android:background="@android:color/darker_gray"
+            android:layout_height="1dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:orientation="horizontal"
+            android:id="@+id/ui_controls_settings"
+            android:layout_marginTop="20dp">
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:layout_gravity="center"
+                android:layout_margin="16dp"
+                android:src="@drawable/game_controller_2_drawable"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_gravity="center"
+                android:layout_weight="8">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="@string/ui_controls_visiable_lbl"/>
+
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:id="@+id/ui_controls_settings_checkbox"
+                    android:layout_weight="1"
+                    android:layout_gravity="left" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <View
+            android:layout_below="@+id/ui_up_container"
+            android:layout_width="match_parent"
+            android:background="@android:color/darker_gray"
+            android:layout_height="1dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:orientation="horizontal"
+            android:id="@+id/dpad_scale_settings"
+            android:layout_marginTop="20dp">
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:layout_gravity="center"
+                android:layout_margin="16dp"
+                android:src="@drawable/dpad_icon_drawable"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_gravity="center"
+                android:layout_weight="8">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="@string/dpad_scale_size_lbl"/>
+
+                <SeekBar
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:id="@+id/dpad_scale_settings_bar"
+                    android:layout_weight="1"
+                    android:layout_gravity="center"
+                    android:indeterminate="false"
+                    android:max="100" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <View
+            android:layout_below="@+id/ui_up_container"
+            android:layout_width="match_parent"
+            android:background="@android:color/darker_gray"
+            android:layout_height="1dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:orientation="horizontal"
+            android:id="@+id/vibration_settings"
+            android:layout_marginTop="20dp">
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:layout_gravity="center"
+                android:layout_margin="16dp"
+                android:src="@drawable/vibration_drawable"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_gravity="center"
+                android:layout_weight="8">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="@string/vibration_lbl"/>
+
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:id="@+id/vibration_settings_checkbox"
+                    android:layout_weight="1"
+                    android:layout_gravity="left" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <View
+            android:layout_below="@+id/ui_up_container"
+            android:layout_width="match_parent"
+            android:background="@android:color/darker_gray"
+            android:layout_height="1dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:orientation="horizontal"
+            android:id="@+id/fullscreen_settings"
+            android:layout_marginTop="20dp">
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:layout_gravity="center"
+                android:layout_margin="16dp"
+                android:src="@drawable/desktop_screen_drawable"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_gravity="center"
+                android:layout_weight="8">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="@string/game_fullscreen_lbl"/>
+
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:id="@+id/fullscreen_settings_checkbox"
+                    android:layout_weight="1"
+                    android:layout_gravity="left" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <View
+            android:layout_below="@+id/ui_up_container"
+            android:layout_width="match_parent"
+            android:background="@android:color/darker_gray"
+            android:layout_height="1dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp">
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:layout_gravity="center"
+                android:layout_margin="16dp"
+                android:src="@drawable/screen_rotate_drawable"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_gravity="center"
+                android:layout_weight="8">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="@string/screen_rotate_lbl"/>
+
+                <Spinner
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:id="@+id/screen_orientation_list"
+                    android:layout_weight="1"
+                    android:layout_gravity="center"
+                    android:spinnerMode="dropdown"/>
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

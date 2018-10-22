@@ -1,0 +1,112 @@
+import org.gradle.internal.os.OperatingSystem;
+
+apply plugin: 'com.android.application'
+
+// Create a variable called keystorePropertiesFile, and initialize it to your
+// keystore.properties file, in the rootProject folder.
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+
+// Initialize a new Properties() object called keystoreProperties.
+def keystoreProperties = new Properties()
+
+// Load your keystore.properties file into the keystoreProperties object.
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
+android {
+    compileSdkVersion 26
+    buildToolsVersion "28.0.3"
+
+    defaultConfig {
+        applicationId "com.hqgame.networknes"
+        minSdkVersion 16
+        targetSdkVersion 26
+        versionCode 10181
+        versionName "1.0.1.8"
+
+        externalNativeBuild {
+            cmake {
+                cppFlags "-std=c++11"
+                arguments "-DANDROID_CPP_FEATURES=exceptions",
+                        "-DANDROID_PLATFORM=android-10",
+                        "-DANDROID_ARM_MODE=arm",
+                        "-DANDROID_STL=c++_shared"
+            }
+        }
+
+        ndk {
+            abiFilters "x86", "armeabi-v7a"
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            path "CMakeLists.txt"
+        }
+    }
+
+    signingConfigs {
+        debug {
+            storeFile rootProject.file("debug.keystore")
+        }
+
+        release {
+            // modify keystore.properties in root project directory to use your own keystore
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+
+        debug {
+            debuggable true
+            jniDebuggable true
+        }
+    }
+
+    // Specifies one flavor dimension.
+    flavorDimensions "version"
+
+    productFlavors {
+        gpg {
+            // Assigns this product flavor to the "version" flavor dimension.
+            // This property is optional if you are using only one dimension.
+            dimension "version"
+            applicationIdSuffix ".gpg"
+            versionNameSuffix "-gpg"
+        }
+        full {
+            dimension "version"
+            applicationIdSuffix ""
+            versionNameSuffix ""
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation 'com.google.android.gms:play-services-ads:16.0.0'
+    implementation 'com.google.android.gms:play-services-auth:16.0.0'
+    implementation 'com.google.android.gms:play-services-games:16.0.0'
+    implementation 'com.google.firebase:firebase-ads:16.0.1'
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support:support-v4:26.1.0'
+    implementation 'com.facebook.android:facebook-android-sdk:4.37.0'
+    implementation 'com.appsflyer:af-android-sdk:4.8.15@aar'
+    implementation 'com.android.installreferrer:installreferrer:1.0'
+    implementation 'com.android.billingclient:billing:1.2'
+
+    implementation "android.arch.lifecycle:extensions:1.1.1"
+}

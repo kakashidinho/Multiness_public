@@ -1,0 +1,945 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\core">
+      <UniqueIdentifier>{adc0b1ee-8f00-450f-99da-46aa0b0d23d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\miniupnp">
+      <UniqueIdentifier>{2bc108dd-22b0-4d86-b31a-d3d08937365a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\miniupnp\miniupnpc">
+      <UniqueIdentifier>{02d43e6d-f747-4749-b5b6-5cd9ae7db8a2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\third-party\RakNet\Source\_FindFirst.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\Base64Encoder.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\BitStream.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\CCRakNetSlidingWindow.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\CCRakNetUDT.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\CheckSum.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\CloudClient.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\CloudCommon.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\CloudServer.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\CommandParserInterface.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\ConnectionGraph2.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\ConsoleServer.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\DataCompressor.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\DirectoryDeltaTransfer.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\DR_SHA1.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\DS_BytePool.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\DS_ByteQueue.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\DS_HuffmanEncodingTree.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\DS_Table.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\DynDNS.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\EmailSender.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\EpochTimeToString.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\FileList.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\FileListTransfer.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\FileOperations.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\FormatString.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\FullyConnectedMesh2.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\Getche.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\Gets.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\GetTime.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\gettimeofday.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\GridSectorizer.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\HTTPConnection.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\HTTPConnection2.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\IncrementalReadInterface.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\Itoa.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\LinuxStrings.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\LocklessTypes.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\LogCommandParser.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\MessageFilter.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\NatPunchthroughClient.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\NatPunchthroughServer.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\NatTypeDetectionClient.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\NatTypeDetectionCommon.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\NatTypeDetectionServer.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\NetworkIDManager.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\NetworkIDObject.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\PacketConsoleLogger.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\PacketFileLogger.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\PacketizedTCP.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\PacketLogger.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\PacketOutputWindowLogger.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\PluginInterface2.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\PS4Includes.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\Rackspace.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\RakMemoryOverride.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\RakNetCommandParser.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\RakNetSocket.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\RakNetSocket2.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\RakNetSocket2_360_720.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\RakNetSocket2_Berkley.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\RakNetSocket2_Berkley_NativeClient.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\RakNetSocket2_NativeClient.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\RakNetSocket2_PS3_PS4.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\RakNetSocket2_PS4.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\RakNetSocket2_Vita.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\RakNetSocket2_Windows_Linux.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\RakNetSocket2_Windows_Linux_360.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\RakNetSocket2_WindowsStore8.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\RakNetStatistics.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\RakNetTransport2.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\RakNetTypes.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\RakPeer.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\RakSleep.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\RakString.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\RakThread.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\RakWString.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\Rand.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\RandSync.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\ReadyEvent.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\RelayPlugin.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\ReliabilityLayer.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\ReplicaManager3.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\Router2.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\RPC4Plugin.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\SecureHandshake.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\SendToThread.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\SignaledEvent.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\SimpleMutex.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\SocketLayer.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\StatisticsHistory.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\StringCompressor.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\StringTable.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\SuperFastHash.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\TableSerializer.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\TCPInterface.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\TeamBalancer.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\TeamManager.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\TelnetTransport.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\ThreadsafePacketLogger.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\TwoWayAuthentication.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\UDPForwarder.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\UDPProxyClient.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\UDPProxyCoordinator.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\UDPProxyServer.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\VariableDeltaSerializer.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\VariableListDeltaTracker.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\VariadicSQLParser.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\VitaIncludes.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\RakNet\Source\WSAStartupSingleton.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\miniupnp\miniupnpc\connecthostport.c">
+      <Filter>Source Files\miniupnp\miniupnpc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\miniupnp\miniupnpc\igd_desc_parse.c">
+      <Filter>Source Files\miniupnp\miniupnpc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\miniupnp\miniupnpc\listdevices.c">
+      <Filter>Source Files\miniupnp\miniupnpc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\miniupnp\miniupnpc\minihttptestserver.c">
+      <Filter>Source Files\miniupnp\miniupnpc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\miniupnp\miniupnpc\minisoap.c">
+      <Filter>Source Files\miniupnp\miniupnpc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\miniupnp\miniupnpc\minissdpc.c">
+      <Filter>Source Files\miniupnp\miniupnpc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\miniupnp\miniupnpc\miniupnpc.c">
+      <Filter>Source Files\miniupnp\miniupnpc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\miniupnp\miniupnpc\miniupnpcmodule.c">
+      <Filter>Source Files\miniupnp\miniupnpc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\miniupnp\miniupnpc\miniwget.c">
+      <Filter>Source Files\miniupnp\miniupnpc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\miniupnp\miniupnpc\minixml.c">
+      <Filter>Source Files\miniupnp\miniupnpc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\miniupnp\miniupnpc\minixmlvalid.c">
+      <Filter>Source Files\miniupnp\miniupnpc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\miniupnp\miniupnpc\portlistingparse.c">
+      <Filter>Source Files\miniupnp\miniupnpc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\miniupnp\miniupnpc\receivedata.c">
+      <Filter>Source Files\miniupnp\miniupnpc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\miniupnp\miniupnpc\testigddescparse.c">
+      <Filter>Source Files\miniupnp\miniupnpc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\miniupnp\miniupnpc\testminiwget.c">
+      <Filter>Source Files\miniupnp\miniupnpc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\miniupnp\miniupnpc\testminixml.c">
+      <Filter>Source Files\miniupnp\miniupnpc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\miniupnp\miniupnpc\testportlistingparse.c">
+      <Filter>Source Files\miniupnp\miniupnpc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\miniupnp\miniupnpc\testupnpreplyparse.c">
+      <Filter>Source Files\miniupnp\miniupnpc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\miniupnp\miniupnpc\upnpc.c">
+      <Filter>Source Files\miniupnp\miniupnpc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\miniupnp\miniupnpc\upnpcommands.c">
+      <Filter>Source Files\miniupnp\miniupnpc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\miniupnp\miniupnpc\upnpdev.c">
+      <Filter>Source Files\miniupnp\miniupnpc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\miniupnp\miniupnpc\upnperrors.c">
+      <Filter>Source Files\miniupnp\miniupnpc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\miniupnp\miniupnpc\upnpreplyparse.c">
+      <Filter>Source Files\miniupnp\miniupnpc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\remote_control\ConnectionHandlerRakNet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\third-party\RakNet\Source\_FindFirst.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\AutopatcherPatchContext.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\AutopatcherRepositoryInterface.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\Base64Encoder.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\BitStream.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\CCRakNetSlidingWindow.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\CCRakNetUDT.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\CheckSum.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\CloudClient.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\CloudCommon.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\CloudServer.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\CommandParserInterface.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\ConnectionGraph2.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\ConsoleServer.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\DataCompressor.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\DirectoryDeltaTransfer.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\DR_SHA1.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\DS_BinarySearchTree.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\DS_BPlusTree.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\DS_BytePool.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\DS_ByteQueue.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\DS_Hash.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\DS_Heap.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\DS_HuffmanEncodingTree.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\DS_HuffmanEncodingTreeFactory.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\DS_HuffmanEncodingTreeNode.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\DS_LinkedList.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\DS_List.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\DS_Map.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\DS_MemoryPool.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\DS_Multilist.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\DS_OrderedChannelHeap.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\DS_OrderedList.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\DS_Queue.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\DS_QueueLinkedList.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\DS_RangeList.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\DS_Table.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\DS_ThreadsafeAllocatingQueue.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\DS_Tree.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\DS_WeightedGraph.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\DynDNS.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\EmailSender.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\EmptyHeader.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\EpochTimeToString.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\Export.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\FileList.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\FileListNodeContext.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\FileListTransfer.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\FileListTransferCBInterface.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\FileOperations.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\FormatString.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\FullyConnectedMesh2.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\Getche.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\Gets.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\GetTime.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\gettimeofday.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\GridSectorizer.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\HTTPConnection.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\HTTPConnection2.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\IncrementalReadInterface.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\InternalPacket.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\Itoa.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\Kbhit.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\LinuxStrings.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\LocklessTypes.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\LogCommandParser.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\MessageFilter.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\MessageIdentifiers.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\MTUSize.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\NativeFeatureIncludes.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\NativeFeatureIncludesOverrides.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\NativeTypes.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\NatPunchthroughClient.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\NatPunchthroughServer.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\NatTypeDetectionClient.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\NatTypeDetectionCommon.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\NatTypeDetectionServer.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\NetworkIDManager.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\NetworkIDObject.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\PacketConsoleLogger.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\PacketFileLogger.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\PacketizedTCP.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\PacketLogger.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\PacketOutputWindowLogger.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\PacketPool.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\PacketPriority.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\PluginInterface2.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\PS3Includes.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\PS4Includes.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\Rackspace.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\RakAlloca.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\RakAssert.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\RakMemoryOverride.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\RakNetCommandParser.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\RakNetDefines.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\RakNetDefinesOverrides.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\RakNetSmartPtr.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\RakNetSocket.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\RakNetSocket2.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\RakNetStatistics.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\RakNetTime.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\RakNetTransport2.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\RakNetTypes.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\RakNetVersion.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\RakPeer.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\RakPeerInterface.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\RakSleep.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\RakString.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\RakThread.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\RakWString.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\Rand.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\RandSync.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\ReadyEvent.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\RefCountedObj.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\RelayPlugin.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\ReliabilityLayer.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\ReplicaEnums.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\ReplicaManager3.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\Router2.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\RPC4Plugin.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\SecureHandshake.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\SendToThread.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\SignaledEvent.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\SimpleMutex.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\SimpleTCPServer.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\SingleProducerConsumer.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\SocketDefines.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\SocketIncludes.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\SocketLayer.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\StatisticsHistory.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\StringCompressor.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\StringTable.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\SuperFastHash.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\TableSerializer.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\TCPInterface.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\TeamBalancer.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\TeamManager.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\TelnetTransport.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\ThreadPool.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\ThreadsafePacketLogger.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\TransportInterface.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\TwoWayAuthentication.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\UDPForwarder.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\UDPProxyClient.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\UDPProxyCommon.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\UDPProxyCoordinator.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\UDPProxyServer.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\VariableDeltaSerializer.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\VariableListDeltaTracker.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\VariadicSQLParser.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\VitaIncludes.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\WindowsIncludes.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\WSAStartupSingleton.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\RakNet\Source\XBox360Includes.h">
+      <Filter>Source Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\miniupnp\miniupnpc\codelength.h">
+      <Filter>Source Files\miniupnp\miniupnpc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\miniupnp\miniupnpc\connecthostport.h">
+      <Filter>Source Files\miniupnp\miniupnpc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\miniupnp\miniupnpc\igd_desc_parse.h">
+      <Filter>Source Files\miniupnp\miniupnpc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\miniupnp\miniupnpc\minisoap.h">
+      <Filter>Source Files\miniupnp\miniupnpc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\miniupnp\miniupnpc\minissdpc.h">
+      <Filter>Source Files\miniupnp\miniupnpc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\miniupnp\miniupnpc\miniupnpc.h">
+      <Filter>Source Files\miniupnp\miniupnpc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\miniupnp\miniupnpc\miniupnpc_declspec.h">
+      <Filter>Source Files\miniupnp\miniupnpc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\miniupnp\miniupnpc\miniupnpctypes.h">
+      <Filter>Source Files\miniupnp\miniupnpc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\miniupnp\miniupnpc\miniwget.h">
+      <Filter>Source Files\miniupnp\miniupnpc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\miniupnp\miniupnpc\minixml.h">
+      <Filter>Source Files\miniupnp\miniupnpc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\miniupnp\miniupnpc\portlistingparse.h">
+      <Filter>Source Files\miniupnp\miniupnpc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\miniupnp\miniupnpc\receivedata.h">
+      <Filter>Source Files\miniupnp\miniupnpc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\miniupnp\miniupnpc\upnpcommands.h">
+      <Filter>Source Files\miniupnp\miniupnpc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\miniupnp\miniupnpc\upnpdev.h">
+      <Filter>Source Files\miniupnp\miniupnpc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\miniupnp\miniupnpc\upnperrors.h">
+      <Filter>Source Files\miniupnp\miniupnpc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\miniupnp\miniupnpc\upnpreplyparse.h">
+      <Filter>Source Files\miniupnp\miniupnpc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\remote_control\ConnectionHandlerRakNet.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

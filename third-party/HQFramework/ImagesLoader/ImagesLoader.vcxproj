@@ -1,0 +1,294 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug static CRT|Win32">
+      <Configuration>Debug static CRT</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="release noptimize|Win32">
+      <Configuration>release noptimize</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release static CRT|Win32">
+      <Configuration>Release static CRT</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{EDD85CC5-7AD8-457E-AF78-606A67A07175}</ProjectGuid>
+    <RootNamespace>ImagesLoader</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug static CRT|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release static CRT|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release noptimize|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug static CRT|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release static CRT|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='release noptimize|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>12.0.21005.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)\Output\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)\VS_int_files\$(ProjectName)\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)D</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)\Output\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)\VS_int_files\$(ProjectName)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release noptimize|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)\VS_int_files\$(ProjectName)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release static CRT|Win32'">
+    <OutDir>$(SolutionDir)\Output\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)\VS_int_files\$(ProjectName)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug static CRT|Win32'">
+    <OutDir>$(SolutionDir)\Output\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)\VS_int_files\$(ProjectName)\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)D</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>zlib-1.2.6;lpng159;jpeg-8d;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <BrowseInformation>true</BrowseInformation>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(SolutionDir)\Output\$(Configuration)\$(ProjectName)D.lib</OutputFile>
+    </Lib>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>zlib-1.2.6;lpng159;jpeg-8d;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(SolutionDir)\Output\$(Configuration)\$(ProjectName).lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='release noptimize|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>zlib-1.2.6;lpng159;jpeg-8d;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(SolutionDir)\Output\$(Configuration)\$(ProjectName).lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release static CRT|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>zlib-1.2.6;lpng159;jpeg-8d;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(SolutionDir)\Output\$(Configuration)\$(ProjectName).lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug static CRT|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>zlib-1.2.6;lpng159;jpeg-8d;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(SolutionDir)\Output\$(Configuration)\$(ProjectName)D.lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="3STC_DXT.cpp" />
+    <ClCompile Include="Bitmap.cpp" />
+    <ClCompile Include="BMP.cpp" />
+    <ClCompile Include="DDS.cpp" />
+    <ClCompile Include="ETC.cpp" />
+    <ClCompile Include="ImgByteStream.cpp" />
+    <ClCompile Include="JPEG.cpp" />
+    <ClCompile Include="KTX.cpp" />
+    <ClCompile Include="PNGImg.cpp" />
+    <ClCompile Include="PVR.cpp" />
+    <ClCompile Include="TGA.cpp" />
+    <ClCompile Include="jpeg-8d\jaricom.c" />
+    <ClCompile Include="jpeg-8d\jcomapi.c" />
+    <ClCompile Include="jpeg-8d\jdapimin.c" />
+    <ClCompile Include="jpeg-8d\jdapistd.c" />
+    <ClCompile Include="jpeg-8d\jdarith.c" />
+    <ClCompile Include="jpeg-8d\jdatadst.c" />
+    <ClCompile Include="jpeg-8d\jdatasrc.c" />
+    <ClCompile Include="jpeg-8d\jdcoefct.c" />
+    <ClCompile Include="jpeg-8d\jdcolor.c" />
+    <ClCompile Include="jpeg-8d\jddctmgr.c" />
+    <ClCompile Include="jpeg-8d\jdhuff.c" />
+    <ClCompile Include="jpeg-8d\jdinput.c" />
+    <ClCompile Include="jpeg-8d\jdmainct.c" />
+    <ClCompile Include="jpeg-8d\jdmarker.c" />
+    <ClCompile Include="jpeg-8d\jdmaster.c" />
+    <ClCompile Include="jpeg-8d\jdmerge.c" />
+    <ClCompile Include="jpeg-8d\jdpostct.c" />
+    <ClCompile Include="jpeg-8d\jdsample.c" />
+    <ClCompile Include="jpeg-8d\jdtrans.c" />
+    <ClCompile Include="jpeg-8d\jerror.c" />
+    <ClCompile Include="jpeg-8d\jidctflt.c" />
+    <ClCompile Include="jpeg-8d\jidctfst.c" />
+    <ClCompile Include="jpeg-8d\jidctint.c" />
+    <ClCompile Include="jpeg-8d\jmemansi.c" />
+    <ClCompile Include="jpeg-8d\jmemmgr.c" />
+    <ClCompile Include="jpeg-8d\jquant1.c" />
+    <ClCompile Include="jpeg-8d\jquant2.c" />
+    <ClCompile Include="jpeg-8d\jutils.c" />
+    <ClCompile Include="lpng159\png.c" />
+    <ClCompile Include="lpng159\pngerror.c" />
+    <ClCompile Include="lpng159\pngget.c" />
+    <ClCompile Include="lpng159\pngmem.c" />
+    <ClCompile Include="lpng159\pngpread.c" />
+    <ClCompile Include="lpng159\pngread.c" />
+    <ClCompile Include="lpng159\pngrio.c" />
+    <ClCompile Include="lpng159\pngrtran.c" />
+    <ClCompile Include="lpng159\pngrutil.c" />
+    <ClCompile Include="lpng159\pngset.c" />
+    <ClCompile Include="lpng159\pngtrans.c" />
+    <ClCompile Include="zlib-1.2.6\adler32.c" />
+    <ClCompile Include="zlib-1.2.6\compress.c" />
+    <ClCompile Include="zlib-1.2.6\crc32.c" />
+    <ClCompile Include="zlib-1.2.6\deflate.c" />
+    <ClCompile Include="zlib-1.2.6\gzclose.c" />
+    <ClCompile Include="zlib-1.2.6\gzlib.c" />
+    <ClCompile Include="zlib-1.2.6\gzread.c" />
+    <ClCompile Include="zlib-1.2.6\gzwrite.c" />
+    <ClCompile Include="zlib-1.2.6\infback.c" />
+    <ClCompile Include="zlib-1.2.6\inffast.c" />
+    <ClCompile Include="zlib-1.2.6\inflate.c" />
+    <ClCompile Include="zlib-1.2.6\inftrees.c" />
+    <ClCompile Include="zlib-1.2.6\trees.c" />
+    <ClCompile Include="zlib-1.2.6\uncompr.c" />
+    <ClCompile Include="zlib-1.2.6\zutil.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="3STC_DXT.h" />
+    <ClInclude Include="Bitmap.h" />
+    <ClInclude Include="ETC.h" />
+    <ClInclude Include="ImgByteStream.h" />
+    <ClInclude Include="ImgLoader.h" />
+    <ClInclude Include="JPEG.h" />
+    <ClInclude Include="PNGImg.h" />
+    <ClInclude Include="jpeg-8d\jconfig.h" />
+    <ClInclude Include="jpeg-8d\jdct.h" />
+    <ClInclude Include="jpeg-8d\jerror.h" />
+    <ClInclude Include="jpeg-8d\jinclude.h" />
+    <ClInclude Include="jpeg-8d\jmemsys.h" />
+    <ClInclude Include="jpeg-8d\jmorecfg.h" />
+    <ClInclude Include="jpeg-8d\jpegint.h" />
+    <ClInclude Include="jpeg-8d\jpeglib.h" />
+    <ClInclude Include="jpeg-8d\jversion.h" />
+    <ClInclude Include="lpng159\png.h" />
+    <ClInclude Include="lpng159\pngconf.h" />
+    <ClInclude Include="lpng159\pnglibconf.h" />
+    <ClInclude Include="lpng159\pngpriv.h" />
+    <ClInclude Include="zlib-1.2.6\crc32.h" />
+    <ClInclude Include="zlib-1.2.6\deflate.h" />
+    <ClInclude Include="zlib-1.2.6\inffast.h" />
+    <ClInclude Include="zlib-1.2.6\inffixed.h" />
+    <ClInclude Include="zlib-1.2.6\inflate.h" />
+    <ClInclude Include="zlib-1.2.6\inftrees.h" />
+    <ClInclude Include="zlib-1.2.6\trees.h" />
+    <ClInclude Include="zlib-1.2.6\zconf.h" />
+    <ClInclude Include="zlib-1.2.6\zlib.h" />
+    <ClInclude Include="zlib-1.2.6\zutil.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
