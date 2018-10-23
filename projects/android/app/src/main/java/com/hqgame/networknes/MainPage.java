@@ -297,6 +297,8 @@ public class MainPage extends BaseMenuPage implements PurchasesUpdatedListener {
     }
 
     private void startPurchaseNoAds() {
+        if (getBaseActivity() == null)
+            return;
         enableDonationButton(false, true);
         getBaseActivity().startIAPPurchaseFlow(getString(R.string.no_ads_iap_id), new AsyncQuery<Integer>() {
             @Override
