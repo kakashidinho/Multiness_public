@@ -125,7 +125,15 @@ public class MainPage extends BaseMenuPage implements PurchasesUpdatedListener {
     public void onDestroy() {
         super.onDestroy();
 
-        BaseActivity.getCurrentActivity().unregisterIAPPurchaseUpdatedCallback(this);
+        try {
+            BaseActivity activity = getBaseActivity();
+            if (activity == null)
+                activity = BaseActivity.getCurrentActivity();
+            if (activity != null)
+                activity.unregisterIAPPurchaseUpdatedCallback(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
