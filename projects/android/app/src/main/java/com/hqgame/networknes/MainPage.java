@@ -71,7 +71,7 @@ public class MainPage extends BaseMenuPage implements PurchasesUpdatedListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        BaseActivity.getCurrentActivity().registerIAPPurchaseUpdatedCallback(this);
+        registerIAPPurchaseUpdatedCallback();
     }
 
     @Override
@@ -255,6 +255,18 @@ public class MainPage extends BaseMenuPage implements PurchasesUpdatedListener {
     }
 
     /*---------- Donation/IAP ----------------------------*/
+    private void registerIAPPurchaseUpdatedCallback() {
+        try {
+            BaseActivity activity = getBaseActivity();
+            if (activity == null)
+                activity = BaseActivity.getCurrentActivity();
+            if (activity != null)
+                activity.registerIAPPurchaseUpdatedCallback(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void checkDonationButtonState() {
         try {
             if (Settings.isAdsDisabled()) {
@@ -299,6 +311,11 @@ public class MainPage extends BaseMenuPage implements PurchasesUpdatedListener {
     private void startPurchaseNoAds() {
         if (getBaseActivity() == null)
             return;
+
+        // sometimes BaseActivity.getCurrentActivity() return null inside onCreate(),
+        // so make sure we register the onPurchasesUpdated() callback here
+        registerIAPPurchaseUpdatedCallback();
+
         enableDonationButton(false, true);
         getBaseActivity().startIAPPurchaseFlow(getString(R.string.no_ads_iap_id), new AsyncQuery<Integer>() {
             @Override
