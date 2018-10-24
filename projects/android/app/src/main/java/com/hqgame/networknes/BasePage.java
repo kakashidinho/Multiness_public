@@ -33,6 +33,8 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -334,7 +336,7 @@ public class BasePage extends Fragment {
 
   public void finish() {
     mFinishing = true;
-    BaseActivity activity = getBaseActivity();
+    final BaseActivity activity = getBaseActivity();
 
     FragmentManager fm = activity.getSupportFragmentManager();
     int pagesCount = fm.getBackStackEntryCount();
@@ -352,25 +354,31 @@ public class BasePage extends Fragment {
       return;
     }
 
-    Integer requestCode = top.getRequestCode();
-    int resultCode = top.getResult();
-    Bundle data = top.getResultData();
+    final Integer requestCode = top.getRequestCode();
+    final int resultCode = top.getResult();
+    final Bundle data = top.getResultData();
 
     // notify next page
     if (_2ndTop != null)
       _2ndTop.onNavigatingTo(activity);
 
-    if (!fm.popBackStackImmediate()) {
-      activity.finish();
-      return;
-    }
+    fm.popBackStack();
 
-    // notify new top page about the result of previous top page
-    // need to obtain the page instance again since Android may recreate a new instance of Fragment
-    _2ndTop = activity.getTopFragmentAsPage();
-    if (requestCode != null && _2ndTop != null) {
-      _2ndTop.onPageResult(requestCode, resultCode, data);
-    }
+    new Handler(Looper.getMainLooper())
+            .post(new Runnable() {
+              @Override
+              public void run() {
+                // notify new top page about the result of previous top page
+                // need to obtain the page instance again since Android may recreate a new instance of Fragment
+                BaseActivity currentActivity = BaseActivity.getCurrentActivity();
+                if (currentActivity == null)
+                  currentActivity = activity; // get from outer method, this activity might be destroyed, but we have no choice
+                BasePage curTop = currentActivity.getTopFragmentAsPage();
+                if (requestCode != null && curTop != null) {
+                  curTop.onPageResult(requestCode, resultCode, data);
+                }
+              }
+            });
   }
 
   public boolean isFinishing() {
