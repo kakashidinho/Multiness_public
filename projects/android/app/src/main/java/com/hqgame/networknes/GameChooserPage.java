@@ -236,10 +236,16 @@ public class GameChooserPage extends BaseMenuPage {
         ProgressDialog gameSearchProgressDlg = new ProgressDialog(getContext());
         gameSearchProgressDlg.setMessage(getString(R.string.auto_search_loading));
         gameSearchProgressDlg.setIndeterminate(true);
-        gameSearchProgressDlg.setCancelable(false);
+        gameSearchProgressDlg.setCancelable(true);
         gameSearchProgressDlg.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+                cancelGameAutoSearch();
+            }
+        });
+        gameSearchProgressDlg.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
                 cancelGameAutoSearch();
             }
         });
