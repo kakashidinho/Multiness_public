@@ -40,14 +40,9 @@ namespace Nes {
 	namespace Input {
 		static const int DEFAULT_AUTOFIRE_SIGNAL = 6;
 		static const int AUTOFIRE_STOP = -9999;
-		
-		static const int A_IDX = 0;
-		static const int B_IDX = 1;
-		static const int SELECT_IDX = 2;
-		static const int START_IDX = 3;
-		static const int AB_IDX = 4;
-		static const int AUTO_A_IDX = 5;
-		static const int AUTO_B_IDX = 6;
+
+		static const int AUTO_A_IDX = Button::NUM_NORMAL_BUTTONS;
+		static const int AUTO_B_IDX = Button::NUM_NORMAL_BUTTONS + 1;
 		
 		static const int UP_IDX = 0;
 		static const int DOWN_IDX = 1;
@@ -99,7 +94,138 @@ namespace Nes {
 			AB_COMBO_INITIALIZED,
 			AB_COMBO_FINALIZING,
 		};
-		
+
+		Maths::Rect GetDefaultRect(Button::Id button, float width, float height, float minVideoY) {
+
+			Maths::Rect resultRect = {0};
+
+			//calculate layout
+			if (width <= height)
+			{
+				auto right_panel_size = width * 0.35f;
+				auto middle_btn_width = width * 0.2f;
+				auto middle_btn_height = middle_btn_width * 0.5f;
+				auto middle_btn_gap = (right_panel_size - 2 * middle_btn_height) / 3.f;
+				auto base_y = max(0.4f * (minVideoY - right_panel_size - 10), 10);
+				auto a_btn_size = right_panel_size * 0.5f;
+				auto a_btn_x = width - a_btn_size;
+				auto b_btn_x = width - right_panel_size;
+
+				switch (button) {
+					case Button::SELECT:
+					case Button::START: {
+
+						resultRect.x = resultRect.x = (width - middle_btn_width) * 0.5f;
+						resultRect.width = resultRect.width = middle_btn_width;
+						resultRect.height = resultRect.height = middle_btn_height;
+
+						auto select_rect_y = base_y + middle_btn_gap;
+
+						if (button == Button::SELECT)
+							resultRect.y = select_rect_y;
+						else
+							resultRect.y = select_rect_y + middle_btn_gap + middle_btn_height;
+					}
+						break;
+					case Button::A:
+					case Button::B: {
+						resultRect.width = resultRect.height = a_btn_size;
+
+						if (button == Button::B) {
+							resultRect.x = b_btn_x;
+							resultRect.y = base_y;
+						} else {
+							resultRect.x = a_btn_x;
+							resultRect.y = base_y + right_panel_size * 0.5f;
+						}
+					}
+						break;
+					case Button::AB: {
+						resultRect.width = resultRect.height = a_btn_size * 0.8f;
+						auto abXGap = (a_btn_size - resultRect.width) * 0.8f;
+						auto abYGap = (a_btn_size - resultRect.width) * 0.4f;
+						resultRect.x = a_btn_x + abXGap;
+						resultRect.y = base_y + abYGap;
+					}
+						break;
+					default:
+						// skip
+						break;
+				}
+			}
+			else {
+				auto right_panel_size = min(width * 0.3f, height * 0.45f);
+				auto middle_btn_width = width * 0.13f;
+				auto middle_btn_height = middle_btn_width * 0.5f;
+				auto select_btn_x = width * (0.5f - 0.015f) - middle_btn_width;
+				auto a_btn_size = right_panel_size * 0.5f;
+				auto b_btn_x = width - right_panel_size - 0.3f * (select_btn_x - right_panel_size);
+				auto a_btn_x = b_btn_x + a_btn_size;
+				auto a_btn_y = 10;
+
+				switch (button) {
+					case Button::SELECT:
+					case Button::START: {
+						resultRect.width = resultRect.width = middle_btn_width;
+						resultRect.height = resultRect.height = middle_btn_height;
+						resultRect.y = resultRect.y = 10;
+
+						if (Button::SELECT == button) {
+							resultRect.x = select_btn_x;
+						} else {
+							resultRect.x = width * (0.5f + 0.015f);
+						}
+					}
+						break;
+					case Button::A:
+					case Button::B: {
+						resultRect.width = resultRect.height = a_btn_size;
+						resultRect.y = a_btn_y;
+
+						if (button == Button::B) {
+							resultRect.x = b_btn_x;
+						} else {
+							resultRect.x = a_btn_x;
+						}
+					}
+						break;
+					case Button::AB: {
+						resultRect.width = resultRect.height = a_btn_size * 0.8f;
+						auto abXGap = (a_btn_size - resultRect.width) * 0.8f;
+						auto abYGap = (a_btn_size - resultRect.width) * 0.4f;
+						resultRect.x = a_btn_x + abXGap;
+						resultRect.y = a_btn_y + right_panel_size * 0.5f + abYGap;
+					}
+						break;
+					default:
+						// skip
+						break;
+				}
+			}
+
+			return resultRect;
+		}
+
+		Maths::Rect GetDefaultDpadRect(float width, float height, float minVideoY) {
+
+			Maths::Rect dPadRect;
+
+			auto selectRect = GetDefaultRect(Button::SELECT, width, height, minVideoY);
+
+			if (width <= height) {
+				dPadRect.width = dPadRect.height = width * 0.35f;
+				dPadRect.x = 0;
+				dPadRect.y = max(0.5f * (minVideoY - dPadRect.height), 10);
+			}
+			else {
+				dPadRect.width = dPadRect.height = min(width * 0.3f, height * 0.45f) ;
+				dPadRect.x = (selectRect.x - dPadRect.width) * 0.2f;
+				dPadRect.y = 10;
+			}
+
+			return dPadRect;
+		}
+
 		/*-------------- IInput::AutoFireState ------------*/
 		IInput::AutoFireState::AutoFireState()
 		: m_signal(DEFAULT_AUTOFIRE_SIGNAL), m_step(AUTOFIRE_STOP),
@@ -139,6 +265,12 @@ namespace Nes {
 		}
 
 		/*-------------- IInput ------------*/
+		IInput::IInput()
+		: m_currentDisplayIsPortrait(false), m_outlineSize(2.5f)
+		{
+			m_useCustomButtonsLayout[0] = m_useCustomButtonsLayout[1] = false;
+		}
+
 		void IInput::OnJoystickMoved(float x, float y) {
 			std::lock_guard<std::mutex> lg(m_lock);
 
@@ -191,13 +323,9 @@ namespace Nes {
 		void IInput::Reset(Video::IRenderer& renderer, Callback::OpenFileCallback resourceLoader) {
 			std::lock_guard<std::mutex> lg(m_lock);
 
+			m_currentDisplayIsPortrait = renderer.GetScreenWidth() < renderer.GetScreenHeight();
+
 			ResetImpl(renderer, resourceLoader);
-		}
-
-		void IInput::ScaleDPad(float scale, Video::IRenderer& renderer, Callback::OpenFileCallback resourceLoader) {
-			std::lock_guard<std::mutex> lg(m_lock);
-
-			ScaleDPadImpl(scale, renderer, resourceLoader);
 		}
 		
 		void IInput::EnableUI(bool e) {
@@ -210,6 +338,29 @@ namespace Nes {
 			std::lock_guard<std::mutex> lg(m_lock);
 
 			SwitchABTurboModeImpl(aIsTurbo, bIsTurbo);
+		}
+
+		void IInput::SetButtonRect(Button::Id button, const Maths::Rect& rect, bool forPortrait) {
+			std::lock_guard<std::mutex> lg(m_lock);
+
+			int isPortrait = forPortrait ? 1 : 0;
+			m_useCustomButtonsLayout[isPortrait] = true;
+
+			SetButtonRectImpl(button, rect, forPortrait);
+		}
+
+		void IInput::SetDPadRect(float x, float y, float size, bool forPortrait) {
+			std::lock_guard<std::mutex> lg(m_lock);
+
+			int isPortrait = forPortrait ? 1 : 0;
+			m_useCustomButtonsLayout[isPortrait] = true;
+
+			Maths::Rect rect;
+			rect.x = x;
+			rect.y = y;
+			rect.width = rect.height = size;
+
+			SetDPadRectImpl(rect, forPortrait);
 		}
 
 		void IInput::CleanupGraphicsResources()//cleanup graphics resources
@@ -225,12 +376,16 @@ namespace Nes {
 
 			BeginFrameImpl();
 		}
-		void IInput::EndFrame(Video::IRenderer& renderer)//this is called after NES engine's processing
+		void IInput::EndFrame(Video::IRenderer& renderer, bool drawBoundingBoxes)//this is called after NES engine's processing
 		{
 			std::lock_guard<std::mutex> lg(m_lock);
 
-			if (m_uiEnabled)
+			if (m_uiEnabled) {
 				EndFrameImpl(renderer);
+
+				if (drawBoundingBoxes)
+					DrawBoundingBoxesImpl(renderer);
+			}
 			else
 			{
 				//do not display the onscreen controls
@@ -243,14 +398,14 @@ namespace Nes {
 		BaseInputPad::BaseInputPad(bool deferResLoading)
 		: m_abComboState(AB_COMBO_UNINITIALIZED), m_deferResLoading(deferResLoading)
 		{
-			for (int i = 0; i < sizeof(m_buttonRects) / sizeof(m_buttonRects[0]); ++i)
+			for (int i = 0; i < m_numButtons; ++i)
 			{	
 				m_buttonTextures[i] = nullptr;
 				m_buttonHighlightTextures[i] = nullptr;
 			}
 		}
 		BaseInputPad::~BaseInputPad() {
-			for (int i = 0; i < sizeof(m_buttonRects) / sizeof(m_buttonRects[0]); ++i)
+			for (int i = 0; i < m_numButtons; ++i)
 			{	
 				delete m_buttonTextures[i];
 				delete m_buttonHighlightTextures[i];
@@ -273,19 +428,19 @@ namespace Nes {
 		void BaseInputPad::OnUserHardwareButtonDownImpl(UserHardwareButton button) {
 			switch (button) {
 				case UserHardwareButton::A:
-					m_hardwareButtonPressed[A_IDX] = true;
+					m_hardwareButtonPressed[Button::A] = true;
 					break;
 				case UserHardwareButton::B:
-					m_hardwareButtonPressed[B_IDX] = true;
+					m_hardwareButtonPressed[Button::B] = true;
 					break;
 				case UserHardwareButton::AB:
-					m_hardwareButtonPressed[AB_IDX] = true;
+					m_hardwareButtonPressed[Button::AB] = true;
 					break;
 				case UserHardwareButton::SELECT:
-					m_hardwareButtonPressed[SELECT_IDX] = true;
+					m_hardwareButtonPressed[Button::SELECT] = true;
 					break;
 				case UserHardwareButton::START:
-					m_hardwareButtonPressed[START_IDX] = true;
+					m_hardwareButtonPressed[Button::START] = true;
 					break;
 				case UserHardwareButton::AUTO_A:
 					m_hardwareButtonPressed[AUTO_A_IDX] = true;
@@ -303,19 +458,19 @@ namespace Nes {
 		void BaseInputPad::OnUserHardwareButtonUpImpl(UserHardwareButton button) {
 			switch (button) {
 				case UserHardwareButton::A:
-					m_hardwareButtonPressed[A_IDX] = false;
+					m_hardwareButtonPressed[Button::A] = false;
 					break;
 				case UserHardwareButton::B:
-					m_hardwareButtonPressed[B_IDX] = false;
+					m_hardwareButtonPressed[Button::B] = false;
 					break;
 				case UserHardwareButton::AB:
-					m_hardwareButtonPressed[AB_IDX] = false;
+					m_hardwareButtonPressed[Button::AB] = false;
 					break;
 				case UserHardwareButton::SELECT:
-					m_hardwareButtonPressed[SELECT_IDX] = false;
+					m_hardwareButtonPressed[Button::SELECT] = false;
 					break;
 				case UserHardwareButton::START:
-					m_hardwareButtonPressed[START_IDX] = false;
+					m_hardwareButtonPressed[Button::START] = false;
 					break;
 				case UserHardwareButton::AUTO_A:
 					m_hardwareButtonPressed[AUTO_A_IDX] = false;
@@ -333,7 +488,7 @@ namespace Nes {
 		bool BaseInputPad::OnTouchDown(void* id, float x, float y)
 		{
 			bool reacted = false;
-			for (int i = 0; i < sizeof(m_buttonRects) / sizeof(m_buttonRects[0]); ++i)
+			for (int i = 0; i < m_numButtons; ++i)
 			{
 				if (m_buttonRects[i].contains(x, y))
 				{
@@ -368,7 +523,7 @@ namespace Nes {
 		
 		bool BaseInputPad::OnTouchEndedImpl(void* id, float x, float y)  {
 			bool reacted = false;
-			for (int i = 0; i < sizeof(m_buttonRects) / sizeof(m_buttonRects[0]); ++i)
+			for (int i = 0; i < m_numButtons; ++i)
 			{
 				auto ite = m_buttonTouches[i].find(id);
 				if (ite != m_buttonTouches[i].end())
@@ -384,79 +539,34 @@ namespace Nes {
 			
 		void BaseInputPad::InvalidateImpl()
 		{
-			for (int i = 0; i < sizeof(m_buttonRects) / sizeof(m_buttonRects[0]); ++i)
+			for (int i = 0; i < m_numButtons; ++i)
 			{	
 				m_buttonTextures[i]->Invalidate();
 				m_buttonHighlightTextures[i]->Invalidate();
 			}
+		}
+
+		void BaseInputPad::SetButtonRectImpl(Button::Id button, const Maths::Rect& rect, bool forPortrait) {
+			int isPortrait = forPortrait ? 1 : 0;
+			if (button >= m_numButtons)
+				return;
+			m_buttonRectsSettings[isPortrait][button] = rect;
 		}
 		
 		void BaseInputPad::ResetImpl(Video::IRenderer& renderer, Callback::OpenFileCallback resourceLoader) {
 			auto width = renderer.GetScreenWidth();
 			auto height = renderer.GetScreenHeight();
 			unsigned int minVideoY = renderer.GetVideoMinY();
+
+			int isPortrait = width < height ? 1 : 0;
+			m_buttonRects = m_buttonRectsSettings[isPortrait];
 			
-			//calculate layout
-			if (width <= height)
+			for (int i = 0; i < m_numButtons; ++i)
 			{
-				auto right_panel_size = width * 0.35f;
-				auto middle_btn_width = width * 0.2f;
-				auto middle_btn_height = middle_btn_width * 0.5f;
-				auto middle_btn_gap = (right_panel_size - 2 * middle_btn_height) / 3.f;
-				auto base_y = max(0.5f * (minVideoY - right_panel_size - 10), 10);
-				
-				m_buttonRects[SELECT_IDX].x = m_buttonRects[START_IDX].x = (width - middle_btn_width) * 0.5f;
-				m_buttonRects[SELECT_IDX].width = m_buttonRects[START_IDX].width = middle_btn_width;
-				m_buttonRects[SELECT_IDX].height = m_buttonRects[START_IDX].height = middle_btn_height;
-				
-				m_buttonRects[SELECT_IDX].y = base_y + middle_btn_gap;
-				m_buttonRects[START_IDX].y = m_buttonRects[SELECT_IDX].y + middle_btn_gap + middle_btn_height;
-				
-				m_buttonRects[B_IDX].x = width - right_panel_size;
-				m_buttonRects[B_IDX].y = base_y;
-				m_buttonRects[B_IDX].width = m_buttonRects[B_IDX].height = right_panel_size * 0.5f;
-				
-				m_buttonRects[A_IDX].x = width - right_panel_size * 0.5f;
-				m_buttonRects[A_IDX].y = base_y + right_panel_size * 0.5f;
-				m_buttonRects[A_IDX].width = m_buttonRects[A_IDX].height = right_panel_size * 0.5f;
-				
-				//AB combo button
-				m_buttonRects[AB_IDX].width = m_buttonRects[AB_IDX].height = m_buttonRects[A_IDX].width * 0.8f;
-				auto abXGap = (m_buttonRects[A_IDX].width - m_buttonRects[AB_IDX].width) * 0.8f;
-				auto abYGap = (m_buttonRects[A_IDX].width - m_buttonRects[AB_IDX].width) * 0.4f;
-				m_buttonRects[AB_IDX].x = m_buttonRects[A_IDX].x + abXGap;
-				m_buttonRects[AB_IDX].y = m_buttonRects[B_IDX].y + abYGap;
-			}
-			else {
-				auto right_panel_size = min(width * 0.3f, height * 0.45f);
-				auto middle_btn_width = width * 0.13f;
-				auto middle_btn_height = middle_btn_width * 0.5f;
-				
-				m_buttonRects[SELECT_IDX].width = m_buttonRects[START_IDX].width = middle_btn_width;
-				m_buttonRects[SELECT_IDX].height = m_buttonRects[START_IDX].height = middle_btn_height;
-				
-				m_buttonRects[SELECT_IDX].x = width * (0.5f - 0.015f) - middle_btn_width;
-				m_buttonRects[START_IDX].x = width * (0.5f + 0.015f);
-				m_buttonRects[SELECT_IDX].y = m_buttonRects[START_IDX].y = 10;
-				
-				m_buttonRects[B_IDX].x = width - right_panel_size - 0.3f * (m_buttonRects[SELECT_IDX].x - right_panel_size);
-				m_buttonRects[B_IDX].y = 10;
-				m_buttonRects[B_IDX].width = m_buttonRects[B_IDX].height = right_panel_size * 0.5f;
-				
-				m_buttonRects[A_IDX].x = m_buttonRects[B_IDX].x + m_buttonRects[B_IDX].width;
-				m_buttonRects[A_IDX].y = m_buttonRects[B_IDX].y;
-				m_buttonRects[A_IDX].width = m_buttonRects[A_IDX].height = right_panel_size * 0.5f;
-				
-				//AB combo button
-				m_buttonRects[AB_IDX].width = m_buttonRects[AB_IDX].height = m_buttonRects[A_IDX].width * 0.8f;
-				auto abXGap = (m_buttonRects[A_IDX].width - m_buttonRects[AB_IDX].width) * 0.8f;
-				auto abYGap = (m_buttonRects[A_IDX].width - m_buttonRects[AB_IDX].width) * 0.4f;
-				m_buttonRects[AB_IDX].x = m_buttonRects[A_IDX].x + abXGap;
-				m_buttonRects[AB_IDX].y = m_buttonRects[A_IDX].y + right_panel_size * 0.5f + abYGap;
-			}
-			
-			for (int i = 0; i < sizeof(m_buttonRects) / sizeof(m_buttonRects[0]); ++i)
-			{
+				if (!m_useCustomButtonsLayout[isPortrait]) {
+					m_buttonRects[i] = GetDefaultRect((Button::Id)i, width, height, minVideoY);
+				}
+
 				if (!m_deferResLoading)
 				{
 					//reload textures immediately
@@ -487,7 +597,7 @@ namespace Nes {
 		
 		void BaseInputPad::CleanupGraphicsResourcesImpl() {
 			//release textures
-			for (int i = 0; i < sizeof(m_buttonRects) / sizeof(m_buttonRects[0]); ++i)
+			for (int i = 0; i < m_numButtons; ++i)
 			{
 				m_buttonTextures[i]->Cleanup();
 				m_buttonHighlightTextures[i]->Cleanup();
@@ -497,10 +607,10 @@ namespace Nes {
 		void BaseInputPad::BeginFrameImpl() {
 			this->pad[0].buttons = 0;
 			
-			for (int i = 0; i < sizeof(m_buttonRects) / sizeof(m_buttonRects[0]); ++i)
+			for (int i = 0; i < m_numButtons; ++i)
 			{
 				if ((m_buttonPressed[i] = m_buttonTouches[i].size() > 0) || m_hardwareButtonPressed[i]) {
-					if (i == AB_IDX)//this is special combo button
+					if (i == Button::AB)//this is special combo button
 					{
 						//the AB combo button will generate the button pressed state in 3 phases: A pressed -> A & B pressed -> B pressed -> none
 						switch (m_abComboState) {
@@ -515,13 +625,13 @@ namespace Nes {
 								break;
 								
 						}
-					}//if (i == AB_IDX)
+					}//if (i == Button::AB)
 					else {
 						// handle cases when user wants normal A/B button to act as auto A/B button
-						if (i == A_IDX && m_aIsAuto) {
+						if (i == Button::A && m_aIsAuto) {
 							if (!m_autoAState.isEnabled())
 								m_autoAState.start();
-						} else if (i == B_IDX && m_bIsAuto) {
+						} else if (i == Button::B && m_bIsAuto) {
 							if (!m_autoBState.isEnabled())
 								m_autoBState.start();
 						} else {
@@ -530,7 +640,7 @@ namespace Nes {
 					}
 				}//if (m_buttonPressed[i])
 				else {
-					if (i == AB_IDX)
+					if (i == Button::AB)
 					{
 						switch (m_abComboState) {
 							case AB_COMBO_INITIALIZED:
@@ -543,17 +653,17 @@ namespace Nes {
 							default:
 								break;
 						}
-					}//if (i == AB_IDX)
+					}//if (i == Button::AB)
 					// handle cases when user wants normal A/B button to act as auto A/B button
-					else if (i == A_IDX && m_aIsAuto) {
+					else if (i == Button::A && m_aIsAuto) {
 						if (!m_hardwareButtonPressed[AUTO_A_IDX] && m_autoAState.isEnabled())
 							m_autoAState.stop();
-					} else if (i == B_IDX && m_bIsAuto) {
+					} else if (i == Button::B && m_bIsAuto) {
 						if (!m_hardwareButtonPressed[AUTO_B_IDX] && m_autoBState.isEnabled())
 							m_autoBState.stop();
 					}
 				}
-			}//for (int i = 0; i < sizeof(m_buttonRects) / sizeof(m_buttonRects[0]); ++i)
+			}//for (int i = 0; i < m_numButtons; ++i)
 				
 			//autofire buttons' state update
 			if (m_autoAState.step())
@@ -569,7 +679,7 @@ namespace Nes {
 		
 		void BaseInputPad::EndFrameImpl(Video::IRectRenderer& renderer)
 		{
-			for (int i = 0; i < sizeof(m_buttonRects) / sizeof(m_buttonRects[0]); ++i)
+			for (int i = 0; i < m_numButtons; ++i)
 			{
 				//perform defer loading if the texture hasn't been loaded yet
 				if (m_buttonTextures[i]->IsInvalid())
@@ -589,6 +699,13 @@ namespace Nes {
 					renderer.DrawRect(*m_buttonHighlightTextures[i], m_buttonRects[i]);
 				else
 					renderer.DrawRect(*m_buttonTextures[i], m_buttonRects[i]);
+			}
+		}
+
+		void BaseInputPad::DrawBoundingBoxesImpl(Video::IRectRenderer& renderer) {
+			Video::Color color = {.r = 1, .g = 0, .b=0, .a=1};
+			for (int i = 0; i < m_numButtons; ++i) {
+				renderer.DrawOutlineRect(color, m_outlineSize, m_buttonRects[i]);
 			}
 		}
 		
@@ -791,14 +908,6 @@ namespace Nes {
 			
 			return reacted;
 		}
-		
-		void InputDPad::ScaleDPadImpl(float scale, Video::IRenderer& renderer, Callback::OpenFileCallback resourceLoader)
-		{
-			if (scale == m_dpadScale)
-				return;
-			m_dpadScale = scale;
-			ResetImpl(renderer, resourceLoader);
-		}
 			
 		void InputDPad::InvalidateImpl()
 		{
@@ -811,105 +920,128 @@ namespace Nes {
 				m_dpadDirectionHighlightTextures[i]->Invalidate();
 			}
 		}
-		
-		void InputDPad::ResetImpl(Video::IRenderer& renderer, Callback::OpenFileCallback resourceLoader) {
-			BaseInputPad::ResetImpl(renderer, resourceLoader);
-			
-			auto width = renderer.GetScreenWidth();
-			auto height = renderer.GetScreenHeight();
-			unsigned int minVideoY = renderer.GetVideoMinY();
-			
-			//calculate d-pad layout
-			if (width <= height) {
-				m_dPadRect.width = m_dPadRect.height = width * 0.35f * m_dpadScale;
-				m_dPadRect.x = 0;
-				m_dPadRect.y = max(0.5f * (minVideoY - m_dPadRect.height), 10);
-			}
-			else {
-				m_dPadRect.width = m_dPadRect.height = min(width * 0.3f, height * 0.45f) * m_dpadScale;
-				m_dPadRect.x = (m_buttonRects[SELECT_IDX].x - m_dPadRect.width) * 0.2f;
-				m_dPadRect.y = 10;
-			}
+
+		void InputDPad::ResetDPadRelatedRegions() {
+			// recalculate dpad-related info
 			auto deadzoneRadius = m_dPadRect.width * 0.1f;
 			m_dPadDeadzoneRadiusSq = deadzoneRadius * deadzoneRadius;
-			
+
 			const auto halfRange = Maths::_PI / 3.f;// * 3.f / 8.f;
 			auto dpadDirectionWidth = m_dPadRect.width * 0.35f;
 			auto dpadDirectionHeight = m_dPadRect.width * 0.5f;
 			const auto dpadDirectionOverlappedSize = (m_dPadRect.width - dpadDirectionWidth) * 0.5f;
-			
+
 			//direction buttons' angular regions
 			m_dPadDirectionAngleRegions[RIGHT_IDX].min = -halfRange;
 			m_dPadDirectionAngleRegions[RIGHT_IDX].max = halfRange;
-			
+
 			m_dPadDirectionAngleRegions[LEFT_IDX].min = Maths::_PI - halfRange;
 			m_dPadDirectionAngleRegions[LEFT_IDX].max = Maths::_PI + halfRange;
-			
+
 			m_dPadDirectionAngleRegions[UP_IDX].min = Maths::_PI / 2.f - halfRange;
 			m_dPadDirectionAngleRegions[UP_IDX].max = Maths::_PI / 2.f + halfRange;
-			
+
 			m_dPadDirectionAngleRegions[DOWN_IDX].min = Maths::_PI * 1.5f - halfRange;
 			m_dPadDirectionAngleRegions[DOWN_IDX].max = Maths::_PI * 1.5f + halfRange;
-			
+
 			//direction buttons's overlapped rectangle regions (to be used as diagonal direction detection)
 			m_dPadDirectionOverlappedRects[RIGHT_IDX].x = m_dPadRect.x + m_dPadRect.width - dpadDirectionOverlappedSize;
 			m_dPadDirectionOverlappedRects[LEFT_IDX].x = m_dPadRect.x;
 			m_dPadDirectionOverlappedRects[RIGHT_IDX].y = m_dPadDirectionOverlappedRects[LEFT_IDX].y = m_dPadRect.y;
 			m_dPadDirectionOverlappedRects[RIGHT_IDX].width = m_dPadDirectionOverlappedRects[LEFT_IDX].width = dpadDirectionOverlappedSize;
 			m_dPadDirectionOverlappedRects[RIGHT_IDX].height = m_dPadDirectionOverlappedRects[LEFT_IDX].height = m_dPadRect.height;
-			
+
 			m_dPadDirectionOverlappedRects[UP_IDX].y = m_dPadRect.y + m_dPadRect.height - dpadDirectionOverlappedSize;
 			m_dPadDirectionOverlappedRects[DOWN_IDX].y = m_dPadRect.y;
 			m_dPadDirectionOverlappedRects[UP_IDX].x = m_dPadDirectionOverlappedRects[DOWN_IDX].x = m_dPadRect.x;
 			m_dPadDirectionOverlappedRects[UP_IDX].height = m_dPadDirectionOverlappedRects[DOWN_IDX].height = dpadDirectionOverlappedSize;
 			m_dPadDirectionOverlappedRects[UP_IDX].width = m_dPadDirectionOverlappedRects[DOWN_IDX].width = m_dPadRect.width;
-			
+
 			//directional buttons' rectangle regions
 			m_dPadDirectionRects[UP_IDX].x = m_dPadDirectionRects[DOWN_IDX].x = m_dPadRect.x + (m_dPadRect.width - dpadDirectionWidth) * 0.5f;
 			m_dPadDirectionRects[UP_IDX].width = m_dPadDirectionRects[DOWN_IDX].width = dpadDirectionWidth;
 			m_dPadDirectionRects[UP_IDX].height = m_dPadDirectionRects[DOWN_IDX].height = dpadDirectionHeight;
 			m_dPadDirectionRects[UP_IDX].y = m_dPadRect.y + m_dPadDirectionRects[DOWN_IDX].height;
 			m_dPadDirectionRects[DOWN_IDX].y = m_dPadRect.y;
-			
+
 			m_dPadDirectionRects[LEFT_IDX].y = m_dPadDirectionRects[RIGHT_IDX].y = m_dPadRect.y + (m_dPadRect.height - dpadDirectionWidth) * 0.5f;
 			m_dPadDirectionRects[LEFT_IDX].width = m_dPadDirectionRects[RIGHT_IDX].width = dpadDirectionHeight;
 			m_dPadDirectionRects[LEFT_IDX].height = m_dPadDirectionRects[RIGHT_IDX].height = dpadDirectionWidth;
 			m_dPadDirectionRects[LEFT_IDX].x = m_dPadRect.x;
 			m_dPadDirectionRects[RIGHT_IDX].x = m_dPadRect.x + m_dPadDirectionRects[LEFT_IDX].width;
-			
+
 			//directional buttons' highlight textures' regions
 			auto highlightRectSize = m_dPadRect.width * 0.5f;
 			auto highlightRectOffset = m_dPadRect.width * 0.25f;
 			m_dPadDirectionHighlightRects[UP_IDX].x = m_dPadDirectionHighlightRects[DOWN_IDX].x = m_dPadRect.x + highlightRectOffset;
 			m_dPadDirectionHighlightRects[UP_IDX].y = m_dPadRect.y + highlightRectSize;
 			m_dPadDirectionHighlightRects[DOWN_IDX].y = m_dPadRect.y;
-			
+
 			m_dPadDirectionHighlightRects[LEFT_IDX].y = m_dPadDirectionHighlightRects[RIGHT_IDX].y = m_dPadRect.y + highlightRectOffset;
 			m_dPadDirectionHighlightRects[LEFT_IDX].x = m_dPadRect.x;
 			m_dPadDirectionHighlightRects[RIGHT_IDX].x = m_dPadRect.x + highlightRectSize;
-			
+
 			m_dPadDirectionHighlightRects[UP_IDX].width = m_dPadDirectionHighlightRects[UP_IDX].height =
 			m_dPadDirectionHighlightRects[DOWN_IDX].width = m_dPadDirectionHighlightRects[DOWN_IDX].height =
 			m_dPadDirectionHighlightRects[LEFT_IDX].width = m_dPadDirectionHighlightRects[LEFT_IDX].height =
 			m_dPadDirectionHighlightRects[RIGHT_IDX].width = m_dPadDirectionHighlightRects[RIGHT_IDX].height = highlightRectSize;
-			
-			//reload texture
-			if (!m_deferResLoading)
-				m_dPadTexture->ResetIfInvalid(dpadImage, resourceLoader);
-			
+		}
+
+		void InputDPad::ClearDPadTouchesTracking() {
 			//reset whole dpad's touch tracking
 			m_dPadTouches.clear();
 			for (int i = 0; i < sizeof(m_dPadDirectionTouches) / sizeof(m_dPadDirectionTouches[0]); ++i)
 			{
 				//reset direction specific touch tracking
 				m_dPadDirectionTouches[i].clear();
-				
+
 				//reset hardware buttons' state
 				m_hardwareDPadDirectionPressed[i] = false;
-				
-				//reset highlight texture
-				if (!m_deferResLoading)
+			}
+		}
+
+		void InputDPad::SetDPadRectImpl(const Maths::Rect& rect, bool forPortrait) {
+			int isPortrait = forPortrait ? 1 : 0;
+
+			m_dPadRectSettings[isPortrait] = rect;
+
+			if (m_currentDisplayIsPortrait == forPortrait) {
+				// apply the change
+				m_dPadRect = m_dPadRectSettings[isPortrait];
+
+				ResetDPadRelatedRegions();
+				ClearDPadTouchesTracking();
+			}
+		}
+		
+		void InputDPad::ResetImpl(Video::IRenderer& renderer, Callback::OpenFileCallback resourceLoader) {
+			BaseInputPad::ResetImpl(renderer, resourceLoader);
+			
+			auto width = renderer.GetScreenWidth();
+			auto height = renderer.GetScreenHeight();
+
+			int isPortrait = width < height ? 1 : 0;
+
+			//calculate d-pad layout
+			if (!m_useCustomButtonsLayout[isPortrait]) {
+				unsigned int minVideoY = renderer.GetVideoMinY();
+
+				m_dPadRectSettings[isPortrait] = GetDefaultDpadRect(width, height, minVideoY);
+			}
+
+			m_dPadRect = m_dPadRectSettings[isPortrait];
+
+			ResetDPadRelatedRegions();
+			ClearDPadTouchesTracking();
+
+			if (!m_deferResLoading) {
+				// reload base texture
+				m_dPadTexture->ResetIfInvalid(dpadImage, resourceLoader);
+
+				// reset highlight textures
+				for (int i = 0; i < sizeof(m_dPadDirectionTouches) / sizeof(m_dPadDirectionTouches[0]); ++i) {
 					m_dpadDirectionHighlightTextures[i]->ResetIfInvalid(dpadHighlightImages[i], resourceLoader);
+				}
 			}
 		}
 		
@@ -964,6 +1096,13 @@ namespace Nes {
 					renderer.DrawRect(*m_dpadDirectionHighlightTextures[i], m_dPadDirectionHighlightRects[i]);
 				}
 			}
+		}
+
+		void InputDPad::DrawBoundingBoxesImpl(Video::IRectRenderer& renderer) {
+			BaseInputPad::DrawBoundingBoxesImpl(renderer);
+
+			Video::Color color = {.r = 1, .g = 0, .b=0, .a=1};
+			renderer.DrawOutlineRect(color, m_outlineSize, m_dPadRect);
 		}
 	}
 }

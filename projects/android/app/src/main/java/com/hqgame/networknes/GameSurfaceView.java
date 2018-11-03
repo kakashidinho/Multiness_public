@@ -30,6 +30,8 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.graphics.PixelFormat;
+import android.graphics.Rect;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
@@ -115,9 +117,17 @@ public class GameSurfaceView extends GLSurfaceView {
 
     private WeakReference<GamePage> mParentPageRef = null;
 
+    private final boolean mDrawButtonsOnly;
+    private final float mDrawButtonOutlineSize;
+    private final Runnable mGLContextReadyCallback;
+
     public GameSurfaceView(GamePage parentPage, AttributeSet attrs) {
         super(parentPage.getContext(), attrs);
         Context context = parentPage.getContext();
+
+        mDrawButtonsOnly = false;
+        mDrawButtonOutlineSize = 0;
+        mGLContextReadyCallback = null;
 
         /*
         try {
@@ -144,6 +154,31 @@ public class GameSurfaceView extends GLSurfaceView {
         setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
 
         this.setHapticFeedbackEnabled(true);
+    }
+
+    // this is for rendering button layout only.
+    // Note: glContextReadyCallback will be invoked on ui thread
+    public GameSurfaceView(Context context, AttributeSet attrs, float buttonOutlineSize, boolean hasAlpha, Runnable glContextReadyCallback) {
+        super(context, attrs);
+
+        mDrawButtonsOnly = true;
+        mDrawButtonOutlineSize = buttonOutlineSize;
+        mGLContextReadyCallback = glContextReadyCallback;
+
+        if (hasAlpha) {
+            setEGLConfigChooser(new GLUtils.ConfigChooser(8, 8, 8, 8, 0, 0));
+            getHolder().setFormat(PixelFormat.TRANSLUCENT);
+        } else {
+            setEGLConfigChooser(new GLUtils.ConfigChooser(5, 6, 5, 0, 0, 0));
+        }
+        setEGLContextFactory((mCtxFactory = new GLUtils.ContextFactory(this.getHolder())));
+
+        mRenderer = new Renderer();
+
+        // Set the Renderer for drawing on the GLSurfaceView
+        setRenderer(mRenderer);
+
+        setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
     }
 
     private class Renderer implements GLSurfaceView.Renderer {
@@ -177,7 +212,7 @@ public class GameSurfaceView extends GLSurfaceView {
             GLES20.glViewport(0, 0, mWidth, mHeight);
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
 
-            renderGameViewNative(sNativeHandle);
+            renderGameViewNative(sNativeHandle, mDrawButtonsOnly, mDrawButtonOutlineSize);
 
             sJavaHandle.set(null);
         }
@@ -190,6 +225,15 @@ public class GameSurfaceView extends GLSurfaceView {
 
             mWidth = width;
             mHeight = height;
+
+            if (mGLContextReadyCallback != null) {
+                post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mGLContextReadyCallback.run();
+                    }
+                });
+            }
         }
 
         private void resetNativeView(int width, int height, boolean contextRecreated) {
@@ -251,7 +295,7 @@ public class GameSurfaceView extends GLSurfaceView {
 
         final boolean hasRecordPermission = Utils.hasPermission(getActivity(), Manifest.permission.RECORD_AUDIO);
 
-        queueEvent(new Runnable() {
+        queuePersistentEvent(new Runnable() {
             @Override
             public void run() {
                 initGameNativeIfNeeded();
@@ -261,10 +305,25 @@ public class GameSurfaceView extends GLSurfaceView {
                 setAudioRecordPermissionChangedNative(sNativeHandle, hasRecordPermission);
                 setAudioVolumeNative(sNativeHandle, Settings.getAudioVolume());
                 enableAudioInput(sNativeHandle, Settings.isVoiceChatEnabled());
-                scaleDPadNative(getContext().getAssets(), sNativeHandle, Settings.getDpadScale());
                 enableUIButtonsNative(sNativeHandle, Settings.isUIButtonsEnbled());
                 enableFullScreenNative(sNativeHandle, Settings.isFullscreenEnabled());
                 switchABTurboModeNative(sNativeHandle, Settings.isBtnATurbo(), Settings.isBtnBTurbo());
+
+                // apply buttons layout settings
+                boolean portrait = mWidth < mHeight;
+
+                if (Settings.getNumAssignedUIButtonsRects(portrait) > 0) {
+                    for (int i = 0; i < Settings.Button.NORMAL_BUTTONS; ++i) {
+                        Settings.Button button = Settings.Button.values()[i];
+                        Rect rect = Settings.getUIButtonRect(button, portrait);
+                        if (rect != null)
+                            setUIButtonRect(button, rect, null);
+                    }
+                }
+
+                Rect dpadRect = ButtonsLayoutPage.getDPadRectFromSettings(portrait);
+                if (dpadRect != null)
+                    setDPadRect(dpadRect.left, dpadRect.top, dpadRect.width(), null);
             }
         });
     }
@@ -795,6 +854,106 @@ public class GameSurfaceView extends GLSurfaceView {
         });
     }
 
+    // ----------------- UI buttons editor --------------------------
+    public void setUIButtonRect(final Settings.Button button, final Rect rect, final AsyncQuery<Boolean> finishCallback) {
+        queueEvent(new Runnable() {
+            @Override
+            public void run() {
+                if (mWidth == -1 || mHeight == -1)
+                {
+                    if (finishCallback != null)
+                        finishCallback.run(false);
+                    return;
+                }
+
+                initGameNativeIfNeeded();
+
+                setUIButtonRectNative(sNativeHandle, button.ordinal(), rect.left, mHeight - rect.bottom, rect.width(), rect.height());
+
+                if (finishCallback != null)
+                    finishCallback.run(true);
+            }
+        });
+    }
+
+    public void setDPadRect(final float left, final float top, final float size, final AsyncQuery<Boolean> finishCallback) {
+        queueEvent(new Runnable() {
+            @Override
+            public void run() {
+                if (mWidth == -1 || mHeight == -1)
+                {
+                    if (finishCallback != null)
+                        finishCallback.run(false);
+                    return;
+                }
+
+                initGameNativeIfNeeded();
+
+                setDPadRectNative(sNativeHandle, left, mHeight - top - size, size);
+
+                if (finishCallback != null)
+                    finishCallback.run(true);
+            }
+        });
+    }
+
+    public void getUIButtonDefaultRect(final Settings.Button button, final AsyncQuery<Rect> resultCallback) {
+        queueEvent(new Runnable() {
+            @Override
+            public void run() {
+                if (mWidth == -1 || mHeight == -1)
+                {
+                    return;
+                }
+
+                initGameNativeIfNeeded();
+
+                float [] values = new float[4];
+
+                getUIButtonDefaultRectNative(sNativeHandle, button.ordinal(), values);
+
+                int width = (int)values[2];
+                int height = (int)values[3];
+
+                Rect rect = new Rect();
+                rect.left = (int)values[0];
+                rect.bottom = (int)(mHeight - values[1]);
+                rect.right = (int)(rect.left + width);
+                rect.top = (int)(rect.bottom - height);
+
+                resultCallback.run(rect);
+            }
+        });
+    }
+
+    public void getDPadDefaultRect(final AsyncQuery<Rect> resultCallback) {
+        queueEvent(new Runnable() {
+            @Override
+            public void run() {
+                if (mWidth == -1 || mHeight == -1)
+                {
+                    return;
+                }
+
+                initGameNativeIfNeeded();
+
+                float [] values = new float[3];
+
+                getDPadDefaultRectNative(sNativeHandle, values);
+
+                int sizeI = (int) values[2];
+
+                Rect rect = new Rect();
+                rect.left = (int)values[0];
+                rect.bottom = (int)(mHeight - values[1]);
+                rect.right = (int)(rect.left + sizeI);
+                rect.top = (int)(rect.bottom - sizeI);
+
+                resultCallback.run(rect);
+            }
+        });
+    }
+
     /*--------------------- */
     private void initGameNativeIfNeeded() {
         initGameNativeIfNeeded(this.getContext());
@@ -828,6 +987,9 @@ public class GameSurfaceView extends GLSurfaceView {
     @Override
     public boolean onTouchEvent(MotionEvent _event)
     {
+        if (mDrawButtonsOnly)
+            return false;
+
         final MotionEvent event = MotionEvent.obtainNoHistory(_event);//TODO: do we need history to handle precise touch movement?
 
         final GLSurfaceView view = this;
@@ -1825,17 +1987,22 @@ public class GameSurfaceView extends GLSurfaceView {
     private native void setAudioVolumeNative(long nativeHandle, float gain);
     private native void setAudioRecordPermissionChangedNative(long nativeHandle, boolean hasPermission);
     private native void enableAudioInput(long nativeHandle, boolean enable);
-    private native void scaleDPadNative(AssetManager assetManager, long nativeHandle, float scale);
     private native void enableUIButtonsNative(long nativeHandle, boolean enable);
     private native void enableFullScreenNative(long nativeHandle, boolean enable);
     private native void switchABTurboModeNative(long nativeHandle, boolean enableATurbo, boolean enableBTurbo); // if set, the normal A/B will become auto A/B buttons
+
+    // UI buttons editor
+    private native void setUIButtonRectNative(long nativeHandle, int buttonCode, float x, float y, float width, float height);
+    private native void setDPadRectNative(long nativeHandle, float x, float y, float size);
+    private native void getUIButtonDefaultRectNative(long nativeHandle, int buttonCode, float[] values);
+    private native void getDPadDefaultRectNative(long nativeHandle, float [] values);
 
     private native int sendMessageToRemoteNative(long nativeHandle, long id, String message);
     private native String getRemoteNameNative(long nativeHandle);
 
     private native void resetGameViewNative(AssetManager assetManager, long nativeHandle, int esVersionMajor, int width, int height, boolean contextRecreate);
     private native void cleanupGameViewNative(long nativeHandle);//TODO: for now, we don't explicitly call this method, instead let Android system free up the resources automatically for us
-    private native void renderGameViewNative(long nativeHandle);
+    private native void renderGameViewNative(long nativeHandle, boolean drawButtonsOnly, float buttonBoundingBoxOutlineSize);
 
     private native void onResumeNative(long nativeHandle);//this is called in game thread
     private native void onPauseOnUIThreadNative(long nativeHandle);//this is called in main thread

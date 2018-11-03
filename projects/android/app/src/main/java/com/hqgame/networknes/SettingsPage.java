@@ -27,7 +27,10 @@ package com.hqgame.networknes;
 
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -60,12 +63,12 @@ public class SettingsPage extends BasePage {
         // Settings.loadGlobalSettings(getContext());
 
         SeekBar audioBar = (SeekBar)v.findViewById(R.id.sound_settings_bar);
-        SeekBar dpadBar = (SeekBar)v.findViewById(R.id.dpad_scale_settings_bar);
         CheckBox voiceCheckBox = (CheckBox)v.findViewById(R.id.voice_settings_checkbox);
         CheckBox vibrationCheckBox = (CheckBox)v.findViewById(R.id.vibration_settings_checkbox);
         CheckBox uiButtonsCheckBox = (CheckBox)v.findViewById(R.id.ui_controls_settings_checkbox);
         CheckBox fullScreenCheckBox = (CheckBox)v.findViewById(R.id.fullscreen_settings_checkbox);
         Button controllerMapBtn = (Button)v.findViewById(R.id.controller_mapping_btn);
+        Button uiButtonLayoutEdit = (Button) v.findViewById(R.id.ui_controls_layout_edit_btn);
 
         //screen orientation settings
         Spinner orientationList = (Spinner)v.findViewById(R.id.screen_orientation_list);
@@ -75,7 +78,6 @@ public class SettingsPage extends BasePage {
 
         //apply saved settings
         audioBar.setProgress((int)(Settings.getAudioVolume() * audioBar.getMax()));
-        dpadBar.setProgress((int)(dpad_scaled_2_ui_percent(Settings.getDpadScale()) * dpadBar.getMax()));
         vibrationCheckBox.setChecked(Settings.isButtonsVibrationEnabled());
         voiceCheckBox.setChecked(Settings.isVoiceChatEnabled());
         uiButtonsCheckBox.setChecked(Settings.isUIButtonsEnbled());
@@ -101,7 +103,6 @@ public class SettingsPage extends BasePage {
         });
 
         audioBar.setOnSeekBarChangeListener(seekBarListener);
-        dpadBar.setOnSeekBarChangeListener(seekBarListener);
 
         voiceCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -149,6 +150,12 @@ public class SettingsPage extends BasePage {
                 onButtonClicked(v);
             }
         });
+        uiButtonLayoutEdit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onButtonClicked(v);
+            }
+        });
 
         return v;
     }
@@ -171,11 +178,6 @@ public class SettingsPage extends BasePage {
         switch (seekBar.getId()) {
             case R.id.sound_settings_bar:
                 Settings.setAudioVolume(percent);
-                break;
-            case R.id.dpad_scale_settings_bar: {
-                float scaled_percent = dpad_ui_2_scaled_percent(percent);
-                Settings.setDpadScale(scaled_percent);
-            }
                 break;
         }
 
@@ -216,6 +218,33 @@ public class SettingsPage extends BasePage {
             case R.id.controller_mapping_btn:
                 goToPage(BasePage.create(ControllerMappingPage.class));
                 break;
+            case R.id.ui_controls_layout_edit_btn:
+            {
+                // TODO: localizaton
+                final int orientations[] = { ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE,  ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT};
+                final CharSequence choices[] = new CharSequence[]{ "Landscape", "Portrait" };
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle(getString(R.string.select_orientation));
+
+                builder.setSingleChoiceItems(choices, -1, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+
+                        BasePage page = BasePage.create(ButtonsLayoutPage.class);
+                        Bundle settings = new Bundle();
+                        settings.putInt(ButtonsLayoutPage.ORIENTATION_KEY, orientations[i]);
+
+                        page.setExtras(settings);
+
+                        goToPage(page);
+                    }
+                });
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+            break;
         }
     }
 

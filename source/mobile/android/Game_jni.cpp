@@ -1177,18 +1177,70 @@ extern "C" {
 	}
 	
 	JNIEXPORT void JNICALL
-	Java_com_hqgame_networknes_GameSurfaceView_scaleDPadNative(JNIEnv *env, jobject thiz, jobject jassetManager, jlong nativePtr, jfloat scale)
-	{
-		auto system = (NesSystem*)nativePtr;
-		system->ScaleDPad(scale, GameSurfaceView_resourceLoaderFromJava(env, jassetManager));
-	}
-	
-	JNIEXPORT void JNICALL
 	Java_com_hqgame_networknes_GameSurfaceView_enableUIButtonsNative(JNIEnv *env, jobject thiz, jlong nativePtr, jboolean enable)
 	{
 		__android_log_print(ANDROID_LOG_DEBUG, "Nes", "enableUIButtonsNative(%d)\n", (int)enable);
 		auto system = (NesSystem*)nativePtr;
 		system->EnableUIButtons(enable);
+	}
+
+	JNIEXPORT void JNICALL
+	Java_com_hqgame_networknes_GameSurfaceView_setUIButtonRectNative(JNIEnv *env, jobject thiz, jlong nativePtr, jint buttonCode, float x, float y, float width, float height)
+	{
+		auto system = (NesSystem*)nativePtr;
+
+		Maths::Rect rect;
+		rect.x = x;
+		rect.y = y;
+		rect.width = width;
+		rect.height = height;
+
+		bool forPortrait = system->GetScreenWidth() < system->GetScreenHeight();
+
+		system->GetInput().SetButtonRect((Input::Button::Id)buttonCode, rect, forPortrait);
+	}
+
+	JNIEXPORT void JNICALL
+	Java_com_hqgame_networknes_GameSurfaceView_setDPadRectNative(JNIEnv *env, jobject thiz, jlong nativePtr, float x, float y, float size)
+	{
+		auto system = (NesSystem*)nativePtr;
+
+		bool forPortrait = system->GetScreenWidth() < system->GetScreenHeight();
+
+		system->GetInput().SetDPadRect(x, y, size, forPortrait);
+	}
+
+	JNIEXPORT void JNICALL
+	Java_com_hqgame_networknes_GameSurfaceView_getUIButtonDefaultRectNative(JNIEnv *env, jobject thiz, jlong nativePtr, jint buttonCode, jfloatArray jvalues)
+	{
+		auto system = (NesSystem*)nativePtr;
+
+		auto rect = Input::GetDefaultRect((Input::Button::Id)buttonCode, system->GetScreenWidth(), system->GetScreenHeight(), system->GetRenderer().GetVideoMinY());
+
+		auto values = env->GetFloatArrayElements(jvalues, 0);
+
+		values[0] = rect.x;
+		values[1] = rect.y;
+		values[2] = rect.width;
+		values[3] = rect.height;
+
+		env->ReleaseFloatArrayElements(jvalues, values, 0);
+	}
+
+	JNIEXPORT void JNICALL
+	Java_com_hqgame_networknes_GameSurfaceView_getDPadDefaultRectNative(JNIEnv *env, jobject thiz, jlong nativePtr, jfloatArray jvalues)
+	{
+		auto system = (NesSystem*)nativePtr;
+
+		auto rect = Input::GetDefaultDpadRect(system->GetScreenWidth(), system->GetScreenHeight(), system->GetRenderer().GetVideoMinY());
+
+		auto values = env->GetFloatArrayElements(jvalues, 0);
+
+		values[0] = rect.x;
+		values[1] = rect.y;
+		values[2] = rect.width;
+
+		env->ReleaseFloatArrayElements(jvalues, values, 0);
 	}
 
 	JNIEXPORT void JNICALL
@@ -1255,12 +1307,27 @@ extern "C" {
 	}
 	
 	JNIEXPORT void JNICALL
-	Java_com_hqgame_networknes_GameSurfaceView_renderGameViewNative(JNIEnv *env, jobject thiz, jlong nativePtr)
+	Java_com_hqgame_networknes_GameSurfaceView_renderGameViewNative(JNIEnv *env, jobject thiz, jlong nativePtr, jboolean drawButtonOnly, jfloat buttonBoundingBoxOutlineSize)
 	{
 		auto system = (NesSystem*)nativePtr;
-		
-		//TODO: error callback
-		system->Execute();
+
+		if (drawButtonOnly) {
+			glEnable(GL_BLEND);
+
+			auto& inputManager = system->GetInput();
+			auto inputDrawDisabled = !inputManager.IsUIEnabled();
+			inputManager.EnableUI(true); // temporarily enable UI buttons so that they will be visible
+
+			inputManager.SetBoundingBoxOutlineSize(buttonBoundingBoxOutlineSize);
+			inputManager.BeginFrame();
+			inputManager.EndFrame(system->GetRenderer(), true);
+
+			inputManager.EnableUI(inputDrawDisabled);
+
+		} else {
+			// TODO: error callback
+			system->Execute();
+		}
 	}
 	
 	JNIEXPORT void JNICALL

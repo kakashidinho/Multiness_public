@@ -45,6 +45,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.text.Spanned;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -73,6 +74,22 @@ public class Utils {
         long id = System.currentTimeMillis();
 
         return id;
+    }
+
+    public static double distance(float x1, float y1, float x2, float y2) {
+        float dx = x2 -x1;
+        float dy = y2 -y1;
+
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    public static float convertDpToPixel(float dp, Context context){
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        float px = dp * ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+        if (px < 0)
+            px = 1;
+        return px;
     }
 
     public static String getHostIPAddress(Context context)

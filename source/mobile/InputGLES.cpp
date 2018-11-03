@@ -32,7 +32,7 @@ namespace Nes {
 			InputDPad::InputDPad()
 				: Input::InputDPad(false)
 			{
-				for (int i = 0; i < sizeof(m_buttonRects) / sizeof(m_buttonRects[0]); ++i)
+				for (int i = 0; i < sizeof(m_buttonTextures) / sizeof(m_buttonTextures[0]); ++i)
 				{
 					m_buttonTextures[i] = new Video::GL::Texture();
 					m_buttonHighlightTextures[i] = new Video::GL::Texture();

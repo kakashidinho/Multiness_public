@@ -37,6 +37,7 @@
     <string name="host">Player 1 (Chủ)</string>
     <string name="client">Player 2 (Khách)</string>
     <string name="select_player">Chọn Vai Trò</string>
+    <string name="select_orientation">Hướng hiển thị</string>
     <string name="err_no_network">Hiện tại bạn đang không kết nối vào mạng nào.</string>
     <string name="host_game">Làm máy chủ</string>
     <string name="host_lan_game_msg">Điền port của máy chủ</string>
@@ -69,6 +70,7 @@
     <string name="vibration_lbl">Rung nút điều khiển trên màn hình</string>
     <string name="voice_lbl">Voice chat trong multiplayer</string>
     <string name="controller_mapping_lbl">Cài đặt tay cầm</string>
+    <string name="ui_controls_edit_lbl">Sửa vị trí nút ảo</string>
     <string name="screen_rotate_lbl">Hướng hiển thị màn hình game</string>
     <string name="ui_controls_visiable_lbl">Hiển thị nút điều khiển trên màn hình</string>
     <string name="game_fullscreen_lbl">Hiển thị game toàn màn hình</string>
@@ -155,6 +157,7 @@
     <string name="copyright">Bản quyền</string>
     <string name="iap_generic_err_msg">Có lỗi xảy ra khi mua hàng. Mã=%1$d.</string>
     <string name="iap_already_owned_msg">Bạn đã mua sản phẩm này trước đây. Không cần phải mua lại.</string>
+    <string name="ui_buttons_editor_help">Dùng một ngón để dịch chuyển.\nHai ngón để thay đổi kích cỡ.</string>
 
     <!--
     <string name="appwarp_connect_error_msg">Failed to connect to Game Server using Google Account. Error code=%1$d. Please try again later.</string>

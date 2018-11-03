@@ -27,10 +27,16 @@ package com.hqgame.networknes;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Rect;
+import android.support.annotation.NonNull;
 import android.view.KeyEvent;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -44,7 +50,6 @@ class Settings {
     private static final String SETTINGS_FILE = "settings";
     private static final String SETTINGS_KEY_PREFIX = "com.hqgame.networknes.SETTINGS_";
     private static final String SETTINGS_VOLUME_KEY = SETTINGS_KEY_PREFIX + "VOL";
-    private static final String SETTINGS_DPAD_SCALE__KEY = SETTINGS_KEY_PREFIX + "DP_SCALE";
     private static final String SETTINGS_VOICE_ENABLE_KEY = SETTINGS_KEY_PREFIX + "VOICE_ENABLE";
     private static final String SETTINGS_UI_CONTROLS_ENABLE_KEY = SETTINGS_KEY_PREFIX + "UI_CONTROLS_ENABLE";
     private static final String SETTINGS_ORIENTATION_KEY = SETTINGS_KEY_PREFIX + "ORIENTATION";
@@ -52,6 +57,8 @@ class Settings {
     private static final String SETTINGS_FULLSCREEN_KEY = SETTINGS_KEY_PREFIX + "FULLSCREEN";
     private static final String SETTINGS_A_IS_TURBO_KEY = SETTINGS_KEY_PREFIX + "A_IS_TURBO";
     private static final String SETTINGS_B_IS_TURBO_KEY = SETTINGS_KEY_PREFIX + "B_IS_TURBO";
+    private static final String SETTINGS_UI_CONTROLS_RECTS_LANDSCAPE_KEY = SETTINGS_KEY_PREFIX + "UI_BTN_LANDSCAPE_RECTS";
+    private static final String SETTINGS_UI_CONTROLS_RECTS_PORT_KEY = SETTINGS_KEY_PREFIX + "UI_BTN_PORT_RECTS";
 
     public static final String IMMEDIATE_PREF_FILE = "last_session";
     public static final String LAST_PLAYED_GAME_KEY = "com.hqgame.networknes.LAST_GAME";
@@ -127,8 +134,8 @@ class Settings {
         }
     }
 
-    public static enum Button {
-        /*WARNING: this must reflect the order defined in source/mobile/Input.hpp*/
+    /*
+    public static enum OldButton {
         LEFT, RIGHT, UP, DOWN,
         A,
         B,
@@ -158,9 +165,47 @@ class Settings {
             }
         }
     }
+    */
+
+    public static enum Button {
+        /*WARNING: this must reflect the order defined in source/mobile/Input.hpp*/
+        A,
+        B,
+        SELECT,
+        START,
+        AB,
+
+        LEFT,
+        RIGHT, UP, DOWN,
+
+        AUTO_A,
+        AUTO_B,
+
+        QUICK_SAVE,
+        QUICK_LOAD;
+
+        public static final int NORMAL_BUTTONS = 5;
+
+        @Override
+        public String toString() {
+            switch (this) {
+                case AUTO_A:
+                    return "Auto A";
+                case AUTO_B:
+                    return "Auto B";
+                case AB:
+                    return "A + B";
+                case QUICK_SAVE:
+                    return "Quick Save";
+                case QUICK_LOAD:
+                    return "Quick Load";
+                default:
+                    return name();
+            }
+        }
+    }
 
     private static float audioVolume = 1.f;
-    private static float dpadScale = 1.f;
     private static boolean buttonsVibration = true;
     private static boolean voiceChatEnabled = true;
     private static boolean uiButtonsEnabled = true;
@@ -175,8 +220,10 @@ class Settings {
 
     private static TreeMap<Button, Integer> btn2KeyDefaultMap = new TreeMap<>();
 
+    private static TreeMap<Button, Rect> uiButtonsRectsPortrait = new TreeMap<>();
+    private static TreeMap<Button, Rect> uiButtonsRectsLandscape = new TreeMap<>();
+
     public static float getAudioVolume() { return audioVolume; }
-    public static float getDpadScale() { return dpadScale; }
     public static boolean isButtonsVibrationEnabled() { return buttonsVibration; }
     public static boolean isVoiceChatEnabled() { return voiceChatEnabled; }
     public static boolean isUIButtonsEnbled() { return uiButtonsEnabled;}
@@ -195,8 +242,25 @@ class Settings {
         return btn2KeyMap.entrySet();
     }
 
+    public static Iterable<Map.Entry<Button, Rect>> getUIButtonsRects(boolean portrait) {
+        if (portrait)
+            return uiButtonsRectsPortrait.entrySet();
+        return uiButtonsRectsLandscape.entrySet();
+    }
+
+    public static int getNumAssignedUIButtonsRects(boolean portrait) {
+        if (portrait)
+            return uiButtonsRectsPortrait.size();
+        return uiButtonsRectsLandscape.size();
+    }
+
+    public static Rect getUIButtonRect(@NonNull Button button, boolean portrait) {
+        if (portrait)
+            return uiButtonsRectsPortrait.get(button);
+        return uiButtonsRectsLandscape.get(button);
+    }
+
     public static void setAudioVolume(float f) { audioVolume = f; }
-    public static void setDpadScale(float f) { dpadScale = f; }
     public static void enableButtonsVibration(boolean e) { buttonsVibration = e; }
     public static void enableUIButtons(boolean e) { uiButtonsEnabled = e; }
     public static void enableVoiceChat(boolean e) { voiceChatEnabled = e; }
@@ -205,6 +269,20 @@ class Settings {
     public static void enableBtnATurbo(boolean e) { btnATurbo = e; }
     public static void enableBtnBTurbo(boolean e) { btnBTurbo = e; }
     public static void enableAds(boolean e) { disableAds = !e; }
+
+    public static void setUIButtonRect(@NonNull Button button, @NonNull Rect rect, boolean portrait) {
+        if (portrait)
+            uiButtonsRectsPortrait.put(button, rect);
+        else
+            uiButtonsRectsLandscape.put(button, rect);
+    }
+
+    public static void resetUIButtonsRects(boolean portrait) {
+        if (portrait)
+            uiButtonsRectsPortrait.clear();
+        else
+            uiButtonsRectsLandscape.clear();
+    }
 
     public static void mapKeyToButton(int keycode, Button button) {
         //old mapped key
@@ -251,11 +329,58 @@ class Settings {
         mapKeyToButton(pref.getInt(buttonSettingKey(button), defaultKey), button);
     }
 
+    private static void loadUIButtonsLayout(SharedPreferences pref, String prefKey, TreeMap<Button, Rect> layoutPerOrientation) {
+        // ui buttons' layout, load from json string
+        String uiBtnRectsJsonAsString = pref.getString(prefKey, "{}");
+        try {
+            JSONObject uiBtnRectsJson = new JSONObject(uiBtnRectsJsonAsString);
+            Iterator<String> ite = uiBtnRectsJson.keys();
+            while (ite != null && ite.hasNext()) {
+                String btnName = ite.next();
+                Button btn = Button.valueOf(btnName);
+
+                JSONArray rectAsJsonArray = uiBtnRectsJson.getJSONArray(btnName);
+                Rect rect = new Rect();
+                rect.left = rectAsJsonArray.getInt(0);
+                rect.right = rectAsJsonArray.getInt(1);
+                rect.top = rectAsJsonArray.getInt(2);
+                rect.bottom = rectAsJsonArray.getInt(3);
+
+                layoutPerOrientation.put(btn, rect);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void saveUIButtonsLayout(SharedPreferences.Editor editor, String prefKey, TreeMap<Button, Rect> layoutPerOrientation) {
+        // ui buttons layout, save as json string
+        JSONObject uiBtnRectsJson = new JSONObject();
+        Iterable<Map.Entry<Button, Rect>> uiBtnRectsEntries = layoutPerOrientation.entrySet();
+        if (uiBtnRectsEntries != null) {
+            for (Map.Entry<Button, Rect> entry: uiBtnRectsEntries) {
+                JSONArray rectAsArray = new JSONArray();
+
+                Button button = entry.getKey();
+                Rect rect = entry.getValue();
+
+                rectAsArray.put(rect.left).put(rect.right).put(rect.top).put(rect.bottom);
+
+                try {
+                    uiBtnRectsJson.put(button.name(), rectAsArray);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        editor.putString(prefKey, uiBtnRectsJson.toString());
+    }
+
     public static void loadGlobalSettings(Context context) {
         SharedPreferences pref = context.getSharedPreferences(SETTINGS_FILE, Context.MODE_PRIVATE);
 
         audioVolume = pref.getFloat(SETTINGS_VOLUME_KEY, 1.f);
-        dpadScale = pref.getFloat(SETTINGS_DPAD_SCALE__KEY, 1.f);
         buttonsVibration = pref.getBoolean(SETTINGS_VIBRATION_KEY, true);
         voiceChatEnabled = pref.getBoolean(SETTINGS_VOICE_ENABLE_KEY, true);
         uiButtonsEnabled = pref.getBoolean(SETTINGS_UI_CONTROLS_ENABLE_KEY, true);
@@ -277,6 +402,10 @@ class Settings {
         for (Map.Entry<Button, Integer> entry : btn2KeyDefaultMap.entrySet()) {
             loadMappedButtonSetting(pref, entry.getKey(), entry.getValue());
         }
+
+        // ui buttons layout
+        loadUIButtonsLayout(pref, SETTINGS_UI_CONTROLS_RECTS_PORT_KEY, uiButtonsRectsPortrait);
+        loadUIButtonsLayout(pref, SETTINGS_UI_CONTROLS_RECTS_LANDSCAPE_KEY, uiButtonsRectsLandscape);
     }
 
     public static void saveGlobalSettings(Context context) {
@@ -284,7 +413,6 @@ class Settings {
 
         SharedPreferences.Editor editor = pref.edit();
         editor.putFloat(SETTINGS_VOLUME_KEY, audioVolume);
-        editor.putFloat(SETTINGS_DPAD_SCALE__KEY, dpadScale);
         editor.putBoolean(SETTINGS_VIBRATION_KEY, buttonsVibration);
         editor.putBoolean(SETTINGS_VOICE_ENABLE_KEY, voiceChatEnabled);
         editor.putBoolean(SETTINGS_UI_CONTROLS_ENABLE_KEY, uiButtonsEnabled);
@@ -303,7 +431,11 @@ class Settings {
             }
         }//if (mappedEntries != null)
 
-        editor.commit();
+        // ui buttons layout
+        saveUIButtonsLayout(editor, SETTINGS_UI_CONTROLS_RECTS_PORT_KEY, uiButtonsRectsPortrait);
+        saveUIButtonsLayout(editor, SETTINGS_UI_CONTROLS_RECTS_LANDSCAPE_KEY, uiButtonsRectsLandscape);
+
+        editor.apply();
     }
 
     static {

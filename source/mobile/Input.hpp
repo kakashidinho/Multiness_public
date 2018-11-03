@@ -37,23 +37,36 @@
 namespace Nes {
 	namespace Input {
 		/*----- UserHardwareButton -------*/
-		enum class UserHardwareButton {
-			LEFT, RIGHT, UP, DOWN,
-			A,
-			B,
-			AUTO_A,
-			AUTO_B,
-			START,
-			SELECT,
-			AB,
-			
-			NUM_BUTTONS
-		};
-			
+		namespace Button {
+			enum Id : uint32_t {
+				A,
+				B,
+				SELECT,
+				START,
+				AB,
+
+				NUM_NORMAL_BUTTONS,
+
+				LEFT = NUM_NORMAL_BUTTONS,
+				RIGHT, UP, DOWN,
+
+				AUTO_A,
+				AUTO_B,
+
+				NUM_BUTTONS
+			};
+		}
+
+		typedef Button::Id UserHardwareButton;
+
+		Maths::Rect GetDefaultRect(Button::Id button, float screenWidth, float screenHeight, float snesScreenMinY);
+		Maths::Rect GetDefaultDpadRect(float screenWidth, float screenHeight, float snesScreenMinX);
+
 		/*------- IInput --------*/	
 		class IInput: public Core::Input::Controllers {
 		public:
-			
+			IInput();
+
 			virtual ~IInput() {}
 			
 			void OnJoystickMoved(float x, float y); // x, y must be in range [-1, 1]
@@ -67,15 +80,20 @@ namespace Nes {
 			void Invalidate();//should be called when GL/DX context lost
 			//renderer & resourceLoader are needed to reload dpad's resources after scaling
 			void Reset(Video::IRenderer& renderer, Callback::OpenFileCallback resourceLoader);
-			void ScaleDPad(float scale, Video::IRenderer& renderer, Callback::OpenFileCallback resourceLoader);
 			void EnableUI(bool e);//enable/disable UI buttons
 			// if enabled, normal A/B buttons will become auto A/B buttons
 			void SwitchABTurboMode(bool aIsTurbo, bool bIsTurbo);
 
+			bool IsUIEnabled() const { return m_uiEnabled; }
+			void SetButtonRect(Button::Id button, const Maths::Rect& rect, bool forPortrait);
+			void SetDPadRect(float x, float y, float size, bool forPortrait);
+
+			void SetBoundingBoxOutlineSize(float size) { m_outlineSize = size; }
+
 			void CleanupGraphicsResources();//cleanup graphics resources
 
 			void BeginFrame();//this is called before NES engine's processing
-			void EndFrame(Video::IRenderer& renderer);//this is called after NES engine's processing
+			void EndFrame(Video::IRenderer& renderer, bool drawBoudingBoxes = false);//this is called after NES engine's processing
 
 		protected:
 			class AutoFireState {
@@ -105,16 +123,25 @@ namespace Nes {
 			virtual bool OnTouchMovedImpl(void* id, float x, float y) = 0;
 			virtual bool OnTouchEndedImpl(void* id, float x, float y) = 0;
 
+			virtual void SetButtonRectImpl(Button::Id button, const Maths::Rect& rect, bool forPortrait) {}
+			virtual void SetDPadRectImpl(const Maths::Rect& rect, bool forPortrait) {}
+
 			virtual void InvalidateImpl() = 0;
 			virtual void ResetImpl(Video::IRenderer& renderer, Callback::OpenFileCallback resourceLoader) = 0;
-			virtual void ScaleDPadImpl(float scale, Video::IRenderer& renderer, Callback::OpenFileCallback resourceLoader) = 0;
 			virtual void CleanupGraphicsResourcesImpl() = 0;
 
 			virtual void BeginFrameImpl() = 0;//this is called before NES engine's processing
 			virtual void EndFrameImpl(Video::IRectRenderer& renderer) = 0;
+			virtual void DrawBoundingBoxesImpl(Video::IRectRenderer& renderer) = 0;
 
 			std::mutex m_lock;
 			bool m_uiEnabled;//enabled UI buttons?
+
+			bool m_useCustomButtonsLayout[2]; // one for landscape, one for portrait
+
+			bool m_currentDisplayIsPortrait;
+
+			float m_outlineSize;
 		};
 		
 		
@@ -136,19 +163,26 @@ namespace Nes {
 			virtual bool OnTouchMovedImpl(void* id, float x, float y) override;
 			virtual bool OnTouchEndedImpl(void* id, float x, float y) override;
 
+			virtual void SetButtonRectImpl(Button::Id button, const Maths::Rect& rect, bool forPortrait) override;
+
 			virtual void InvalidateImpl() override;
 			virtual void ResetImpl(Video::IRenderer& renderer, Callback::OpenFileCallback resourceLoader) override;
 			virtual void CleanupGraphicsResourcesImpl() override;
 
 			virtual void BeginFrameImpl() override;
 			virtual void EndFrameImpl(Video::IRectRenderer& renderer) override;
-		
-			Video::IStaticTexture* m_buttonTextures[5];
-			Video::IStaticTexture* m_buttonHighlightTextures[5];
-			Maths::Rect m_buttonRects[5];
-			std::set<void*> m_buttonTouches[5];
-			bool m_buttonPressed[5];
-			bool m_hardwareButtonPressed[7];//hardware button pressed
+			virtual void DrawBoundingBoxesImpl(Video::IRectRenderer& renderer) override;
+
+			const size_t m_numButtons = Button::NUM_NORMAL_BUTTONS;
+			Video::IStaticTexture* m_buttonTextures[Button::NUM_NORMAL_BUTTONS];
+			Video::IStaticTexture* m_buttonHighlightTextures[Button::NUM_NORMAL_BUTTONS];
+
+			Maths::Rect *m_buttonRects;
+			Maths::Rect m_buttonRectsSettings[2][Button::NUM_NORMAL_BUTTONS]; // one for landscape, one for portrait
+
+			std::set<void*> m_buttonTouches[Button::NUM_NORMAL_BUTTONS];
+			bool m_buttonPressed[Button::NUM_NORMAL_BUTTONS];
+			bool m_hardwareButtonPressed[Button::NUM_NORMAL_BUTTONS + 2];//hardware button pressed
 			
 			enum ABComboState: uint;
 			
@@ -180,18 +214,24 @@ namespace Nes {
 			virtual bool OnTouchMovedImpl(void* id, float x, float y) override;
 			virtual bool OnTouchEndedImpl(void* id, float x, float y) override;
 
+			virtual void SetDPadRectImpl(const Maths::Rect& rect, bool forPortrait) override;
+
 			virtual void InvalidateImpl() override;
 			virtual void ResetImpl(Video::IRenderer& renderer, Callback::OpenFileCallback resourceLoader) override;
-			virtual void ScaleDPadImpl(float scale, Video::IRenderer& renderer, Callback::OpenFileCallback resourceLoader) override;
 			virtual void CleanupGraphicsResourcesImpl() override;
+
+			void ResetDPadRelatedRegions();
+			void ClearDPadTouchesTracking();
 
 			virtual void BeginFrameImpl() override;
 			virtual void EndFrameImpl(Video::IRectRenderer& renderer) override;
+			virtual void DrawBoundingBoxesImpl(Video::IRectRenderer& renderer) override;
 		
 			Video::IStaticTexture* m_dPadTexture;
 			Video::IStaticTexture* m_dpadDirectionHighlightTextures[4];
 			
 			Maths::Rect m_dPadRect;
+			Maths::Rect m_dPadRectSettings[2]; // one for landscape, one for portrait
 			Maths::Range m_dPadDirectionAngleRegions[4];
 			Maths::Rect m_dPadDirectionRects[4];
 			Maths::Rect m_dPadDirectionOverlappedRects[4];

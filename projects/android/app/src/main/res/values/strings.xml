@@ -39,6 +39,7 @@
     <string name="host">Player 1 (Host)</string>
     <string name="client">Player 2 (Guest)</string>
     <string name="select_player">Select Player</string>
+    <string name="select_orientation">Select Orientation</string>
     <string name="err_no_network">No network connection</string>
     <string name="host_game">Host New Game</string>
     <string name="host_lan_game_msg">Enter your network port</string>
@@ -71,6 +72,7 @@
     <string name="vibration_lbl">Onscreen buttons\' vibration</string>
     <string name="voice_lbl">Voice chat in multiplayer</string>
     <string name="controller_mapping_lbl">Controller\'s mappings</string>
+    <string name="ui_controls_edit_lbl">Onscreen buttons\' layout</string>
     <string name="screen_rotate_lbl">In-game display orientation</string>
     <string name="ui_controls_visiable_lbl">Onscreen buttons\' visibility</string>
     <string name="game_fullscreen_lbl">Fullscreen In-game display</string>
@@ -164,6 +166,8 @@
     <string name="no_ads_iap_id" translatable="false">ads.remove</string>
     <string name="iap_generic_err_msg">Failed to process Payment. Error code=%1$d.</string>
     <string name="iap_already_owned_msg">You already bought this item.</string>
+    <string name="ui_buttons_editor_help">Use one finger to move.\nUse two fingers to scale.</string>
+
 
     <!--
     <string name="appwarp_connect_error_msg">Failed to connect to Game Server using Google Account. Error code=%1$d. Please try again later.</string>

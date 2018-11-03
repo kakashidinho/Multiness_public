@@ -52,13 +52,15 @@ namespace Nes {
 				unsigned int GetVideoMinY() const { return m_videoY; }
 				
 				virtual void DrawRect(ITexture& texture, float x, float y, float width, float height) override;
-				
+				virtual void DrawOutlineRect(const Color& color, float size, float x, float y, float width, float height) override;
+
 				virtual void PresentVideo() override;
 			private:
 				virtual void ResetImpl() override;
 				
 				void DrawRect(float x, float y, float width, float height);
-				
+				void ApplyRectTransform(GLint uniformLoc, float x, float y, float width, float height);
+
 				virtual bool VideoLock(Core::Video::Output& video) override;
 				virtual void VideoUnlock(Core::Video::Output& video) override;
 
@@ -70,6 +72,10 @@ namespace Nes {
 				GLint m_renderTransformUniformLoc;
 				GLuint m_renderProgram;
 				GLuint m_renderVBO;
+
+				GLint m_renderOutlineTransformUniformLoc, m_renderOutlineColorUniformLoc;
+				GLuint m_renderOutlineProgram;
+				GLuint m_renderOutlineVBO;
 				
 				int m_esVersionMajor;
 

@@ -114,8 +114,8 @@ namespace  Nes {
 		void EnableFullScreenVideo(bool e) { m_renderer->EnableFullScreenVideo(e); }
 		
 		Video::IRenderer& GetRenderer() { return *m_renderer; }
-		
-		void ScaleDPad(float scale, OpenFileCallback resourceLoader);
+		Input::IInput& GetInput() { return *m_input; }
+
 		void EnableUIButtons(bool e);
 		// if enabled, normal A/B buttons will become auto A/B buttons
 		void SwitchABTurboMode(bool aIsTurbo, bool bIsTurbo);

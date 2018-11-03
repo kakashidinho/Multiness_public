@@ -627,13 +627,6 @@ namespace  Nes {
 		}
 	}
 	
-	//scale Dpad's size
-	void NesSystemWrapper::ScaleDPad(float scale, OpenFileCallback resourceLoader)
-	{
-		if (m_input)
-			m_input->ScaleDPad(scale, *m_renderer, resourceLoader);
-	}
-	
 	void NesSystemWrapper::EnableUIButtons(bool e) {
 		if (m_input)
 			m_input->EnableUI(e);
