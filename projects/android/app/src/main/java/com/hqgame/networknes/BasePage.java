@@ -253,6 +253,9 @@ public class BasePage extends Fragment {
   }
 
   public BaseActivity getBaseActivity() {
+    Activity activity = getActivity();
+    if (activity != null && activity instanceof BaseActivity)
+      return (BaseActivity)activity;
     return BaseActivity.getCurrentActivity();
   }
 
