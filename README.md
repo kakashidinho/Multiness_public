@@ -24,7 +24,7 @@ from continuing support them. So expect iOS, WinRT projects to be broken in late
 * The core mechanism of multiplayer feature is actually very close to video streaming. The host player will render a frame and stream it to 2nd player.
 * Pairing people online is done by Google Play Game Services or Facebook invite system.
 * Note that Google Play Game Services can connect two 2 people p2p on its own but I didn't use it because the overhead is too high. It has to convert C packet to java byte array before sending out.
-* So the p2p connection will be handled by RakNet, it will perform NAT punchthrough technique (this requires dediced server on the cloud) to find the public API of 2 players and connect them.
+* So the p2p connection will be handled by RakNet, it will perform NAT punchthrough technique (this requires dediced server on the cloud) to find the public IP of 2 players and connect them.
 * I didn't use any standard video codec in the industry. Instead I defined my own streaming method and compression which currently work fine for this emulator.
 * The simple overview of this streaming method:
     * Compress and send out only the deltas between current frame and a key frame before it. 
