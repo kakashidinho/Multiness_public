@@ -165,12 +165,16 @@ public class GameChooserPage extends BaseMenuPage {
                     cachedGamePathList.add(new File(path));
                 }
             }
-
-            addCachedGamePathsToList();
         }
         catch (Exception e) {
             e.printStackTrace();
         }
+
+        // reuse the past search results
+        if (uniqueGamePathList.size() == 0)
+            addCachedGamePathsToList();
+        if (gameListAdapter.getCount() == 0)
+            sortGameListView();
 
         // check for storage permission
         if ((uniqueGamePathList.size() == 0 || gameListAdapter.getCount() == 0)
