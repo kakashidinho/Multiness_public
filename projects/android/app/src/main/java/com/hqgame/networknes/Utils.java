@@ -92,6 +92,13 @@ public class Utils {
         return px;
     }
 
+    public static String getExternalFilesDirStorageRootPath(String path) throws Exception {
+        int index = path.indexOf("/Android");
+        if (index == -1)
+            return path;
+        return path.substring(0, index);
+    }
+
     public static String getHostIPAddress(Context context)
     {
         try {

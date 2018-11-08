@@ -29,6 +29,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Environment;
 
 import java.io.File;
@@ -37,6 +38,7 @@ import java.security.InvalidParameterException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 /**
  * Created by le on 4/1/2016.
@@ -52,6 +54,7 @@ public class FileListingTask extends AsyncTask<Void, Void, Void>
 
     private static File sSdPath;
     private static File sDataPath;
+    private static final LinkedHashSet<String> sExternalSdPaths = new LinkedHashSet<>();
 
     private final File mPrivateDataPath;
 
@@ -80,6 +83,26 @@ public class FileListingTask extends AsyncTask<Void, Void, Void>
         this.mDelegateRef = new WeakReference<Delegate>(delegate);
         this.mCurrentDirectory = currentDirectory;
         this.mPrivateDataPath = context.getFilesDir();
+
+        // secondary sdcards
+        File[] _externalFileDirs = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            synchronized (sExternalSdPaths) {
+                sExternalSdPaths.clear();
+                _externalFileDirs = context.getExternalFilesDirs(null);
+                if (_externalFileDirs != null) {
+                    for (int i = 1; i < _externalFileDirs.length; ++i) {
+                        File dir = _externalFileDirs[i];
+                        if (dir != null)
+                            try {
+                                sExternalSdPaths.add(Utils.getExternalFilesDirStorageRootPath(dir.getAbsolutePath()));
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                    }
+                }
+            } // synchronized sExternalSdPaths
+        }
 
         this.mProgressDialog = new ProgressDialog(context);
         this.mProgressDialog.setMessage(context.getString(R.string.loading_msg));
@@ -124,6 +147,22 @@ public class FileListingTask extends AsyncTask<Void, Void, Void>
             catch (Exception e)
             {
                 e.printStackTrace();
+            }
+
+            // secondary sdcards
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                int i = 1;
+                synchronized (sExternalSdPaths) {
+                    for (String dir : sExternalSdPaths) {
+                        File file = new File(dir);
+                        try {
+                            if (file.exists())
+                                addFileToList(new FileEntry(file, "sdcard" + (i++)));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
             }
 
             try {
@@ -294,22 +333,44 @@ public class FileListingTask extends AsyncTask<Void, Void, Void>
             this(new File(path), null);
         }
 
+        public FileEntry(String path, String name)
+        {
+            this(new File(path), name);
+        }
+
+        public FileEntry(String path, String name, boolean forceParentIsNull)
+        {
+            this(new File(path), name, forceParentIsNull);
+        }
+
         public FileEntry(File file, String name)
+        {
+            this(file, name, false);
+        }
+
+        public FileEntry(File file, String name, boolean forceParentIsNull)
         {
             this.file = file;
             this.name = name;
+            this.forceParentIsNull = forceParentIsNull;
 
             if (file == null)
                 throw new InvalidParameterException("File must not be null");
         }
 
         FileEntry getParent() {
+            if (forceParentIsNull)
+                return null;
             if (file.equals("/"))
                 return null;
             if (file.equals(sSdPath))
                 return null;
             if (file.equals(sDataPath))
                 return null;
+            synchronized (sExternalSdPaths) {
+                if (sExternalSdPaths.contains(this.file.getAbsolutePath()))
+                    return null;
+            }
 
             return new FileEntry(file.getParentFile());
         }
@@ -334,6 +395,7 @@ public class FileListingTask extends AsyncTask<Void, Void, Void>
 
         private final File file;
         private final String name;
+        private final boolean forceParentIsNull;
     }
 
 

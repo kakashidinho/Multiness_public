@@ -36,6 +36,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -60,6 +61,7 @@ import java.lang.ref.WeakReference;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
@@ -150,6 +152,7 @@ public class GameChooserPage extends BaseMenuPage {
 
         super.onResume();
 
+        if (cachedGamePathList.size() == 0)
         try {
             SharedPreferences pref = getContext().getSharedPreferences(getClass().getSimpleName(), Context.MODE_PRIVATE);
 
@@ -162,13 +165,16 @@ public class GameChooserPage extends BaseMenuPage {
                     cachedGamePathList.add(new File(path));
                 }
             }
+
+            addCachedGamePathsToList();
         }
         catch (Exception e) {
             e.printStackTrace();
         }
 
         // check for storage permission
-        if (Utils.hasPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)) {
+        if ((uniqueGamePathList.size() == 0 || gameListAdapter.getCount() == 0)
+            && Utils.hasPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)) {
 
             //auto search existing games and populate the list
             autoSearch();
@@ -218,19 +224,25 @@ public class GameChooserPage extends BaseMenuPage {
         super.onJoiningGoogleMatchBegin(matchId);
     }
 
-    private void autoSearch()
+    private void autoSearch() {
+        autoSearch(true);
+    }
+
+    private void autoSearch(boolean recreate)
     {
         System.out.println("GameChooserPage.autoSearch()");
 
         cancelGameAutoSearch();
 
-        gameListAdapter.clear();
-        uniqueGamePathList.clear();
+        if (recreate) {
+            gameListAdapter.clear();
+            uniqueGamePathList.clear();
 
-        // TODO: move last played game to first of the list
+            // TODO: move last played game to first of the list
 
-        //use cached file list
-        addCachedGamePathsToList();
+            //use cached file list
+            addCachedGamePathsToList();
+        }
 
         //search for games
         ProgressDialog gameSearchProgressDlg = new ProgressDialog(getContext());
@@ -476,6 +488,7 @@ public class GameChooserPage extends BaseMenuPage {
         private final File sdcardAndroidDir;
         private final File sdcardDir;
         private final File secondarySdcardDir;
+        private final File[] externalFileDirs;
 
         private HashSet<File> excludedDirs = new HashSet<>();
 
@@ -488,6 +501,7 @@ public class GameChooserPage extends BaseMenuPage {
             // also cache the path to /sdcard/Android folder, this folder may contains a lot of files, so we will process it last
             File _sdcardAndroidDir = null;
             File _sdcardDir = null;
+            File[] _externalFileDirs = null;
             String _secondarySdcardDirPath = null;
 
             try {
@@ -514,9 +528,17 @@ public class GameChooserPage extends BaseMenuPage {
                 e.printStackTrace();
             }
 
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+            try {
+                _externalFileDirs = parent.getContext().getExternalFilesDirs(null);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             this.sdcardDir = _sdcardDir;
             this.sdcardAndroidDir = _sdcardAndroidDir;
             this.secondarySdcardDir = (_secondarySdcardDirPath != null && _secondarySdcardDirPath.length() > 0) ? new File(_secondarySdcardDirPath) : null;
+            this.externalFileDirs = _externalFileDirs;
         }
 
         @Override
@@ -640,27 +662,55 @@ public class GameChooserPage extends BaseMenuPage {
         }
 
         private void searchMountedStorages() throws Exception {
-            Set<String> mountedStorages = getMountedStorages();
+            Set<String> mountedStorages = getMountedStoragesSafe();
             for (String mounted: mountedStorages) {
                 if (mounted != null) {
+                    File file = new File(mounted);
+
                     try {
-                        File file = new File(mounted);
                         if (file.exists())
                             searchFile(file);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+
+                    excludeDirectory(file);
                 }
             }
         }
 
+        private Set<String> getMountedStoragesSafe() {
+            Set<String> out = null;
+
+            try {
+                out = getMountedStorages();
+            } catch (Exception e) {
+                e.printStackTrace();
+
+                if (out == null)
+                    out = new LinkedHashSet<>();
+            }
+
+            out.add("/storage/");
+            out.add("/mnt/");
+
+            return out;
+        }
+
         private Set<String> getMountedStorages() throws Exception {
-            final HashSet<String> out = new HashSet<String>();
-            if (true) {
-                out.add("/storage/");
-                out.add("/mnt/");
-            } else {
+            final LinkedHashSet<String> out = new LinkedHashSet<String>();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                if (externalFileDirs != null) {
+                    for (File dir: externalFileDirs) {
+                        if (dir != null)
+                            out.add(Utils.getExternalFilesDirStorageRootPath(dir.getAbsolutePath()));
+                    }
+                }
+            }
+            else
+            {
                 // solution from https://stackoverflow.com/questions/11281010/how-can-i-get-external-sd-card-path-for-android-4-0
+                // and https://stackoverflow.com/questions/38143961/sd-card-path-of-android-phone
                 String reg = "(?i).*vold.*(vfat|ntfs|exfat|fat32|ext3|ext4).*rw.*";
                 final Process process = new ProcessBuilder().command("mount")
                         .redirectErrorStream(true).start();
@@ -677,6 +727,13 @@ public class GameChooserPage extends BaseMenuPage {
                                 if (part.startsWith("/"))
                                     if (!part.toLowerCase(Locale.US).contains("vold"))
                                         out.add(part);
+                            }
+                        } else if (line.contains("extSdCard")) {
+                            String[] arr = line.split(" ");
+                            String path = arr[1];
+                            File file = new File(path);
+                            if (file.isDirectory()) {
+                                out.add(path);
                             }
                         }
                     }
