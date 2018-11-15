@@ -78,7 +78,7 @@ namespace Nes {
 		static const char MULTICAST_MAGIC_STRING[] = "864bb9cf-f8e5-44cf-bb0d-95b82683f200";
 		
 		static const size_t RELIABLE_MSG_MAX_SIZE = 1400;
-		static const size_t UNRELIABLE_MSG_MAX_SIZE = 512;
+		static const size_t UNRELIABLE_MSG_MAX_SIZE = 1024;
 		
 		static_assert(ID_USER_PACKET_ENUM <= (0xFF - 1), "Unexpected max packet id" );
 		
@@ -828,7 +828,7 @@ namespace Nes {
 			bool isReconnection = m_connected && m_remotePeerAddress == address;
 			
 			m_connected = true;
-			onConnected(isReconnection);//tell base class
+			onConnected(isReconnection);//tell base class IConnectionHandler
 			
 			m_remotePeerAddress = address;
 			
@@ -851,6 +851,9 @@ namespace Nes {
 				if(address == m_remotePeerAddress)
 				{
 					m_connected = false;
+
+					// IConnectionHandler::onDisconnected();
+					onDisconnected(); // notify base class
 				}
 			}
 		}
@@ -1079,12 +1082,17 @@ namespace Nes {
 		}
 	
 		void ConnectionHandlerRakNetServer::doRestart() {
+			bool wasConnected = m_connected.load();
 			m_connected = false;
 			m_dontWait = false;
 			
 			m_reconnectionWaitStartTime = 0;//reset timer
 			m_remotePeerAddress = RakNet::SystemAddress();//invalidate connected peer's address
 			
+			// IConnectionHandler::onDisconnected();
+			if (wasConnected)
+				onDisconnected(); // notify base class
+
 			restart();
 		}
 		
@@ -1279,8 +1287,14 @@ namespace Nes {
 				else {
 					if (m_testOnly || !tryReconnect(connectedAddress))
 					{
+						bool wasConnected = m_connected.load();
+
 						m_connected = false;
 						
+						// IConnectionHandler::onDisconnected();
+						if (wasConnected && !m_testOnly)
+							onDisconnected(); // notify base class
+
 						m_remotePeerAddress = RakNet::SystemAddress();//invalidate connected peer's address
 					}
 				}
