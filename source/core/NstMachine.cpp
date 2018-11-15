@@ -51,7 +51,7 @@
 #	include <pthread.h>
 #endif
 
-#define DEFAULT_REMOTE_FPS 30
+#define DEFAULT_REMOTE_FPS 28
 #define DEFAULT_REMOTE_FRAME_INTERVAL (1.0 / DEFAULT_REMOTE_FPS)
 
 #define SLOW_NET_REMOTE_FPS 20
