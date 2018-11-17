@@ -20,8 +20,8 @@ android {
         applicationId "com.hqgame.networknes"
         minSdkVersion 16
         targetSdkVersion 26
-        versionCode 10181
-        versionName "1.0.1.8"
+        versionCode 10220
+        versionName "1.0.2.2"
 
         externalNativeBuild {
             cmake {
