@@ -156,7 +156,7 @@
     <string name="wifi_direct_generic_err_msg">Wifi Direct Error. Error code=%1$d.</string>
     <string name="donate_msg">I made this app as a hobby. It is free with very minimal ads. Any donations are always welcome. In return, the ads will be removed.</string>
     <string name="donation_url">https://paypal.me/HQgame</string>
-    <string name="copyright">Copyright</string>
+    <string name="app_version_text" translatable="false">Version %1$s (%2$d)</string>
     <string name="copyright_text" translatable="false">(C) 2016-2018  Le Hoang Quyen</string>
     <string name="nestopia" translatable="false">Nestopia core</string>
     <string name="nestopia_copyright_text" translatable="false">(C) 2003-2008 Martin Freij</string>

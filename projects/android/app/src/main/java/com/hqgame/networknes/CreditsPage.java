@@ -46,6 +46,10 @@ public class CreditsPage extends BasePage implements View.OnClickListener {
 
         View v = inflater.inflate(R.layout.page_credits, container, false);
 
+        // version text
+        TextView versionView = (TextView)v.findViewById(R.id.app_version_tv);
+        versionView.setText(String.format(getString(R.string.app_version_text), BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE));
+
         // copyright license
         View licenseLinkView = makeSpanText(v, R.id.program_license_link);
         View nestopiaLicenseLinkView = makeSpanText(v, R.id.nestopia_license_link);

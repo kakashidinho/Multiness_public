@@ -154,7 +154,6 @@
     <string name="wifi_direct_generic_err_msg">Lỗi Wifi Direct. Mã=%1$d.</string>
     <string name="donate_msg">Mình làm app này vì sở thích cá nhân. Bạn nào muốn donate tiền có thể bấm vào đây. Đổi lại, tất cả quảng cáo sẽ được tắt.</string>
     <string name="donation_url">https://paypal.me/HQgame</string>
-    <string name="copyright">Bản quyền</string>
     <string name="iap_generic_err_msg">Có lỗi xảy ra khi mua hàng. Mã=%1$d.</string>
     <string name="iap_already_owned_msg">Bạn đã mua sản phẩm này trước đây. Không cần phải mua lại.</string>
     <string name="ui_buttons_editor_help">Dùng một ngón để dịch chuyển.\nHai ngón để thay đổi kích cỡ.</string>
