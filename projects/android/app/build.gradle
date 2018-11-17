@@ -80,12 +80,12 @@ android {
             // This property is optional if you are using only one dimension.
             dimension "version"
             applicationIdSuffix ".gpg"
-            versionNameSuffix "-gpg"
+            versionNameSuffix "-gpg-opensource"
         }
         full {
             dimension "version"
             applicationIdSuffix ""
-            versionNameSuffix ""
+            versionNameSuffix "-opensource"
         }
     }
 }
