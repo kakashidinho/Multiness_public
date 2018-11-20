@@ -712,7 +712,7 @@ namespace Nes {
 						//firt time setup
 						m_portToForward = getAssignedPortFromRakNetSocket();
 						
-						m_rakPeer->CloseConnection(address, true);//close the connection to NAT server, we will connect to it again after port forwarding finishes
+						m_rakPeer->CloseConnection(address, true, 0, HIGH_PRIORITY);//close the connection to NAT server, we will connect to it again after port forwarding finishes
 						
 						doPortForwardingAsync();
 					}
@@ -843,7 +843,7 @@ namespace Nes {
 			
 			//disconnect from NAT punchthrough server
 			m_sendingNATPunchthroughRequest = false;
-			m_rakPeer->CloseConnection(m_natPunchServerAddress, true);
+			m_rakPeer->CloseConnection(m_natPunchServerAddress, true, 0, HIGH_PRIORITY);
 		}
 		
 		void ConnectionHandlerRakNet::processPacket(RakNet::Packet* packet) {
@@ -891,7 +891,7 @@ namespace Nes {
 					{
 						m_natServerRemainReconnectionAttempts = MAX_RECONNECTION_ATTEMPTS;
 						//close connection to the NAT server, the reconnection with new port mapping will be attempted later
-						m_rakPeer->CloseConnection(m_natPunchServerAddress, true);
+						m_rakPeer->CloseConnection(m_natPunchServerAddress, true, 0, HIGH_PRIORITY);
 						auto re = connectToNatServer();
 					}
 						break;
@@ -913,7 +913,7 @@ namespace Nes {
 						setInternalError(GUID_ALREADY_EXISTS_ERR_INTERNAL);//TODO: this is the agreement between this and user of this code
 						
 						m_natServerRemainReconnectionAttempts = 0;//no more reconnection attempt
-						m_rakPeer->CloseConnection(m_natPunchServerAddress, true);
+						m_rakPeer->CloseConnection(m_natPunchServerAddress, true, 0, HIGH_PRIORITY);
 						
 						HQRemote::Log("* We already connected to NAT server elsewhere\n");
 						break;
