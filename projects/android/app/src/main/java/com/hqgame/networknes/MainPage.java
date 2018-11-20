@@ -119,6 +119,9 @@ public class MainPage extends BaseMenuPage implements PurchasesUpdatedListener {
 
         // check donation button's status
         checkDonationButtonState();
+
+        // introduces new feature
+        showNewFeatures();
     }
 
     @Override
@@ -465,6 +468,43 @@ public class MainPage extends BaseMenuPage implements PurchasesUpdatedListener {
         }
 
         return intent;
+    }
+
+    private void showNewFeatures() {
+        final SharedPreferences preferences = getContext().getSharedPreferences(Settings.IMMEDIATE_PREF_FILE, Context.MODE_PRIVATE);
+        if (preferences == null)
+            return;
+
+        boolean skipNewFeatures = false;
+        if (!preferences.contains(Settings.USER_TOTAL_PLAY_TIME_KEY)) // new user?
+            skipNewFeatures = true; // skip showing new features
+        else {
+            skipNewFeatures = preferences.getBoolean(Settings.SKIP_LOBBY_FEATURE_DIALOG_KEY, false);
+        }
+
+        if (!skipNewFeatures) {
+            skipNewFeatures = true; // skip it the next time
+
+            Utils.dialog(getContext(), getString(R.string.new_feature_title), getString(R.string.lobby_feature_msg), null,
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            selectInternetModeDialog();
+                        }
+                    }, new Runnable() {
+                        @Override
+                        public void run() {
+
+                        }
+                    }
+            );
+        }
+
+        if (!preferences.contains(Settings.SKIP_LOBBY_FEATURE_DIALOG_KEY)) {
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putBoolean(Settings.SKIP_LOBBY_FEATURE_DIALOG_KEY, skipNewFeatures);
+            editor.commit();
+        }
     }
 
     private void lanPlayerSelected(int playerIdx)

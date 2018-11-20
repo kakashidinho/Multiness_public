@@ -171,6 +171,8 @@
     <string name="create_public_room_text">Host Public Game</string>
     <string name="private_rooms_text">Private Games</string>
     <string name="lobby_page_title">Available Public Servers</string>
+    <string name="new_feature_title">New feature</string>
+    <string name="lobby_feature_msg">Internet Multiplayer now allows you to host a public game that anyone can see and join.</string>
 
 
     <!--

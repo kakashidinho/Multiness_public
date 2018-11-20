@@ -74,6 +74,7 @@ class Settings {
     public static final String USER_RATING_PROMPT_DATE_KEY = "com.hqgame.networknes.USER_RATING_DATE";
     public static final String USER_TOTAL_PLAY_TIME_KEY = "com.hqgame.networknes.USER_TOTAL_PLAYTIME";
     public static final String USER_TOTAL_MULTIPLAYER_TIME_KEY = "com.hqgame.networknes.USER_TOTAL_MULTIPLAYER_TIME";
+    public static final String SKIP_LOBBY_FEATURE_DIALOG_KEY = "com.hqgame.networknes.SKIP_LOBBY_FEATURE_DIALOG";
 
     //the name of the game path in GameActivity's game settings bundle
     public static final String GAME_ACTIVITY_PATH_KEY = "com.hqgame.networknes.GAME";
