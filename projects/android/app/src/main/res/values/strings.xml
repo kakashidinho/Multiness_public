@@ -67,7 +67,7 @@
     <string name="must_signin_internet_title">Log in required</string>
     <string name="must_signin_fb_title_msg">You must log in with Facebook before using Facebook Internet Multiplayer Mode.</string>
     <string name="must_signin_google_title_msg">You must log in with Google before using Google Internet Multiplayer Mode.</string>
-    <string name="must_signin_msg">You must log in with Google or Facebook before using Google Internet Multiplayer Mode.</string>
+    <string name="must_signin_msg">You must log in with Google or Facebook before using Internet Multiplayer Mode.</string>
     <string name="dpad_scale_size_lbl">Onscreen D-pad\'s size</string>
     <string name="audio_volum_lbl">Audio volume</string>
     <string name="vibration_lbl">Onscreen buttons\' vibration</string>
