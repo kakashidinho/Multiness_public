@@ -130,7 +130,8 @@ public class LobbyPage extends BaseInvitationsPage<LobbyPage.Room> implements Vi
         String url = "http://" + GameSurfaceView.getLobbyServerAddress()
                 + ":8080/rooms/"
                 + GameSurfaceView.getLobbyAppId()
-                + "?page=" + mCurrentPage;
+                + "?page=" + mCurrentPage
+                + "&desc=1";
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
                 listener,
                 listener);
