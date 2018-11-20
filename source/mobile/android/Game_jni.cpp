@@ -1125,7 +1125,6 @@ extern "C" {
 			// need to generate public server's meta data, only java side needs it, so let it creates it for us.
 			// The meta data will be stored on cloud lobby server. Java side can query later using http request.
 			publicServerMetaDataGenerator = [context, publicNameRef] (const Remote::ConnectionHandlerRakNetServer* hostHandler) -> std::string {
-				std::ostringstream ss;
 				char serverInfo[256];
 				if (!InitInternetServerConnectionInfo(hostHandler->getGUID(), hostHandler->getInvitationKey(), hostHandler->getLanPort(), serverInfo, sizeof(serverInfo)))
 					return "";
