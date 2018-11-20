@@ -66,7 +66,9 @@ typedef int socklen_t;
 
 //#define DEBUG
 
-#define USE_NAT_SERVER_ACCEPT_SYSTEM 1
+// this flag is not really needed, if the same guid is used to connect to nat server,
+// it will return ID_ALREADY_CONNECTED
+#define USE_NAT_SERVER_ACCEPT_SYSTEM 0
 
 namespace Nes {
 	namespace Remote {
@@ -901,7 +903,7 @@ namespace Nes {
 							onConnected(packet->systemAddress, packet->guid, true);
 						break;
 					case ID_ALREADY_CONNECTED:
-#if 0 // ignore for now
+#if 1
 						if (packet->systemAddress != m_natPunchServerAddress)
 #endif
 							break;
