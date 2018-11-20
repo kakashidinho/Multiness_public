@@ -1552,7 +1552,12 @@ public class GameSurfaceView extends GLSurfaceView {
     private static String createPublicServerMetaData(final String publicName, final String inviteData, final int context) {
         try {
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put(Settings.PUBLIC_SERVER_ROM_NAME_KEY, loadedGameNameNative(sNativeHandle));
+            String gameName = loadedGameNameNative(sNativeHandle);
+            int dotIndex = gameName.lastIndexOf('.');
+            if (dotIndex > 0) {
+                gameName = gameName.substring(0, dotIndex);
+            }
+            jsonObject.put(Settings.PUBLIC_SERVER_ROM_NAME_KEY, gameName);
             jsonObject.put(Settings.PUBLIC_SERVER_INVITE_DATA_KEY, inviteData);
             jsonObject.put(Settings.PUBLIC_SERVER_NAME_KEY, publicName);
 
