@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="must_signin_msg">Bạn phải log in với Google trước khi dùng chế độ Internet Multiplayer.</string>
+</resources>

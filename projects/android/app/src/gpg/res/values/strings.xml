@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name" translatable="false">Multiness GP</string>
+    <string name="must_signin_msg">You must log in with Google before using Internet Multiplayer Mode.</string>
 
 </resources>
