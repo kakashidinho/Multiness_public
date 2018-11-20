@@ -18,12 +18,14 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 // even though we inherit from BaseInvitationsPage, doesn't mean this page is about invitations
 // It is actually handling rooms list on lobby
 public class LobbyPage extends BaseInvitationsPage<LobbyPage.Room> implements View.OnClickListener {
     private static final int EXPECTED_MAX_INVITATIONS_TO_FETCH = 25;
 
-    private Room[] mRooms = null;
+    private ArrayList<Room> mRooms = new ArrayList<>();
     private RequestQueue mQueue;
     private int mCurrentPage = 0;
 
@@ -60,6 +62,9 @@ public class LobbyPage extends BaseInvitationsPage<LobbyPage.Room> implements Vi
 
     @Override
     protected void acceptedInvitation(@NonNull Room info) {
+        if (info.inviteData == null || info.inviteData.length() <= 0)
+            return;
+
         Bundle existSettings = getExtras();
         final Bundle settings = existSettings != null ? existSettings : new Bundle();
 
@@ -80,7 +85,7 @@ public class LobbyPage extends BaseInvitationsPage<LobbyPage.Room> implements Vi
     @Override
     protected AsyncOperation doFetchInvitations(final AsyncQuery<Boolean> finishCallback) {
         //invalidate current invitations
-        mRooms = null;
+        mRooms.clear();
 
         RequestListener<JSONObject> listener = new RequestListener<JSONObject>() {
             @Override
@@ -88,18 +93,24 @@ public class LobbyPage extends BaseInvitationsPage<LobbyPage.Room> implements Vi
                 try {
                     JSONArray roomsListJson = response.getJSONArray("rooms");
                     mCurrentPage = response.getInt("page");
-                    mRooms = new Room[roomsListJson.length()];
+
                     for (int r = 0; r < roomsListJson.length(); ++r) {
-                        JSONObject roomJson = roomsListJson.getJSONObject(r);
-                        String metaBase64 = roomJson.getString("meta_data");
-                        String metaString = new String(Base64.decode(metaBase64, Base64.DEFAULT), "UTF-8");
+                        Room room = new Room();
 
-                        JSONObject metaJson = new JSONObject(metaString);
+                        try {
+                            JSONObject roomJson = roomsListJson.getJSONObject(r);
+                            String metaBase64 = roomJson.getString("meta_data");
+                            String metaString = new String(Base64.decode(metaBase64, Base64.URL_SAFE), "UTF-8");
 
-                        mRooms[r] = new Room();
-                        mRooms[r].name = metaJson.getString(Settings.PUBLIC_SERVER_NAME_KEY);
-                        mRooms[r].gameName = metaJson.getString(Settings.PUBLIC_SERVER_ROM_NAME_KEY);
-                        mRooms[r].inviteData = metaJson.getString(Settings.PUBLIC_SERVER_INVITE_DATA_KEY);
+                            JSONObject metaJson = new JSONObject(metaString);
+                            room.name = metaJson.getString(Settings.PUBLIC_SERVER_NAME_KEY);
+                            room.gameName = metaJson.getString(Settings.PUBLIC_SERVER_ROM_NAME_KEY);
+                            room.inviteData = metaJson.getString(Settings.PUBLIC_SERVER_INVITE_DATA_KEY);
+
+                            mRooms.add(room);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                 } catch (Exception e) {
                     displayErrorDialog(e.getLocalizedMessage(), new java.lang.Runnable() {
@@ -131,12 +142,12 @@ public class LobbyPage extends BaseInvitationsPage<LobbyPage.Room> implements Vi
 
     @Override
     protected Room getInvitation(int index) {
-        return mRooms != null ? mRooms[index] : null;
+        return mRooms != null ? mRooms.get(index) : null;
     }
 
     @Override
     protected int getNumInvitations() {
-        return mRooms != null ? mRooms.length : 0;
+        return mRooms != null ? mRooms.size() : 0;
     }
 
     @Override
