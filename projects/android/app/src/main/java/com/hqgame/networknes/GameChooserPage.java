@@ -152,6 +152,8 @@ public class GameChooserPage extends BaseMenuPage {
 
         super.onResume();
 
+        boolean skipAutoSearch = !Settings.isAutoSearchGamesOnResumeEnabled();
+
         if (cachedGamePathList.size() == 0)
         try {
             SharedPreferences pref = getContext().getSharedPreferences(getClass().getSimpleName(), Context.MODE_PRIVATE);
@@ -178,10 +180,11 @@ public class GameChooserPage extends BaseMenuPage {
 
         // check for storage permission
         if ((uniqueGamePathList.size() == 0 || gameListAdapter.getCount() == 0)
+            && !skipAutoSearch
             && Utils.hasPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)) {
 
             //auto search existing games and populate the list
-            autoSearch();
+            autoSearch(true);
         }
     }
 
@@ -214,7 +217,7 @@ public class GameChooserPage extends BaseMenuPage {
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
             case READ_STORAGE_REQUEST_CODE: {
-                autoSearch();
+                autoSearch(true);
             }
             break;
         }
@@ -229,10 +232,14 @@ public class GameChooserPage extends BaseMenuPage {
     }
 
     private void autoSearch() {
-        autoSearch(true);
+        autoSearch(true, false);
     }
 
-    private void autoSearch(boolean recreate)
+    private void autoSearch(boolean fromResume) {
+        autoSearch(true, fromResume);
+    }
+
+    private void autoSearch(boolean recreate, final boolean fromResume)
     {
         System.out.println("GameChooserPage.autoSearch()");
 
@@ -257,12 +264,18 @@ public class GameChooserPage extends BaseMenuPage {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 cancelGameAutoSearch();
+                if (fromResume) {
+                    displaySkipAutoSearchOnResumeDialog();
+                }
             }
         });
         gameSearchProgressDlg.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
                 cancelGameAutoSearch();
+                if (fromResume) {
+                    displaySkipAutoSearchOnResumeDialog();
+                }
             }
         });
 
@@ -277,6 +290,22 @@ public class GameChooserPage extends BaseMenuPage {
             gameSearchTask.cancel(false);
 
         gameSearchTask = null;
+    }
+
+    private void displaySkipAutoSearchOnResumeDialog() {
+        Utils.dialog(getContext(), null, getString(R.string.skip_autosearch_on_resume_msg), null,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        Settings.enableAutoSearchGamesOnResume(false);
+                        Settings.saveGlobalSettings(getContext());
+                    }
+                }, new Runnable() {
+                    @Override
+                    public void run() {
+
+                    }
+                });
     }
 
     private void onAutoSearchFinished() {
@@ -402,7 +431,8 @@ public class GameChooserPage extends BaseMenuPage {
                                 Utils.alertDialog(getContext(), "Error", getString(R.string.err_invalid_name), new Runnable() {
                                     @Override
                                     public void run() {
-                                        forceDisplayNoGameDialog(pref);//display the popup again
+                                        if (!pref.getBoolean(Settings.DISABLE_NOGAME_DIALOG_KEY, false))
+                                            forceDisplayNoGameDialog(pref);//display the popup again
                                     }
                                 });
                                 return;

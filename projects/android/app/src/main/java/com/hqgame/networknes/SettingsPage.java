@@ -67,6 +67,7 @@ public class SettingsPage extends BasePage {
         CheckBox vibrationCheckBox = (CheckBox)v.findViewById(R.id.vibration_settings_checkbox);
         CheckBox uiButtonsCheckBox = (CheckBox)v.findViewById(R.id.ui_controls_settings_checkbox);
         CheckBox fullScreenCheckBox = (CheckBox)v.findViewById(R.id.fullscreen_settings_checkbox);
+        CheckBox enableAutoSearchOnResumeCheckBox = (CheckBox)v.findViewById(R.id.enable_auto_search_on_resume_checkbox);
         Button controllerMapBtn = (Button)v.findViewById(R.id.controller_mapping_btn);
         Button uiButtonLayoutEdit = (Button) v.findViewById(R.id.ui_controls_layout_edit_btn);
 
@@ -82,6 +83,7 @@ public class SettingsPage extends BasePage {
         voiceCheckBox.setChecked(Settings.isVoiceChatEnabled());
         uiButtonsCheckBox.setChecked(Settings.isUIButtonsEnbled());
         fullScreenCheckBox.setChecked(Settings.isFullscreenEnabled());
+        enableAutoSearchOnResumeCheckBox.setChecked(Settings.isAutoSearchGamesOnResumeEnabled());
         orientationList.setSelection(Settings.getPreferedOrientation().ordinal());
 
         //register callbacks
@@ -126,6 +128,13 @@ public class SettingsPage extends BasePage {
         });
 
         fullScreenCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                onSettingsCheckboxChanged(buttonView, isChecked);
+            }
+        });
+
+        enableAutoSearchOnResumeCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 onSettingsCheckboxChanged(buttonView, isChecked);
@@ -197,6 +206,9 @@ public class SettingsPage extends BasePage {
                 break;
             case R.id.fullscreen_settings_checkbox:
                 Settings.enableFullscreen(checked);
+                break;
+            case R.id.enable_auto_search_on_resume_checkbox:
+                Settings.enableAutoSearchGamesOnResume(checked);
                 break;
         }
     }

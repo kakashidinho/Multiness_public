@@ -59,6 +59,7 @@ class Settings {
     private static final String SETTINGS_B_IS_TURBO_KEY = SETTINGS_KEY_PREFIX + "B_IS_TURBO";
     private static final String SETTINGS_UI_CONTROLS_RECTS_LANDSCAPE_KEY = SETTINGS_KEY_PREFIX + "UI_BTN_LANDSCAPE_RECTS";
     private static final String SETTINGS_UI_CONTROLS_RECTS_PORT_KEY = SETTINGS_KEY_PREFIX + "UI_BTN_PORT_RECTS";
+    private static final String SETTINGS_SKIP_AUTO_SEARCH_DURING_RESUME_KEY = SETTINGS_KEY_PREFIX + "SKIP_AUTO_SEARCH_DURING_RESUME";
 
     public static final String IMMEDIATE_PREF_FILE = "last_session";
     public static final String LAST_PLAYED_GAME_KEY = "com.hqgame.networknes.LAST_GAME";
@@ -221,6 +222,7 @@ class Settings {
     private static boolean btnATurbo = false;
     private static boolean btnBTurbo = false;
     private static boolean disableAds = false; // this setting is not persistent
+    private static boolean disableAutoSearchGamesOnResume = false;
 
     private static TreeMap<Integer, HashSet<Button>> key2BtnMap = new TreeMap<>();
     private static TreeMap<Button, Integer> btn2KeyMap = new TreeMap<>();
@@ -239,6 +241,7 @@ class Settings {
     public static boolean isBtnATurbo() { return btnATurbo; }
     public static boolean isBtnBTurbo() { return btnBTurbo; }
     public static boolean isAdsDisabled() { return disableAds; }
+    public static boolean isAutoSearchGamesOnResumeEnabled() { return !disableAutoSearchGamesOnResume; }
 
     //Note: one key can be mapped to multiple buttons
     public static Iterable<Button> getMappedButton(int keycode) {
@@ -276,6 +279,7 @@ class Settings {
     public static void enableBtnATurbo(boolean e) { btnATurbo = e; }
     public static void enableBtnBTurbo(boolean e) { btnBTurbo = e; }
     public static void enableAds(boolean e) { disableAds = !e; }
+    public static void enableAutoSearchGamesOnResume(boolean e) { disableAutoSearchGamesOnResume = !e; }
 
     public static void setUIButtonRect(@NonNull Button button, @NonNull Rect rect, boolean portrait) {
         if (portrait)
@@ -394,6 +398,7 @@ class Settings {
         fullscreenEnabled = pref.getBoolean(SETTINGS_FULLSCREEN_KEY, false);
         btnATurbo = pref.getBoolean(SETTINGS_A_IS_TURBO_KEY, false);
         btnBTurbo = pref.getBoolean(SETTINGS_B_IS_TURBO_KEY, false);
+        disableAutoSearchGamesOnResume = pref.getBoolean(SETTINGS_SKIP_AUTO_SEARCH_DURING_RESUME_KEY, false);
 
         try {
             String orientationName = pref.getString(SETTINGS_ORIENTATION_KEY, Orientation.LANDSCAPE.name());
@@ -427,6 +432,7 @@ class Settings {
         editor.putBoolean(SETTINGS_FULLSCREEN_KEY, fullscreenEnabled);
         editor.putBoolean(SETTINGS_A_IS_TURBO_KEY, btnATurbo);
         editor.putBoolean(SETTINGS_B_IS_TURBO_KEY, btnBTurbo);
+        editor.putBoolean(SETTINGS_SKIP_AUTO_SEARCH_DURING_RESUME_KEY, disableAutoSearchGamesOnResume);
 
         /*
         buttons mapping

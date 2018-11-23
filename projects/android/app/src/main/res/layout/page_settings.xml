@@ -266,6 +266,48 @@
             android:layout_width="match_parent"
             android:layout_height="70dp"
             android:orientation="horizontal"
+            android:layout_marginTop="20dp">
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:layout_gravity="center"
+                android:layout_margin="16dp"
+                android:src="@drawable/refresh_drawable"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_gravity="center"
+                android:layout_weight="8">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="@string/enable_autosearch_on_resume"/>
+
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:id="@+id/enable_auto_search_on_resume_checkbox"
+                    android:layout_weight="1"
+                    android:layout_gravity="left" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:background="@android:color/darker_gray"
+            android:layout_height="1dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:orientation="horizontal"
             android:id="@+id/fullscreen_settings"
             android:layout_marginTop="20dp">
 
