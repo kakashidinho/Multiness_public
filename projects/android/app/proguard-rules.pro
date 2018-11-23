@@ -27,6 +27,7 @@
     void runOnMainThread(...);
     void onLanServerDiscovered(...);
     java.lang.String getHostIPAddress();
+    java.lang.Object getAssetsManagerObject();
 }
 
 # required for jni

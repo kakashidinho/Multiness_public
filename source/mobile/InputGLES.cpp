@@ -30,7 +30,7 @@ namespace Nes {
 	namespace Input {
 		namespace GL {
 			InputDPad::InputDPad()
-				: Input::InputDPad(false)
+				: Input::InputDPad(true)
 			{
 				for (int i = 0; i < sizeof(m_buttonTextures) / sizeof(m_buttonTextures[0]); ++i)
 				{

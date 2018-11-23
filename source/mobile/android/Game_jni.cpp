@@ -82,6 +82,7 @@ static const char GET_SETTINGS_CLASS_METHOD_NAME[] = "getSettingsClass";
 static const char RUN_ON_MAINTHREAD_METHOD_NAME[] = "runOnMainThread";
 static const char ON_LAN_SERVER_DISCOVERED_METHOD_NAME[] = "onLanServerDiscovered";
 static const char GET_LAN_IP_METHOD_NAME[] = "getHostIPAddress";
+static const char GET_ASSETS_METHOD_NAME[] = "getAssetsManagerObject";
 
 static const char ERROR_CALLBACK_METHOD_NAME[] = "fatalError";
 static const char MACHINE_EVENT_CALLBACK_METHOD_NAME[] = "machineEventCallback";
@@ -99,6 +100,7 @@ static jmethodID g_getSettingsClassMethodID;
 static jmethodID g_runOnMainThreadMethodID;
 static jmethodID g_onLanServerDiscoveredMethodID;
 static jmethodID g_getLanIpAddressMethodID;
+static jmethodID g_getAssetsMethodID;
 
 static jclass g_GameSurfaceViewClass = NULL;
 static jmethodID g_errorCallbackMethodID;
@@ -664,6 +666,7 @@ extern "C" {
 			g_runOnMainThreadMethodID = env->GetStaticMethodID(g_BaseActivityClass, RUN_ON_MAINTHREAD_METHOD_NAME, "(JJ)V");
 			g_onLanServerDiscoveredMethodID = env->GetStaticMethodID(g_BaseActivityClass, ON_LAN_SERVER_DISCOVERED_METHOD_NAME, "(JLjava/lang/String;ILjava/lang/String;)V");
 			g_getLanIpAddressMethodID = env->GetStaticMethodID(g_BaseActivityClass, GET_LAN_IP_METHOD_NAME, "()Ljava/lang/String;");
+			g_getAssetsMethodID = env->GetStaticMethodID(g_BaseActivityClass, GET_ASSETS_METHOD_NAME, "()Ljava/lang/Object;");
 
 			// Settings class's method
 			auto jSettingsClass = GetSettingsClass();
@@ -1299,9 +1302,18 @@ extern "C" {
 	
 	static Callback::OpenFileCallback GameSurfaceView_resourceLoaderFromJava(JNIEnv *env, jobject jassetManager)
 	{
-		auto assetManager = AAssetManager_fromJava(env, jassetManager);
-		
-		return [assetManager] (const char* file) {
+		return [] (const char* file) -> HQDataReaderStream* {
+			if (!g_getAssetsMethodID || !g_BaseActivityClass)
+				return nullptr;
+
+			auto env = Jni::GetCurrenThreadJEnv();
+
+			jobject jassetManager = env->CallStaticObjectMethod(g_BaseActivityClass, g_getAssetsMethodID);
+			if (!jassetManager)
+				return nullptr;
+
+			auto assetManager = AAssetManager_fromJava(env, jassetManager);
+
 			return new HQAssetDataReaderAndroid(assetManager, file);
 		};
 	}

@@ -542,6 +542,12 @@ public final class BaseActivity extends AppCompatActivity
             mOnResumeTasks.add(task);
     }
 
+    private static Object getAssetsManagerObject() {
+        if (sCurrentActivity != null)
+            return sCurrentActivity.getAssets();
+        return null;
+    }
+
     private static Class getSettingsClass() {
         return Settings.class;
     }
