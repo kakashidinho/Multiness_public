@@ -563,7 +563,7 @@ namespace Nes
 			Renderer::~Renderer()
 			{
 				delete filter;
-				delete[] cachedRenderedFrame.pixels;
+				delete[] (byte*)cachedRenderedFrame.pixels;
 				delete cachedRenderedFrameFilter;
 			}
 
