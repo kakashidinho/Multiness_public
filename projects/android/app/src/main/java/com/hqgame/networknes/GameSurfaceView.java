@@ -1240,15 +1240,16 @@ public class GameSurfaceView extends GLSurfaceView {
 
                 javaHandle.aggregateMultiplayerTimeAndResetTimer(System.nanoTime(), false);//aggregate multiplayer duration
 
+                if (value == null) // server's player name is mandatory
+                    break;
+
                 javaHandle.dismissProgressDialog();
-                if (value != null) {
-                    javaHandle.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            javaHandle.showToast(javaHandle.getContext().getString(R.string.connected_to) + " " + value, Toast.LENGTH_LONG);
-                        }
-                    });
-                }
+                javaHandle.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        javaHandle.showToast(javaHandle.getContext().getString(R.string.connected_to) + " " + value, Toast.LENGTH_LONG);
+                    }
+                });
 
                 if (connectedViaProxy) {
                     javaHandle.post(new Runnable() {
