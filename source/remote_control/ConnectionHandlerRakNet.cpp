@@ -706,7 +706,7 @@ namespace Nes {
 				if (copySize == 0)
 				{
 					flushRawDataNoLock();
-					copySize = min(size, RELIABLE_MSG_MAX_SIZE);
+					copySize = min(size, RELIABLE_MSG_MAX_SIZE - m_reliableBuffer.GetNumberOfBytesUsed());
 				}
 
 				m_reliableBuffer.Write((const char*)data, (unsigned int)copySize);
