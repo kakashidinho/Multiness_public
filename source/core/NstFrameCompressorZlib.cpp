@@ -593,22 +593,32 @@ namespace Nes {
 		}
 
 		void ZlibFrameDecompressor::FrameStep(Video::Output* videoOutput) {
+			// try to receive frame frome remote side
+			uint remoteBurstPhase;
+			bool hasFrame = HandleRemoteFrame(remoteBurstPhase);
+
+			// now render the frame
+			auto& ppu = m_machine.ppu;
+			auto& renderer = m_machine.renderer;
+
+			if (videoOutput && (hasFrame || m_lastDecompressId == INVALID_FRAME_ID))
+				renderer.Blit(*videoOutput, ppu.GetScreen(), remoteBurstPhase);
+		}
+
+		bool ZlibFrameDecompressor::HandleRemoteFrame(uint& remoteBurstPhase) {
 			auto eventRef = m_client.getFrameEvent();
 			if (!eventRef)
-				return;
+				return false;
 
 			auto& event = eventRef->event;
 			auto frameId = event.renderedFrameData.frameId;
 			if (m_lastDecompressId != INVALID_FRAME_ID && m_lastDecompressId >= frameId)
-				return;
+				return false;
 
-			auto& ppu = m_machine.ppu;
-			auto& renderer = m_machine.renderer;
-			uint remoteBurstPhase;
 			uint remoteUsePermaLowres;
 
 			if (!Decompress(event.renderedFrameData.frameData, event.renderedFrameData.frameSize, frameId, remoteBurstPhase, remoteUsePermaLowres))
-				return;
+				return false;
 
 			//check if host changed its frame resolution
 			if (remoteUsePermaLowres != this->downSample)
@@ -618,9 +628,7 @@ namespace Nes {
 				Api::Machine::eventCallback(Api::Machine::EVENT_REMOTE_LOWRES, remoteUsePermaLowres ? RESULT_OK : RESULT_ERR_GENERIC);
 			}
 
-			// now render the frame
-			if (videoOutput)
-				renderer.Blit(*videoOutput, ppu.GetScreen(), remoteBurstPhase);
+			return true;
 		}
 
 		bool ZlibFrameDecompressor::Decompress(const void* compressed, size_t compressedSize, uint64_t id, uint& burstPhase, uint& permaDownsample)

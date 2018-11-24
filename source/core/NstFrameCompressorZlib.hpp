@@ -96,6 +96,7 @@ namespace Nes {
 			virtual void FrameStep(Video::Output* videoOutput) override;
 			virtual bool OnRemoteEvent(const HQRemote::Event& event) override;
 		private:
+			bool HandleRemoteFrame(uint& burstPhase);
 			bool Decompress(const void* compressed, size_t compressedSize, uint64_t id, uint& burstPhase, uint& permaDownsample);
 
 			Machine& m_machine;
