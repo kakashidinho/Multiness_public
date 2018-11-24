@@ -52,18 +52,6 @@
 
 #define REMOTE_RCV_RATE_UPDATE_INTERVAL 2.0
 #define REMOTE_SND_RATE_UPDATE_INTERVAL 2.0
-#define REMOTE_DATA_RATE_INCREASE_INTERVAL 30.0
-#define MAX_REMOTE_DATA_RATE_INCREASE_ATTEMPTS 2
-#define MIN_REMOTE_DATA_RATE_REPORTS_TO_START_ADAPT_CLIENT_SIDE 5
-#define MIN_REMOTE_DATA_RATE_REPORTS_TO_START_ADAPT_SERVER_SIDE 5
-#define REMOTE_DATA_ADAPT_TO_LOWER_FPS_DECISION_FACTOR 1.0 / 5
-#define REMOTE_DATA_ADAPT_TO_HIGHER_FPS_DECISION_FACTOR 9.0 / 10
-#define REMOTE_DATA_SERVER_SIDE_ADAPT_TO_SLOW_NET_FACTOR 1.0 / 7
-#define REMOTE_DATA_SERVER_SIDE_ADAPT_TO_FAST_NET_FACTOR 9.0 / 10
-
-#define REMOTE_DATE_RATE_IS_SLOW(rcvRate, sndRate) (rcvRate < sndRate * 0.8f)
-
-#define REMOTE_DATA_RATE_COUNTERS_RESET_INTERVAL 20
 
 #define REMOTE_FRAME_BUNDLE 1
 
@@ -311,10 +299,7 @@ namespace Nes
 				this->lastSentInput = 0;
 				this->lastSentInputTime = 0;
 				this->lastRemoteDataRateUpdateTime = 0;
-				this->lastRemoteDataRateReducingTime = 0;
-				this->numberOfRemoteDataRateIncreaseAttempts = 0;
-				this->numRemoteDataRateReportsSlower = 0;
-				this->numRemoteDataRateReports = 0;
+				this->numBandwidthDetectBytes = 0;
 
 				ResetRemoteAudioBuffer();
 				EnsureCorrectRemoteSoundSettings();
@@ -435,10 +420,6 @@ namespace Nes
 
 			// reset timer
 			this->lastRemoteDataRateUpdateTime = 0;
-			this->lastRemoteDataRateReducingTime = 0;
-			this->numberOfRemoteDataRateIncreaseAttempts = 0;
-			this->numRemoteDataRateReportsSlower = 0;
-			this->numRemoteDataRateReports = 0;
 
 			//reset color use count table
 			ppu.ResetColorUseCountTable();
@@ -605,7 +586,7 @@ namespace Nes
 		void Machine::HandleRemoteEventsAsClient(Video::Output* videoOutput, Sound::Output* soundOutput) {
 			if (this->clientEngine->connected() == false) {
 				auto errorMsg = this->clientEngine->getConnectionInternalError();
-				if (errorMsg || this->clientEngine->timeSinceStart() > 30.0f || this->clientState != 0)
+				if (errorMsg || this->clientEngine->timeSinceStart() > 60.0f || this->clientState != 0)
 				{
 #ifdef DEBUG
 					HQRemote::Log("remote connection's error/timeout detected\n");
@@ -637,22 +618,16 @@ namespace Nes
 			if (this->clientState == 0) {
 				this->clientState = CLIENT_CONNECTED_STATE;
 
+				HQRemote::PlainEvent event;
+
+				// request server to sending bandwidth measurement data
+				event.event.type = Remote::REMOTE_BANDWITH_DETECT_START;
+				this->clientEngine->sendEvent(event);
+
 				//send client info to host
 				HQRemote::FrameEvent clientInfoEvent(this->clientInfo.size(), 0, HQRemote::ENDPOINT_NAME);
 				memcpy(clientInfoEvent.event.renderedFrameData.frameData, this->clientInfo.c_str(), this->clientInfo.size());
 				this->clientEngine->sendEvent(clientInfoEvent);
-
-				HQRemote::PlainEvent event;
-
-				// request server to enable adaptive frame size compression based on data receiving speed from client
-				// it is not enabled by default to allow compatibility with older client
-				event.event.type = Remote::REMOTE_ENABLE_ADAPTIVE_DATA_RATE;
-				this->clientEngine->sendEvent(event);
-
-				//tell host to send frames in specified interval
-				event.event.type = HQRemote::FRAME_INTERVAL;
-				event.event.frameInterval = DEFAULT_REMOTE_FRAME_INTERVAL;
-				this->clientEngine->sendEvent(event);
 
 				//tell host to reset remote's buttons
 				event.event.type = Remote::RESET_REMOTE_INPUT;
@@ -696,13 +671,17 @@ namespace Nes
 				}
 			}//update data rate
 
-			HandleGenericRemoteEventAsClient();
+			// consume as many events as possible
+			while (HandleGenericRemoteEventAsClient()) {
+			}
+
 			HandleRemoteFrameEventAsClient(videoOutput);
 			HandleRemoteAudioEventAsClient(soundOutput);
 		}
 
-		void Machine::HandleGenericRemoteEventAsClient() {
+		bool Machine::HandleGenericRemoteEventAsClient() {
 			const int numHandledEventsToStartRcvFrames = 4;
+
 			//handle generic event
 			auto eventRef = this->clientEngine->getEvent();
 			if (eventRef != nullptr)
@@ -710,6 +689,47 @@ namespace Nes
 				auto & event = eventRef->event;
 
 				switch (event.type) {
+				case Remote::REMOTE_BANDWITH_DETECT_START:
+				{
+					this->numBandwidthDetectBytes = 0;
+					this->bandwidthDetectStartTime = HQRemote::getTimeCheckPoint64();
+
+					HQRemote::Log("client received REMOTE_BANDWITH_DETECT_START\n");
+				}
+				break;
+				case Remote::REMOTE_BANDWITH_DETECT_DATA:
+				{
+					this->numBandwidthDetectBytes += event.renderedFrameData.frameSize;
+#if defined DEBUG || defined _DEBUG
+					HQRemote::Log("received total=%u REMOTE_BANDWITH_DETECT_DATA packet size=%u, speed=%.3f KB/s\n", this->numBandwidthDetectBytes, event.renderedFrameData.frameSize, this->clientEngine->getReceiveRate() / 1024);
+#endif
+				}
+				break;
+				case Remote::REMOTE_BANDWITH_DETECT_END:
+				{
+					// received bandwith detection end mark from host
+					auto curTime = HQRemote::getTimeCheckPoint64();
+					auto elapsed = HQRemote::getElapsedTime64(this->bandwidthDetectStartTime, curTime);
+
+					float rate = (float)(this->numBandwidthDetectBytes / elapsed);
+
+					if (rate <= 70 * 1024) // our receiving rate is less than 70 KB/s
+					{
+						this->clientEngine->setFrameInterval(SLOW_NET_REMOTE_FRAME_INTERVAL);
+					}
+					else {
+						this->clientEngine->setFrameInterval(DEFAULT_REMOTE_FRAME_INTERVAL);
+					}
+
+					// send our receiving rate to host
+					HQRemote::PlainEvent event;
+					event.event.type = Remote::REMOTE_BANDWITH_DETECT_RESULT;
+					event.event.floatValue = rate;
+					this->clientEngine->sendEvent(event);
+
+					HQRemote::Log("client detected bandwidth = %.3f KB/s by receiving %u bytes from server\n", rate / 1024, this->numBandwidthDetectBytes);
+				}
+					break;
 				case HQRemote::HOST_INFO:
 				{
 					assert(Core::Video::Screen::WIDTH == event.hostInfo.width);
@@ -765,77 +785,9 @@ namespace Nes
 				case HQRemote::MESSAGE_ACK:
 					HandleCommonEvent(event);
 					break;
-				case Remote::REMOTE_DATA_RATE: {
-					if (this->clientState == CLIENT_EXCHANGE_DATA_STATE) {
-						auto ourRate = this->clientEngine->getReceiveRate();
-						auto hostSendRate = event.floatValue;
-
-						if (this->lastRemoteDataRateReducingTime == 0 && this->numRemoteDataRateReports > REMOTE_DATA_RATE_COUNTERS_RESET_INTERVAL) {
-							// reset counters only when we are in fast data rate mode
-							this->numRemoteDataRateReports = 0;
-							this->numRemoteDataRateReportsSlower = 0;
-						}
-
-						if (REMOTE_DATE_RATE_IS_SLOW(ourRate, hostSendRate)) {
-							this->numRemoteDataRateReportsSlower ++;
-						}
-						this->numRemoteDataRateReports ++;
-
-						if (this->numRemoteDataRateReports < MIN_REMOTE_DATA_RATE_REPORTS_TO_START_ADAPT_CLIENT_SIDE)
-							break;
-
-						auto ratio = (double) this->numRemoteDataRateReportsSlower / this->numRemoteDataRateReports;
-
-#if defined _DEBUG || defined DEBUG
-						HQRemote::Log("client rcv slow reports: %zu, total reports: %zu. ratio=%.3f\n",
-									  this->numRemoteDataRateReportsSlower,
-									  this->numRemoteDataRateReports,
-									  ratio);
-#endif
-
-						auto currentTime = HQRemote::getTimeCheckPoint64();
-
-						// pending event to be sent to server
-						HQRemote::PlainEvent event;
-						event.event.type = HQRemote::FRAME_INTERVAL;
-
-						if (ratio >= REMOTE_DATA_ADAPT_TO_LOWER_FPS_DECISION_FACTOR) {
-							// our receiving rate is too low compare to host sending rate
-
-							// tell host to send frames in slower rate
-							if (this->lastRemoteDataRateReducingTime == 0) {
-								// inform host
-								event.event.frameInterval = SLOW_NET_REMOTE_FRAME_INTERVAL;
-								this->clientEngine->sendEvent(event);
-								this->clientEngine->setFrameInterval(
-										SLOW_NET_REMOTE_FRAME_INTERVAL);
-
-								this->lastRemoteDataRateReducingTime = currentTime;
-
-								HQRemote::Log("force host to use slower sending rate");
-							}
-						} else if (ratio <= REMOTE_DATA_ADAPT_TO_HIGHER_FPS_DECISION_FACTOR) {
-							// try to increase frame rate
-							auto elapsedSinceLastReduce = HQRemote::getElapsedTime64(this->lastRemoteDataRateReducingTime, currentTime);
-
-							if (this->lastRemoteDataRateReducingTime != 0
-								&& this->numberOfRemoteDataRateIncreaseAttempts < MAX_REMOTE_DATA_RATE_INCREASE_ATTEMPTS
-								&& elapsedSinceLastReduce >= REMOTE_DATA_RATE_INCREASE_INTERVAL) {
-								// restart counters so that the rate reduction can start early
-								this->lastRemoteDataRateReducingTime = 0;
-								this->numRemoteDataRateReportsSlower = this->numRemoteDataRateReports = 0;
-
-								this->numberOfRemoteDataRateIncreaseAttempts++;
-
-								event.event.frameInterval = DEFAULT_REMOTE_FRAME_INTERVAL;
-								this->clientEngine->sendEvent(event);
-								this->clientEngine->setFrameInterval(DEFAULT_REMOTE_FRAME_INTERVAL);
-
-								HQRemote::Log("attempt to tell host to use faster sending rate");
-							}
-
-						}
-					}
+				case Remote::REMOTE_DATA_RATE:
+				{
+					// ignore for now
 				}
 					break;
 				default:
@@ -844,6 +796,7 @@ namespace Nes
 					this->remoteFrameDecompressor->OnRemoteEvent(event);
 					break;
 				}
+
 			}//if (eventRef != nullptr)
 
 			if (this->clientState < CLIENT_EXCHANGE_DATA_STATE && this->clientState >= CLIENT_CONNECTED_STATE + numHandledEventsToStartRcvFrames)
@@ -852,9 +805,19 @@ namespace Nes
 				//we have all info needed from host. Now tell it to start sending frames
 				this->remoteFrameDecompressor->Start();
 
-				HQRemote::PlainEvent eventToHost(HQRemote::START_SEND_FRAME);
+				HQRemote::PlainEvent eventToHost;
+
+				//tell host to send frames in specified interval
+				eventToHost.event.type = HQRemote::FRAME_INTERVAL;
+				eventToHost.event.frameInterval = this->clientEngine->getFrameInterval();
+				this->clientEngine->sendEvent(eventToHost);
+
+				// tell host to start send frames
+				eventToHost.event.type = (HQRemote::START_SEND_FRAME);
 				this->clientEngine->sendEvent(eventToHost);
 			}
+
+			return eventRef != nullptr;
 		}
 
 		void Machine::HandleRemoteFrameEventAsClient(Video::Output* videoOutput) {
@@ -1109,19 +1072,58 @@ namespace Nes
 				this->lastRemoteDataRateUpdateTime = time;
 			}
 
-			HandleGenericRemoteEventAsServer();
+			// consume as many events as possible
+			while (HandleGenericRemoteEventAsServer()) {
+			}
 		}
 
-		void Machine::HandleGenericRemoteEventAsServer() {
+		bool Machine::HandleGenericRemoteEventAsServer() {
 			int numHandledEventsBeforeAcceptAudio = 3;
 			//retrieve event
 			auto eventRef = this->hostEngine->getEvent();
 			if (eventRef == nullptr)
-				return;
+				return false;
 
 			auto & event = eventRef->event;
 
 			switch (event.type) {
+			case Remote::REMOTE_BANDWITH_DETECT_START:
+			{
+				try {
+					this->hostEngine->sendEvent(HQRemote::PlainEvent(Remote::REMOTE_BANDWITH_DETECT_START));
+					HQRemote::Log("server sent REMOTE_BANDWITH_DETECT_START\n");
+
+					// send a data of 256 KB to client
+					for (int i = 0; i < 256; ++i) 
+					{
+						HQRemote::FrameEvent bandwidthDetectEvent(1024, 0, Remote::REMOTE_BANDWITH_DETECT_DATA);
+
+						this->hostEngine->sendEvent(bandwidthDetectEvent);
+					}
+
+					this->hostEngine->sendEvent(HQRemote::PlainEvent(Remote::REMOTE_BANDWITH_DETECT_END));
+					HQRemote::Log("server sent REMOTE_BANDWITH_DETECT_END\n");
+				}
+				catch (const std::exception&  e) {
+					HQRemote::LogErr("REMOTE_BANDWITH_DETECT_START failed with exception %s\n", e.what());
+				}
+			}
+			break;
+			case Remote::REMOTE_BANDWITH_DETECT_RESULT:
+			{
+				auto rate = event.floatValue;
+				HQRemote::Log("server detected bandwidth = %.3f KB/s\n", rate / 1024);
+
+
+				if (rate <= 200 * 1024) // client receiving rate is less than 200 KB/s
+				{
+					this->remoteFrameCompressor->AdaptToClientSlowRecvRate(rate, this->hostEngine->getSendRate());
+				}
+				else {
+					this->remoteFrameCompressor->AdaptToClientFastRecvRate(rate, this->hostEngine->getSendRate());
+				}
+			}
+			break;
 			case HQRemote::ENDPOINT_NAME://name of client
 			{
 				if (event.renderedFrameData.frameSize == 0)
@@ -1185,73 +1187,11 @@ namespace Nes
 				HandleCommonEvent(event);
 				break;
 			case Remote::REMOTE_DATA_RATE: {
-				if (this->clientState < CLIENT_EXCHANGE_DATA_STATE)
-					break;
-
-				auto currentTime = HQRemote::getTimeCheckPoint64();
-				auto clientRcvRate = event.floatValue;
-				auto ourSendRate = this->hostEngine->getSendRate();
-
-				if (this->lastRemoteDataRateReducingTime == 0 && this->numRemoteDataRateReports > REMOTE_DATA_RATE_COUNTERS_RESET_INTERVAL) {
-					// reset counters only when we are in fast data rate mode
-					this->numRemoteDataRateReports = 0;
-					this->numRemoteDataRateReportsSlower = 0;
-				}
-
-				if (REMOTE_DATE_RATE_IS_SLOW(clientRcvRate, ourSendRate)) {
-					this->numRemoteDataRateReportsSlower++;
-				}
-
-				this->numRemoteDataRateReports++;
-				if (this->numRemoteDataRateReports < MIN_REMOTE_DATA_RATE_REPORTS_TO_START_ADAPT_SERVER_SIDE)
-					break;
-
-				auto ratio = (double) this->numRemoteDataRateReportsSlower / this->numRemoteDataRateReports;
-
-#if defined _DEBUG || defined DEBUG
-				HQRemote::Log("client rcv slow reports: %u, total reports: %u. ratio=%.3f\n",
-							  (uint)this->numRemoteDataRateReportsSlower,
-							  (uint)this->numRemoteDataRateReports,
-							  ratio);
-#endif
-
-				if (ratio >= REMOTE_DATA_SERVER_SIDE_ADAPT_TO_SLOW_NET_FACTOR) {
-					if (this->lastRemoteDataRateReducingTime == 0) {
-						// try to reduce frame compression size budget since client's data receiving rate is too low
-						this->remoteFrameCompressor->AdaptToClientSlowRecvRate(clientRcvRate, ourSendRate);
-
-						this->lastRemoteDataRateReducingTime = currentTime;
-
-						HQRemote::Log("Adapt host to slow client receive rate\n");
-					}
-				} else if (ratio <= REMOTE_DATA_SERVER_SIDE_ADAPT_TO_FAST_NET_FACTOR)
-				{
-					// attempt to increase frame compression size budget
-					auto elapsedSinceLastReduce = HQRemote::getElapsedTime64(this->lastRemoteDataRateReducingTime, currentTime);
-					if (this->lastRemoteDataRateReducingTime != 0
-						&& this->numberOfRemoteDataRateIncreaseAttempts < MAX_REMOTE_DATA_RATE_INCREASE_ATTEMPTS
-						&& elapsedSinceLastReduce >= REMOTE_DATA_RATE_INCREASE_INTERVAL) {
-						// restart counters so that the rate reduction can start early
-						this->lastRemoteDataRateReducingTime = 0;
-						this->numRemoteDataRateReportsSlower = this->numRemoteDataRateReports = 0;
-
-						this->numberOfRemoteDataRateIncreaseAttempts++;
-
-						this->remoteFrameCompressor->AdaptToClientFastRecvRate(clientRcvRate, ourSendRate);
-
-						HQRemote::Log("Adapt host to fast client receive rate\n");
-					}
-				}
+				// ignore for now
 			}
 				break;
 			case Remote::REMOTE_ENABLE_ADAPTIVE_DATA_RATE:
-				// reset timer
-				this->lastRemoteDataRateReducingTime = 0;
-				this->numberOfRemoteDataRateIncreaseAttempts = 0;
-				this->numRemoteDataRateReportsSlower = 0;
-				this->numRemoteDataRateReports = 0;
-
-				this->remoteFrameCompressor->OnRemoteEvent(event);
+				// deprecated. ignore
 
 				break;
 			default:
@@ -1269,6 +1209,8 @@ namespace Nes
 				HQRemote::PlainEvent eventToClient(HQRemote::START_SEND_FRAME);
 				this->hostEngine->sendEvent(eventToClient);
 			}
+
+			return true;
 		}
 
 		std::shared_ptr<HQRemote::IData> Machine::CaptureAudioAsClient()
@@ -1837,7 +1779,7 @@ namespace Nes
 						memcpy(inputEvent.event.customData, &remoteInput, sizeof(remoteInput));
 						this->clientEngine->sendEventUnreliable(inputEvent);
 
-#if defined DEBUG || defined _DEBUG
+#if (defined DEBUG || defined _DEBUG)
 						std::stringstream ss;
 						ss << "Sent input (" << remoteInput.id << "): " << remoteInput.buttons << std::endl;
 #	ifdef WIN32

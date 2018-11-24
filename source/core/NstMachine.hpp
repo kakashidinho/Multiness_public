@@ -163,12 +163,12 @@ namespace Nes
 			void UseFrameCompressorType(int type);
 			void UseFrameDecompressorType(int type);
 			void HandleRemoteEventsAsClient(Video::Output* videoOutput, Sound::Output* soundOutput);
-			void HandleGenericRemoteEventAsClient();
+			bool HandleGenericRemoteEventAsClient();
 			void HandleRemoteFrameEventAsClient(Video::Output* videoOutput);
 			void HandleRemoteAudioEventAsClient(Sound::Output* soundOutput);
 
 			void HandleRemoteEventsAsServer();
-			void HandleGenericRemoteEventAsServer();
+			bool HandleGenericRemoteEventAsServer();
 
 			void HandleCommonEvent(const HQRemote::Event& event);
 
@@ -208,11 +208,9 @@ namespace Nes
 			int clientState;
 			std::string hostName;//name of remote control's host
 			std::string clientInfo;//name of remote control's client
-			size_t numRemoteDataRateReportsSlower; // number of data reports indicating the client receiving side is slower
-			size_t numRemoteDataRateReports;
-			size_t numberOfRemoteDataRateIncreaseAttempts;
+			uint32_t numBandwidthDetectBytes;
+			uint64_t bandwidthDetectStartTime;
 			uint64_t lastRemoteDataRateUpdateTime;
-			uint64_t lastRemoteDataRateReducingTime;
 			uint64_t lastSentInputId;
 			uint64_t lastSentInputTime;
 			uint lastSentInput;
