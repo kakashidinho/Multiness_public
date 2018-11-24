@@ -55,6 +55,8 @@
 
 #define REMOTE_FRAME_BUNDLE 1
 
+#define SIMULATE_SLOW_DATA_RATE 0
+
 #define REMOTE_AUDIO_SAMPLE_RATE 48000
 #define REMOTE_AUDIO_STEREO_CHANNELS false
 
@@ -711,7 +713,11 @@ namespace Nes
 					auto curTime = HQRemote::getTimeCheckPoint64();
 					auto elapsed = HQRemote::getElapsedTime64(this->bandwidthDetectStartTime, curTime);
 
+#if SIMULATE_SLOW_DATA_RATE
+					float rate = SIMULATE_SLOW_DATA_RATE;
+#else
 					float rate = (float)(this->numBandwidthDetectBytes / elapsed);
+#endif
 
 					if (rate <= 70 * 1024) // our receiving rate is less than 70 KB/s
 					{
