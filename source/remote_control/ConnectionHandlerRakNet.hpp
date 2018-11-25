@@ -32,6 +32,7 @@
 #include "NatPunchthroughClient.h"
 #include "MessageIdentifiers.h"
 #include "BitStream.h"
+#include "UDPProxyClient.h"
 
 #include "../../third-party/RemoteController/ConnectionHandler.h"
 
@@ -45,146 +46,171 @@
 
 namespace Nes {
 	namespace Remote {
-		class ConnectionHandlerRakNet: public HQRemote::IConnectionHandler {
+		class ConnectionHandlerRakNet: public HQRemote::IConnectionHandler, protected RakNet::UDPProxyClientResultHandler  {
 		public:
 			static const char *GUID_ALREADY_EXISTS_ERR_INTERNAL;
-		
+
 			typedef std::function<void(const ConnectionHandlerRakNet* handler)> MasterServerConnectedCallback;
-		
+
 			//pass <myGUID> = NULL to let internal RakNet system auto generate the GUID
 			ConnectionHandlerRakNet(const RakNet::RakNetGUID* myGUID,
-									const char* natPunchServerAddress,
-									int natPunchServerPort,
+									const char* natPunchServerAddress, int natPunchServerPort,
+									const char* proxyServerAddress, int proxyServerPort,
 									int preferredListenPort,
 									unsigned int maxConnections,
 									bool doPortForwarding,
 									MasterServerConnectedCallback callback = nullptr);
 			~ConnectionHandlerRakNet();
-			
+
 			RakNet::RakNetGUID getGUID() const;
 
 			unsigned short getLanPort() const; // only valid after MasterServerConnectedCallback is invoked
-			
+
 			//IConnectionHandler implementation
 			virtual bool connected() const override;
 
 			static uint64_t getIdForThisApp();
-			
-			MasterServerConnectedCallback serverConnectedCallback;//this is called when connection to central server finished successfully 
+
+			MasterServerConnectedCallback serverConnectedCallback;//this is called when connection to central server finished successfully
 		private:
 			struct NatPunchthroughDebugInterface_Log : public RakNet::NatPunchthroughDebugInterface
 			{
 				virtual void OnClientMessage(const char *msg) override;
 			};
-			
+
 			using IConnectionHandler::onConnected;
-			
+
 			virtual bool startImpl() override;
 			virtual void stopImpl() override;
-			
+
 			virtual HQRemote::_ssize_t sendRawDataImpl(const void* data, size_t size) override;
 			virtual void flushRawDataImpl() override;
 			virtual HQRemote::_ssize_t sendRawDataUnreliableImpl(const void* data, size_t size) override;
-			
+
 			void reconnectToNatServerAsync();
-			
+
 			void onConnected(RakNet::SystemAddress connectedAddress, RakNet::RakNetGUID guid, bool connected);
-			
+
 			RakNet::ConnectionAttemptResult connectToNatServer();
 			bool tryReconnectToNatServer();
-			
+
+			RakNet::ConnectionAttemptResult tryConnectToProxyServer();
+
 			void pollingMulticastData();
 			void pollingProc(RakNet::RakPeerInterface* peer);
-			
+
 			static void pollingCallback(RakNet::RakPeerInterface* peer, void* userData);
-			
+
 			//port forwarding
 			unsigned short getAssignedPortFromRakNetSocket() const;
 			void doPortForwardingAsync();
 			void removePortForwardingAsync();
-			
+
 			class AsyncData;
 			AsyncData* m_portForwardAsyncData;
-			
+
 			std::atomic<uint32_t> m_natServerRemainReconnectionAttempts;
-			
+
 			HQRemote::socket_t m_multicastSocket;
-			
+
 			DataStructures::List<RakNet::RakNetSocket2* > m_raknetSockets;
 			unsigned short m_portToForward;
 			const bool m_doPortForwarding;
 		protected:
 			bool restart();
-			
+
 			virtual void stopExImpl() {}//called at the end of stopImpl()
-			
+
 			virtual void additionalUpdateProc();
 			virtual void processPacket(RakNet::Packet* packet);
 			virtual void onNatServerConnected(bool connected);
 			virtual void onPeerConnected(RakNet::SystemAddress connectedAddress, RakNet::RakNetGUID guid, bool connected);
 			virtual void onPeerUnreachable(RakNet::SystemAddress connectedAddress, RakNet::RakNetGUID guid);
-		
+
+			// implements UDPProxyClientResultHandler
+			virtual void OnForwardingSuccess(const char *proxyIPAddress, unsigned short proxyPort,
+											 RakNet::SystemAddress proxyCoordinator,
+											 RakNet::SystemAddress sourceAddress,
+											 RakNet::SystemAddress targetAddress,
+											 RakNet::RakNetGUID targetGuid,
+											 RakNet::UDPProxyClient *proxyClientPlugin) override;
+			virtual void OnForwardingNotification(const char *proxyIPAddress, unsigned short proxyPort,
+												  RakNet::SystemAddress proxyCoordinator,
+												  RakNet::SystemAddress sourceAddress, RakNet::SystemAddress targetAddress,
+												  RakNet::RakNetGUID targetGuid, RakNet::UDPProxyClient *proxyClientPlugin) override;
+			virtual void OnNoServersOnline(RakNet::SystemAddress proxyCoordinator, RakNet::SystemAddress sourceAddress, RakNet::SystemAddress targetAddress, RakNet::RakNetGUID targetGuid, RakNet::UDPProxyClient *proxyClientPlugin) override;
+			virtual void OnRecipientNotConnected(RakNet::SystemAddress proxyCoordinator, RakNet::SystemAddress sourceAddress, RakNet::SystemAddress targetAddress, RakNet::RakNetGUID targetGuid, RakNet::UDPProxyClient *proxyClientPlugin) override;
+			virtual void OnAllServersBusy(RakNet::SystemAddress proxyCoordinator, RakNet::SystemAddress sourceAddress, RakNet::SystemAddress targetAddress, RakNet::RakNetGUID targetGuid, RakNet::UDPProxyClient *proxyClientPlugin) override;
+			virtual void OnForwardingInProgress(const char *proxyIPAddress, unsigned short proxyPort, RakNet::SystemAddress proxyCoordinator, RakNet::SystemAddress sourceAddress, RakNet::SystemAddress targetAddress, RakNet::RakNetGUID targetGuid, RakNet::UDPProxyClient *proxyClientPlugin) override;
+
+
 			bool attemptNatPunchthrough(const RakNet::RakNetGUID& remoteGUID);
 			bool acceptIncomingConnection();
 
 			bool pingMulticastGroup(bool hasSendingLock);
-			
+
 			void setActiveConnection(RakNet::SystemAddress address);//set a connection as main connection for sending & receving data
-			
+
 			std::atomic<bool> m_natServerConnected;
 			std::atomic<bool> m_connected;
 			std::atomic<bool> m_sendingNATPunchthroughRequest;
-			
+
 			RakNet::RakPeerInterface* m_rakPeer;
 			RakNet::SystemAddress m_natPunchServerAddress;
 			RakNet::SystemAddress m_remotePeerAddress;
 			RakNet::NatPunchthroughClient m_natPunchthroughClient;
 			NatPunchthroughDebugInterface_Log m_natPunchthroughClientLogger;
-			
+
+			RakNet::SystemAddress m_proxyCoordinatorAddress;
+			RakNet::UDPProxyClient m_proxyClient;
+
 			std::mutex m_sendingLock;
 			std::mutex m_multicastLock;
-			
+
 			RakNet::BitStream m_reliableBuffer;
 			RakNet::BitStream m_unreliableBuffer;
-			
+
 			unsigned int m_maxConnections;
 			int m_preferredListenPort;
 		};
-		
+
 		class ConnectionHandlerRakNetServer: public ConnectionHandlerRakNet {
 		public:
 			typedef std::function<std::string (const ConnectionHandlerRakNetServer*)> PublicServerMetaDataGenerator;
 
 			ConnectionHandlerRakNetServer(const RakNet::RakNetGUID* myGUID,
 										  const char* natPunchServerAddress, int natPunchServerPort,
+										  const char* proxyServerAddress, int proxyServerPort,
 										  MasterServerConnectedCallback callback = nullptr);
 
 			ConnectionHandlerRakNetServer(const RakNet::RakNetGUID* myGUID,
 										  const char* natPunchServerAddress, int natPunchServerPort,
+										  const char* proxyServerAddress, int proxyServerPort,
 										  PublicServerMetaDataGenerator publicServerMetaGenerator = nullptr, // if this is not null, the server will be made public with returned meta data from this callback
 										  MasterServerConnectedCallback callback = nullptr);
 
 			ConnectionHandlerRakNetServer(const RakNet::RakNetGUID* myGUID,
-										  const char* natPunchServerAddress, int natPunchServerPort, 
+										  const char* natPunchServerAddress, int natPunchServerPort,
+										  const char* proxyServerAddress, int proxyServerPort,
 										  uint64_t fixedInvitationKey,
 										  PublicServerMetaDataGenerator publicServerMetaGenerator = nullptr, // if this is not null, the server will be made public with returned meta data from this callback
 										  MasterServerConnectedCallback callback = nullptr);
-			
+
 			uint64_t getInvitationKey() const { return m_invitationKey; }
 			void createNewInvitation();//this will kick current connected player if any
 
 			static uint64_t generateInvitationKey();
 		private:
 			virtual void stopExImpl() override;
-			
+
 			void doRestart();
-			
+
 			virtual void onNatServerConnected(bool connected) override;
 			virtual void onPeerConnected(RakNet::SystemAddress connectedAddress, RakNet::RakNetGUID guid, bool connected) override;
-			
+
 			virtual void additionalUpdateProc() override;
 			virtual void processPacket(RakNet::Packet* packet) override;
-			
+
 			uint64_t m_reconnectionWaitStartTime;
 			uint64_t m_invitationKey;
 
@@ -192,44 +218,61 @@ namespace Nes {
 			bool m_dontWait;
 			bool m_autoGenKey;//key is auto generated every time a new session is created
 		};
-		
+
 		class ConnectionHandlerRakNetClient: public ConnectionHandlerRakNet {
 		public:
 			typedef std::function<void(const ConnectionHandlerRakNetClient* handler, bool connectOk)> ConnectivityResultCallback;
 			typedef std::function<void(const ConnectionHandlerRakNetClient* handler)> OnStopCallback;
 
 			ConnectionHandlerRakNetClient(const RakNet::RakNetGUID* myGUID,
-										  const char* natPunchServerAddress,
-										  int natPunchServerPort,
+										  const char* natPunchServerAddress, int natPunchServerPort,
+										  const char* proxyServerAddress, int proxyServerPort,
 										  const RakNet::RakNetGUID& remoteGUID,
 										  std::string&& remoteLanIp, // can be used when the remote side and local side are in the same network
 										  unsigned short remoteLanPort,
 										  uint64_t remoteInvitationKey,
 										  bool testConnectivityOnly = false,
 										  MasterServerConnectedCallback callback = nullptr);
-					
+
 			RakNet::RakNetGUID getRemoteGUID() const { return m_remoteGUID; }
+			bool isConnectedThroughProxy() const;
+
 			ConnectionHandlerRakNetClient& setTestingConnectivityCallback(ConnectivityResultCallback callback); // must be called before start()
 
 			ConnectionHandlerRakNetClient& setOnStopCallback(OnStopCallback callback); // must be called before start()
 		protected:
+			// implements ConnectionHandlerRakNet
 			virtual void stopExImpl() override;
-			
+
 			virtual void onNatServerConnected(bool connected) override;
 			virtual void onPeerConnected(RakNet::SystemAddress connectedAddress, RakNet::RakNetGUID guid, bool connected) override;
 			virtual void onPeerUnreachable(RakNet::SystemAddress connectedAddress, RakNet::RakNetGUID guid) override;
-			
+
 			virtual void processPacket(RakNet::Packet* packet) override;
-			
+
+			// implements UDPProxyClientResultHandler
+			virtual void OnForwardingSuccess(const char *proxyIPAddress, unsigned short proxyPort,
+											 RakNet::SystemAddress proxyCoordinator,
+											 RakNet::SystemAddress sourceAddress,
+											 RakNet::SystemAddress targetAddress,
+											 RakNet::RakNetGUID targetGuid,
+											 RakNet::UDPProxyClient *proxyClientPlugin) override;
+			virtual void OnNoServersOnline(RakNet::SystemAddress proxyCoordinator, RakNet::SystemAddress sourceAddress, RakNet::SystemAddress targetAddress, RakNet::RakNetGUID targetGuid, RakNet::UDPProxyClient *proxyClientPlugin) override;
+			virtual void OnRecipientNotConnected(RakNet::SystemAddress proxyCoordinator, RakNet::SystemAddress sourceAddress, RakNet::SystemAddress targetAddress, RakNet::RakNetGUID targetGuid, RakNet::UDPProxyClient *proxyClientPlugin) override;
+			virtual void OnAllServersBusy(RakNet::SystemAddress proxyCoordinator, RakNet::SystemAddress sourceAddress, RakNet::SystemAddress targetAddress, RakNet::RakNetGUID targetGuid, RakNet::UDPProxyClient *proxyClientPlugin) override;
+
+			void tryLanConnection();
+			void tryRelayConnection(bool hasSendingLock);
 			bool tryReconnect(RakNet::SystemAddress address);
 			bool tryDiscoverLanServer(bool hasSendingLock);
-			
+
 			std::atomic<uint32_t> m_remainReconnectionAttempts;
-			
+
 			const RakNet::RakNetGUID m_remoteGUID;
 			std::string m_remoteLanIpString;
 			RakNet::SystemAddress m_remoteLanAddress;
 			unsigned short m_remoteLanPort;
+			RakNet::SystemAddress m_remoteProxyAddress;
 			uint64_t m_remoteInvitationKey;
 			bool m_tryConnectToLanIp;
 			const bool m_testOnly;

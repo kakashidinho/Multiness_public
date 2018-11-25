@@ -477,6 +477,10 @@ namespace  Nes {
 	std::shared_ptr<HQRemote::IConnectionHandler> NesSystemWrapper::GetRemoteControllerHostConnHandler() {
 		return Api::Machine(m_emulator).GetRemoteControllerHostConnHandler();
 	}
+
+	std::shared_ptr<HQRemote::IConnectionHandler> NesSystemWrapper::GetRemoteControllerClientConnHandler() {
+		return Api::Machine(m_emulator).GetRemoteControllerClientConnHandler();
+	}
 	
 	void NesSystemWrapper::DisableRemoteController(uint32_t idx)
 	{

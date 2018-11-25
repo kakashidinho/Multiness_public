@@ -66,8 +66,17 @@
 using namespace Nes;
 
 // TODO: change your NAT server address here, since this server could be closed at anytime
+#ifdef NAT_SERVER_ADDRESS
+#define VALUE_TO_STRING(x) #x
+#define VALUE(x) VALUE_TO_STRING(x)
+static const char NAT_SERVER[] = VALUE(NAT_SERVER_ADDRESS); // "192.168.2.112";
+#else
 static const char NAT_SERVER[] = "125.212.218.120";
+#endif
 static const int NAT_SERVER_PORT = 61111;
+
+static const char* PROXY_SERVER = nullptr; // use your own relay server
+static const int PROXY_SERVER_PORT = 0;
 
 static const char GET_SETTINGS_CLASS_METHOD_NAME[] = "getSettingsClass";
 static const char RUN_ON_MAINTHREAD_METHOD_NAME[] = "runOnMainThread";
@@ -945,9 +954,14 @@ extern "C" {
 		env->ReleaseStringUTFChars(ip, cip);
 		if (cname)
 			env->ReleaseStringUTFChars(clientName, cname);
-		
-		if (re)
+
+		if (re) {
+			auto connHandler = system->GetRemoteControllerClientConnHandler();
+			if (connHandler)
+				connHandler->setTag(CONN_HANDLER_TYPE_LAN_CLIENT);
+
 			system->EnableAudioInput(true);
+		}
 		
 		return re;
 	}
@@ -972,8 +986,8 @@ extern "C" {
 		cclientGuid = guidFromJString(env, clientGUID);
 		
 		auto connHandler = std::make_shared<Remote::ConnectionHandlerRakNetClient>(&cclientGuid,
-																				   NAT_SERVER,
-																				   NAT_SERVER_PORT,
+																				   NAT_SERVER, NAT_SERVER_PORT,
+																				   PROXY_SERVER, PROXY_SERVER_PORT,
 																				   cremoteGuid,
 																				   std::move(cremoteLanIp),
 																				   cremoteLanPort,
@@ -985,7 +999,8 @@ extern "C" {
 																					   
 																					   ClientAboutToConnectToRemote(invite_id_ref->c_str(), remote_guid, context);
 																				   });
-		
+
+		connHandler->setTag(CONN_HANDLER_TYPE_INTERNET_CLIENT);
 		
 		env->ReleaseStringUTFChars(invite_id, cinvite_id);
 		env->ReleaseStringUTFChars(invite_data, cinvite_data);
@@ -1022,8 +1037,8 @@ extern "C" {
 		cclientGuid = guidFromJString(env, clientGUID);
 
 		auto connHandler = new Remote::ConnectionHandlerRakNetClient(&cclientGuid,
-																	   NAT_SERVER,
-																	   NAT_SERVER_PORT,
+																	   NAT_SERVER, NAT_SERVER_PORT,
+																	   PROXY_SERVER, PROXY_SERVER_PORT,
 																	   cremoteGuid,
 																	   std::move(cremoteLanIp),
 																	   cremoteLanPort,
@@ -1066,6 +1081,20 @@ extern "C" {
 			clientTestHandler->stop();
 			delete clientTestHandler;
 		}
+	}
+
+	JNIEXPORT jboolean JNICALL
+	Java_com_hqgame_networknes_GameSurfaceView_isRemoteConntectionViaProxyNative(JNIEnv *env, jobject thiz, jlong nativePtr) {
+		auto system = (NesSystem *) nativePtr;
+
+		bool usedProxy = false;
+		auto connHandler = system->GetRemoteControllerClientConnHandler();
+		if (connHandler && connHandler->getTag() == CONN_HANDLER_TYPE_INTERNET_CLIENT) {
+			auto connHandlerClient = static_cast<Remote::ConnectionHandlerRakNetClient*>(connHandler.get());
+			usedProxy = connHandlerClient->isConnectedThroughProxy();
+		}
+
+		return usedProxy ? JNI_TRUE : JNI_FALSE;
 	}
 	
 	JNIEXPORT void JNICALL
@@ -1134,8 +1163,8 @@ extern "C" {
 		}
 		
 		auto connHandler = std::make_shared<Remote::ConnectionHandlerRakNetServer>(&chostGUID,
-																				   NAT_SERVER,
-																				   NAT_SERVER_PORT,
+																				   NAT_SERVER, NAT_SERVER_PORT,
+																				   PROXY_SERVER, PROXY_SERVER_PORT,
 																				   publicServerMetaDataGenerator,
 																				   [context](const Remote::ConnectionHandlerRakNet* handler)
 																				   {

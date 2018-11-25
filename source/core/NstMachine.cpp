@@ -1034,6 +1034,12 @@ namespace Nes
 			return nullptr;
 		}
 
+		std::shared_ptr<HQRemote::IConnectionHandler> Machine::GetRemoteControllerClientConnHandler() {
+			if (clientEngine)
+				return clientEngine->getConnHandler();
+			return nullptr;
+		}
+
 		void Machine::DisableRemoteController(uint idx)
 		{
 			//TODO: support more than 1 remote controller

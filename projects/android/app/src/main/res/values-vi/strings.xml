@@ -163,6 +163,7 @@
     <string name="lobby_page_title">Danh sách Online Servers</string>
     <string name="new_feature_title">Tính năng mới</string>
     <string name="lobby_feature_msg">Internet Multiplayer hiện đã cho phép người chơi tạo phòng online công khai, ai cũng tìm được và có thể tham gia cùng.</string>
+    <string name="connected_via_proxy">Hệ thống phát hiện bạn chỉ có thể kết nối với người chơi bên kia thông qua Relay Server thay vì p2p. Băng thông đường truyền có thể sẽ bị giới hạn.</string>
 
     <!--
     <string name="appwarp_connect_error_msg">Failed to connect to Game Server using Google Account. Error code=%1$d. Please try again later.</string>

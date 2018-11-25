@@ -1235,16 +1235,40 @@ public class GameSurfaceView extends GLSurfaceView {
         switch (eventCode)
         {
             case EVENT_REMOTE_CONNECTED://Connected to server, can have optional "value"
+            {
+                final boolean connectedViaProxy = javaHandle.isRemoteConntectionViaProxyNative(sNativeHandle);
+
                 javaHandle.aggregateMultiplayerTimeAndResetTimer(System.nanoTime(), false);//aggregate multiplayer duration
 
                 javaHandle.dismissProgressDialog();
-                if (value != null)
+                if (value != null) {
                     javaHandle.post(new Runnable() {
                         @Override
                         public void run() {
                             javaHandle.showToast(javaHandle.getContext().getString(R.string.connected_to) + " " + value, Toast.LENGTH_LONG);
                         }
                     });
+                }
+
+                if (connectedViaProxy) {
+                    javaHandle.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            // warn user that we are connected via proxy server, so expect low bandwidth
+                            Activity activity = javaHandle.getActivity();
+                            if (activity != null)
+                                Utils.alertDialog(activity, null, activity.getString(R.string.connected_via_proxy),
+                                        new Runnable() {
+                                            @Override
+                                            public void run() {
+
+                                            }
+                                        }
+                                );
+                        }
+                    });
+                }
+            }
                 break;
             case EVENT_REMOTE_CONNECTION_INTERNAL_ERROR:
                 javaHandle.aggregateMultiplayerTimeAndResetTimer(System.nanoTime(), true);//calculate multiplayer duration and reset timer
@@ -2020,6 +2044,7 @@ public class GameSurfaceView extends GLSurfaceView {
     private native boolean loadAndStartGameNative(long nativeHandle, String path);
     private native boolean loadRemoteNative(long nativeHandle, String ip, int port, String clientName);
     private native boolean loadRemoteInternetNative(long nativeHandle, String invite_id, String invite_data, String clientGUID, String clientName, int context);
+    private native boolean isRemoteConntectionViaProxyNative(long nativeHandle);
     private native void resetGameNative(long nativeHandle);
     private native void shutdownGameNative(long nativeHandle);
     private native boolean enableRemoteControllerNative(long nativeHandle, int port, String hostName, @Nullable String hostIpBound);

@@ -173,7 +173,7 @@
     <string name="lobby_page_title">Available Public Servers</string>
     <string name="new_feature_title">New feature</string>
     <string name="lobby_feature_msg">Internet Multiplayer now allows you to host a public game that anyone can see and join.</string>
-
+    <string name="connected_via_proxy">The system detected that you are only able to connect to remote player via Relay Server instead of direct p2p. You may experience limited bandwidth.</string>
 
     <!--
     <string name="appwarp_connect_error_msg">Failed to connect to Game Server using Google Account. Error code=%1$d. Please try again later.</string>

@@ -117,6 +117,7 @@ namespace Nes
 
 			//get connection handler which was passed to EnableRemoteController()
 			std::shared_ptr<HQRemote::IConnectionHandler> GetRemoteControllerHostConnHandler();
+			std::shared_ptr<HQRemote::IConnectionHandler> GetRemoteControllerClientConnHandler();
 
 			void DisableRemoteController(uint idx);
 			void DisableRemoteControllers();

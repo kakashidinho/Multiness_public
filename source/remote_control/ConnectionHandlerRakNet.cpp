@@ -34,6 +34,7 @@
 
 #include <stdlib.h>
 #include <assert.h>
+#include <sstream>
 
 #ifdef WIN32
 #	include <windows.h>
@@ -70,10 +71,13 @@ typedef int socklen_t;
 // it will return ID_ALREADY_CONNECTED
 #define USE_NAT_SERVER_ACCEPT_SYSTEM 0
 
+#define SKIP_LAN_CONNECTION 0
+
 namespace Nes {
 	namespace Remote {
 		static const uint64_t THIS_GAME_ID = 0;
 
+		static const uint32_t DEFAULT_RELAY_ATTEMPT_TIMEOUT_MS = 7000;
 		static const unsigned short DEFAULT_SERVER_PORT = 62989;
 		static const unsigned short DEFAULT_MAX_INCOMING_CONNECTIONS = 100;
 		
@@ -134,7 +138,41 @@ namespace Nes {
 			return ntohll(src);
 		}
 #endif
-		
+
+		static std::ostream& operator << (std::ostream& os, const RakNet::SystemAddress& address) {
+			char addressStr[256];
+			address.ToString(true, addressStr);
+
+			return os << addressStr;
+		}
+
+		static std::ostream& operator << (std::ostream& os, const RakNet::RakNetGUID& guid) {
+			char guid_str[128];
+			guid.ToString(guid_str);
+
+			return os << guid_str;
+		}
+
+		struct LogStream {
+			~LogStream() {
+				HQRemote::Log("%s", m_ss.str().c_str());
+			}
+
+			template <class T>
+			LogStream& operator << (const T& o) {
+				m_ss << o;
+				return *this;
+			}
+
+			template <class T>
+			LogStream& operator << (const T* o) {
+				m_ss << o;
+				return *this;
+			}
+		private:
+			std::ostringstream m_ss;
+		};
+
 		/*----- MyRakPeer -----*/
 		class MyRakPeer: public RakNet::RakPeer {
 		public:
@@ -144,25 +182,25 @@ namespace Nes {
 				{
 					this->myGuid = *_myGUID;
 				}
-				
+
 				char guid_str[128];
 				this->myGuid.ToString(guid_str);
-				
+
 				HQRemote::Log("RakPeer created with guid: %s\n", guid_str);
 			}
 		};
-		
+
 		/*---------   ConnectionHandlerRakNet -------*/
 		const char *ConnectionHandlerRakNet::GUID_ALREADY_EXISTS_ERR_INTERNAL = "guid_exist";
-		
+
 		class ConnectionHandlerRakNet::AsyncData{
 		public:
 			ConnectionHandlerRakNet* ref;
 		};
-		
+
 		ConnectionHandlerRakNet::ConnectionHandlerRakNet(const RakNet::RakNetGUID* myGUID,
-														 const char* natPunchServerAddressStr,
-														 int natPunchServerPort,
+														 const char* natPunchServerAddressStr, int natPunchServerPort,
+														 const char* proxyServerAddress, int proxyServerPort,
 														 int preferredListenPort,
 														 unsigned int maxConnections,
 														 bool doPortForwarding,
@@ -181,28 +219,36 @@ namespace Nes {
 		m_portToForward(0)
 		{
 			std::lock_guard<std::mutex> lg(g_globalLock);
-			
+
 			m_rakPeer = new MyRakPeer(myGUID);
 			m_rakPeer->AttachPlugin(&m_natPunchthroughClient);
-	
+
 			auto natConfig = m_natPunchthroughClient.GetPunchthroughConfiguration();
 			natConfig->MAX_PREDICTIVE_PORT_RANGE = 2;
 #if defined DEBUG || defined _DEBUG
 			m_natPunchthroughClient.SetDebugInterface(&m_natPunchthroughClientLogger);
 #endif
+
+			if (proxyServerAddress && proxyServerPort) {
+				m_proxyCoordinatorAddress = RakNet::SystemAddress(proxyServerAddress,
+																  proxyServerPort);
+
+				m_proxyClient.SetResultHandler(this);
+				m_rakPeer->AttachPlugin(&m_proxyClient);
+			}
 		}
-		
+
 		ConnectionHandlerRakNet::~ConnectionHandlerRakNet()
 		{
 			std::lock_guard<std::mutex> lg(g_globalLock);
-			
+
 			delete m_rakPeer;
 		}
 
 		uint64_t ConnectionHandlerRakNet::getIdForThisApp() {
 			return THIS_GAME_ID;
 		}
-		
+
 		RakNet::RakNetGUID ConnectionHandlerRakNet::getGUID() const {
 			return m_rakPeer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS);
 		}
@@ -210,72 +256,72 @@ namespace Nes {
 		unsigned short ConnectionHandlerRakNet::getLanPort() const {
 			return getAssignedPortFromRakNetSocket();
 		}
-		
+
 		//IConnectionHandler implementation
 		bool ConnectionHandlerRakNet::connected() const
 		{
 			return m_connected.load(std::memory_order_relaxed);
 		}
-				
+
 		bool ConnectionHandlerRakNet::startImpl()
 		{
 			//create multicast socket
 			{
 				m_multicastSocket = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
-				
+
 				int re;
-				
+
 				int yes = 1;
-				
+
 				//bind address
 				struct sockaddr_in addr = {0};
 				addr.sin_family = AF_INET;
 				addr.sin_addr.s_addr = _INADDR_ANY;
 				addr.sin_port = htons(MULTICAST_PORT);
-				
+
 				re = setsockopt(m_multicastSocket, SOL_SOCKET, SO_REUSEADDR, (const char*)&yes,sizeof(yes));
 				HQRemote::Log("* Multicast setsockopt(SO_REUSEADDR) returned %d\n", re);
-				
-				
+
+
 				re = bind(m_multicastSocket, (struct sockaddr *)&addr, sizeof(addr));
 				HQRemote::Log("* Multicast bind() returned %d\n", re);
-				
+
 				//join multicast group with all available network interfaces
 				struct ip_mreq mreq;
 				mreq.imr_multiaddr.s_addr=inet_addr(MULTICAST_ADDRESS);
-				
+
 				std::vector<struct in_addr> interface_addresses;
 				HQRemote::SocketServerHandler::platformGetLocalAddressesForMulticast(interface_addresses);
-				
+
 				for (auto &_interface : interface_addresses) {
 					mreq.imr_interface = _interface;
-					
+
 					re = setsockopt(m_multicastSocket, IPPROTO_IP, IP_ADD_MEMBERSHIP, (const char*)&mreq, sizeof(mreq));
-					
+
 					char addr_buffer[20];
 					if (HQRemote::SocketConnectionHandler::platformIpv4AddrToString(&_interface, addr_buffer, sizeof(addr_buffer)) != NULL)
 						HQRemote::Log("Multicast setsockopt(IP_ADD_MEMBERSHIP, %s) returned %d\n", addr_buffer, re);
 					else
 						HQRemote::Log("Multicast setsockopt(IP_ADD_MEMBERSHIP) returned %d\n", re);
 				}
-				
+
 				//disable loopback
 				char loopback = 0;
 				re = setsockopt(m_multicastSocket, IPPROTO_IP, IP_MULTICAST_LOOP, (const char*)&loopback, sizeof(loopback));
 				HQRemote::Log("* Multicast setsockopt(IP_MULTICAST_LOOP) returned %d\n", re);
-				
+
 				//set max TTL to reach more than one subnets
 				unsigned char ttl = 3;
 				re = setsockopt(m_multicastSocket, IPPROTO_IP, IP_MULTICAST_TTL, (const char*)&ttl, sizeof(ttl));
 				HQRemote::Log("* Multicast setsockopt(IP_MULTICAST_TTL) returned %d\n", re);
 			}
-			
+
 			/*---- initialize RakNet ----*/
 			m_reliableBuffer.Reset();
 			m_unreliableBuffer.Reset();
-			
+
 			m_rakPeer->SetUserUpdateThread(pollingCallback, this);
-			
+
 			//Use 2 socket descriptors;
 			//one will make the OS assign us a random port
 			//one will use preferred port
@@ -283,26 +329,29 @@ namespace Nes {
 			socketDescriptor[0].port = 0;
 			socketDescriptor[1].port = (unsigned short)m_preferredListenPort;
 			unsigned int numSocketDesc = socketDescriptor[0].port == socketDescriptor[1].port ? 1 : 2;
-			
-			//Allow 2 types of connections: one for the other peer, one for the NAT server.
-			auto startRe = m_rakPeer->Startup(1 + m_maxConnections, socketDescriptor, numSocketDesc);
+
+			//Allow 3 types of connections: one for the other peer, one for the NAT server, one for proxy server.
+			int numFixedConnections = 1;
+			if (m_proxyCoordinatorAddress != RakNet::UNASSIGNED_SYSTEM_ADDRESS)
+				numFixedConnections ++;
+			auto startRe = m_rakPeer->Startup(numFixedConnections + m_maxConnections, socketDescriptor, numSocketDesc);
 			if (startRe == RakNet::SOCKET_PORT_ALREADY_IN_USE || startRe == RakNet::SOCKET_FAILED_TO_BIND)
 			{
 				//retry with system assigned port
 				socketDescriptor[1].port = 0;
-				
-				startRe = m_rakPeer->Startup(1 + m_maxConnections, socketDescriptor, 1);
+
+				startRe = m_rakPeer->Startup(numFixedConnections+ m_maxConnections, socketDescriptor, 1);
 			}
-			
+
 			if (startRe != RakNet::RAKNET_STARTED && startRe != RakNet::RAKNET_ALREADY_STARTED)
 				return false;
-			
+
 			m_portToForward = 0;//will get this one after we are connected to NAT server
 			m_rakPeer->GetSockets(m_raknetSockets);
-			
+
 			return restart();
 		}
-		
+
 		void ConnectionHandlerRakNet::stopImpl()
 		{
 			{
@@ -312,15 +361,15 @@ namespace Nes {
 					m_portForwardAsyncData = nullptr;
 				}
 			}
-			
+
 			removePortForwardingAsync();//remove port forwarding entry
-			
+
 			//release RakNet
 			m_rakPeer->ReleaseSockets(m_raknetSockets);
-			
+
 			m_rakPeer->SetUserUpdateThread(NULL, NULL);
 			m_rakPeer->Shutdown(1000);
-			
+
 			{
 				std::lock_guard<std::mutex> lg(m_multicastLock);
 				if (m_multicastSocket != INVALID_SOCKET)
@@ -329,24 +378,24 @@ namespace Nes {
 			}
 
 			m_portToForward = 0;
-			
+
 			{
 				std::lock_guard<std::mutex> lg(m_sendingLock);
-			
+
 				m_sendingNATPunchthroughRequest = false;
 				m_remotePeerAddress = RakNet::SystemAddress();
 				m_connected = false;
-				
+
 				stopExImpl();
 			}
 		}
-		
+
 		void ConnectionHandlerRakNet::reconnectToNatServerAsync()
 		{
 			unsigned char restartId = ID_USER_PACKET_RECONNECT_NAT_SERVER;
 			m_rakPeer->SendLoopback((char*)&restartId, sizeof(restartId));
 		}
-		
+
 		unsigned short ConnectionHandlerRakNet::getAssignedPortFromRakNetSocket() const {
 			unsigned int socketIdx;
 			unsigned short assignedPort;
@@ -358,23 +407,23 @@ namespace Nes {
 					break;
 				}
 			}
-			
+
 			return assignedPort;
 		}
-		
+
 		static void removePortForwardingAsyncImpl(unsigned short port)
 		{
 			std::thread asyncThread([port]{
 				std::unique_lock<std::mutex> alg(g_asyncLock);//only one async operation can be executed at a time
 
 				int timeout = 2000;
-				
+
 				HQRemote::Log("* Removing forwarded port = %d\n", (int)port);
-				
+
 				// Behind a NAT. Try to open with UPNP to avoid doing NAT punchthrough
 				struct UPNPDev * devlist = 0;
 				devlist = upnpDiscover(timeout, 0, 0, 0, 0, 2, 0);
-				
+
 				if (devlist)
 				{
 					char lanaddr[64];	/* my ip address on the LAN */
@@ -388,12 +437,12 @@ namespace Nes {
 						strcpy(eport, iport);
 
 						HQRemote::Log("* Removing forwarded port = %d using %s\n", (int)port, urls.controlURL);
-						
+
 						// Version miniupnpc-1.6.20120410
 						int r = UPNP_DeletePortMapping(urls.controlURL,
 													   data.first.servicetype,
 													   eport, "UDP", 0);
-						
+
 						if(r!=UPNPCOMMAND_SUCCESS)
 							HQRemote::Log("* UPNP_DeletePortMapping(%s) failed with code %d (%s)\n",
 										  eport, r, strupnperror(r));
@@ -401,44 +450,44 @@ namespace Nes {
 							HQRemote::Log("* UPNP_DeletePortMapping(%s) succeeded\n", eport);
 					}//if (UPNP_GetValidIGD)
 				}//if (devlist)
-				
+
 				HQRemote::Log("* Finished removing forwarded port = %d\n", (int)port);
 			});
-			
+
 			asyncThread.detach();
 		}
-		
+
 		void ConnectionHandlerRakNet::removePortForwardingAsync() {
 			auto port = m_portToForward;
 			if (port == 0)
 				return;
-			
+
 			removePortForwardingAsyncImpl(port);
 		}
-		
+
 		void ConnectionHandlerRakNet::doPortForwardingAsync() {
 			std::lock_guard<std::mutex> lg(g_globalLock);
-			
+
 			auto port = m_portToForward;
 			if (port == 0)
 				return;
-			
+
 			auto asyncData = m_portForwardAsyncData = new AsyncData();
 			m_portForwardAsyncData->ref = this;
-			
+
 			std::thread asyncThread([asyncData, port]{
 				std::unique_lock<std::mutex> alg(g_asyncLock);//only one async operation can be executed at a time
 
 				HQRemote::Log("* Forwarding port = %d\n", (int)port);
-				
+
 				int timeout = 2000;
-				
+
 				// Behind a NAT. Try to open with UPNP to avoid doing NAT punchthrough
 				struct UPNPDev * devlist = 0;
 				devlist = upnpDiscover(timeout, 0, 0, 0, 0, 2, 0);
-				
+
 				bool succeeded = true;
-				
+
 				if (devlist)
 				{
 					char lanaddr[64];	/* my ip address on the LAN */
@@ -452,22 +501,22 @@ namespace Nes {
 						strcpy(eport, iport);
 
 						HQRemote::Log("* Forwarding port = %d using %s\n", (int)port, urls.controlURL);
-						
+
 						// Version miniupnpc-1.6.20120410
 						int r = UPNP_AddPortMapping(urls.controlURL, data.first.servicetype,
 													eport, iport, lanaddr, 0, "UDP", 0, "0");
-						
+
 						if(r!=UPNPCOMMAND_SUCCESS)
 						{
 							HQRemote::Log("AddPortMapping(%s, %s, %s) failed with code %d (%s)\n",
 										  eport, iport, lanaddr, r, strupnperror(r));
-							
+
 							succeeded = false;
 						}
-						
+
 						char intPort[6];
 						char intClient[16];
-						
+
 						// Version miniupnpc-1.6.20120410
 						char desc[128];
 						char enabled[128];
@@ -477,7 +526,7 @@ namespace Nes {
 															 eport, "UDP", 0,
 															 intClient, intPort,
 															 desc, enabled, leaseDuration);
-						
+
 						if(r!=UPNPCOMMAND_SUCCESS)
 						{
 							HQRemote::Log("GetSpecificPortMappingEntry() failed with code %d (%s)\n",
@@ -485,45 +534,45 @@ namespace Nes {
 						}
 					}//if (UPNP_GetValidIGD)
 				}//if (devlist)
-				
+
 				HQRemote::Log("* Finished forwarding port = %d success=%d\n", (int)port, succeeded ? 1 : 0);
-				
+
 				//finished
 				std::lock_guard<std::mutex> lg(g_globalLock);
-				
+
 				auto handler = asyncData->ref;
-				
+
 				if (handler)
 				{
 					handler->m_portForwardAsyncData = nullptr;//invalidate the data referece of this thread
-					
+
 					//reconnect to the NAT server with new port mapping
 					handler->reconnectToNatServerAsync();
 				}
 				else
 					removePortForwardingAsyncImpl(port);
-					
+
 				delete asyncData;
 			});
-			
+
 			asyncThread.detach();
 		}
-		
+
 		bool ConnectionHandlerRakNet::attemptNatPunchthrough(const RakNet::RakNetGUID& remoteGUID) {
 			char guid_str[128];
 			remoteGUID.ToString(guid_str);
 			HQRemote::Log("* Attempt to openNAT to guid=%s", guid_str);
-			
+
 			m_sendingNATPunchthroughRequest = true;
 			auto re = m_natPunchthroughClient.OpenNAT(remoteGUID, m_natPunchServerAddress);
 			return re;
 		}
-		
+
 		bool ConnectionHandlerRakNet::acceptIncomingConnection() {
 			m_rakPeer->SetMaximumIncomingConnections(m_maxConnections);
 			return true;
 		}
-		
+
 		bool ConnectionHandlerRakNet::pingMulticastGroup(bool hasSendingLock) {
 			std::unique_lock<std::mutex> lg(m_sendingLock, std::defer_lock);
 			std::lock_guard<std::mutex> lg2(m_multicastLock);
@@ -531,19 +580,19 @@ namespace Nes {
 			// if caller hasn't locked the 'sendingLock' yet then lock it here
 			if (!hasSendingLock)
 				lg.lock();
-			
+
 			//multicast message = | type | magic string |  my guid |
 			unsigned char ping_msg[sizeof (MULTICAST_MAGIC_STRING) + sizeof(uint64_t)];
-			
+
 			auto my_guid = m_rakPeer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS).g;
 			uint64_t n_guid = htonll(my_guid);
-			
+
 			unsigned char type = ID_UNCONNECTED_PING;
 			memcpy(ping_msg, &type, sizeof(type));
 			memcpy(ping_msg + 1, MULTICAST_MAGIC_STRING, sizeof(MULTICAST_MAGIC_STRING) - 1);
 			memcpy(ping_msg + sizeof(MULTICAST_MAGIC_STRING), &n_guid, sizeof(n_guid));
-			
-			
+
+
 			{
 				//use connected socket to NAT server to send raw data
 				RakNet::RNS2_SendParameters sp;
@@ -551,7 +600,7 @@ namespace Nes {
 				sp.length = sizeof(ping_msg);
 				sp.systemAddress.FromStringExplicitPort(MULTICAST_ADDRESS, MULTICAST_PORT);
 				sp.ttl = 4;
-				
+
 				for (unsigned int i=0; i < m_raknetSockets.Size(); i++)
 				{
 					if (m_raknetSockets[i]->GetUserConnectionSocketIndex()==0)
@@ -563,44 +612,44 @@ namespace Nes {
 			}
 			return true;
 		}
-		
+
 		void ConnectionHandlerRakNet::pollingMulticastData() {
 			std::lock_guard<std::mutex> lg(m_multicastLock);
-			
+
 			timeval timeout;
 			timeout.tv_sec = 0;
 			timeout.tv_usec = 1000;
-			
+
 			fd_set sset;
-			
+
 			FD_ZERO(&sset);
 			FD_SET(m_multicastSocket, &sset);
-			
+
 			if (select(m_multicastSocket + 1, &sset, NULL, NULL, &timeout) == 1 && FD_ISSET(m_multicastSocket, &sset))
 			{
 				unsigned char msg[MAXIMUM_MTU_SIZE];
-				
+
 				socklen_t from_addr_len = sizeof(sockaddr_in);
 				sockaddr_in from_addr;
-				
+
 				int re = (int)recvfrom(m_multicastSocket, (char*)msg,  sizeof(msg), 0, (sockaddr*) &from_addr, &from_addr_len);
 				if (re > 0)
 				{
 					//parse source address
 					auto src_port = ntohs(from_addr.sin_port);
-					
+
 					RakNet::SystemAddress rakAddress;
-					
+
 					rakAddress.systemIndex=(RakNet::SystemIndex)-1;
 					rakAddress.address.addr4 = from_addr;
-					
+
 #if defined DEBUG || defined _DEBUG
 					rakAddress.debugPort = src_port;
 #endif
-					
+
 					char src_addr_str[128];
 					rakAddress.ToString(false, src_addr_str);
-					
+
 					switch (msg[0])
 					{
 						case ID_UNCONNECTED_PING:
@@ -612,7 +661,7 @@ namespace Nes {
 								RakNet::RakNetGUID srcGuid;
 								memcpy(&srcGuid.g, msg + sizeof(MULTICAST_MAGIC_STRING), sizeof(srcGuid.g));
 								srcGuid.g = ntohll(srcGuid.g);
-								
+
 								//avertise our system back to source system
 								auto guid = m_rakPeer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS);
 								if (srcGuid != guid)
@@ -626,15 +675,15 @@ namespace Nes {
 							}//multicast ping
 							break;
 					}//switch (msg[0])
-					
+
 				}//if (re > 0)
 			}//if (select(...))
 		}
-		
+
 		HQRemote::_ssize_t ConnectionHandlerRakNet::sendRawDataImpl(const void* data, size_t size)
 		{
 			std::lock_guard<std::mutex> lg(m_sendingLock);
-			
+
 			if (m_connected.load(std::memory_order_relaxed))
 			{
 				if (m_reliableBuffer.GetNumberOfBytesUsed() == 0)
@@ -642,78 +691,78 @@ namespace Nes {
 					//write message's tag
 					m_reliableBuffer.Write(static_cast<unsigned char>(ID_USER_PACKET_ENUM_RELIABLE));
 				}
-				
+
 				auto remainBufferSize = RELIABLE_MSG_MAX_SIZE - m_reliableBuffer.GetNumberOfBytesUsed();
-				
+
 				auto copySize = min(size, remainBufferSize);
-				
+
 				if (copySize == 0)
 				{
 					flushRawDataImpl();
 					copySize = min(size, RELIABLE_MSG_MAX_SIZE);
 				}
-				
+
 				m_reliableBuffer.Write((const char*)data, (unsigned int)copySize);
-				
+
 				return copySize;
 			}//m_connected;
-			
+
 			return -1;
 		}
 		void ConnectionHandlerRakNet::flushRawDataImpl()
 		{
 			std::lock_guard<std::mutex> lg(m_sendingLock);
-			
+
 			if (m_connected.load(std::memory_order_relaxed) &&
 				m_reliableBuffer.GetNumberOfBytesUsed() > 0)
 			{
 				m_rakPeer->Send(&m_reliableBuffer, HIGH_PRIORITY, RELIABLE_ORDERED, 1, m_remotePeerAddress, false);
-				
+
 				m_reliableBuffer.Reset();
 			}
 		}
-		
+
 		HQRemote::_ssize_t ConnectionHandlerRakNet::sendRawDataUnreliableImpl(const void* data, size_t size)
 		{
 			std::lock_guard<std::mutex> lg(m_sendingLock);
-			
+
 			if (m_connected.load(std::memory_order_relaxed))
 			{
 				m_unreliableBuffer.Reset();
 				//write message's tag
 				m_unreliableBuffer.Write(static_cast<unsigned char>(ID_USER_PACKET_ENUM));
-				
+
 				size = min(size, UNRELIABLE_MSG_MAX_SIZE);
-				
+
 				m_unreliableBuffer.Write((const char*)data, (unsigned int) size);
-				
+
 				m_rakPeer->Send(&m_unreliableBuffer, HIGH_PRIORITY, UNRELIABLE, 1, m_remotePeerAddress, false);
-				
+
 				return size;
 			}//if (m_connected.load(std::memory_order_relaxed))
-			
+
 			return -1;
 		}
-		
+
 		void ConnectionHandlerRakNet::onConnected(RakNet::SystemAddress address, RakNet::RakNetGUID guid, bool connected) {
 			std::lock_guard<std::mutex> lg(m_sendingLock);
-			
+
 			if (connected)
 			{
 				if(address ==
 				   m_natPunchServerAddress)
 				{
 					HQRemote::Log("* Successfully connected to the NAT punchthrough server.\n");
-					
+
 					m_natServerRemainReconnectionAttempts = MAX_RECONNECTION_ATTEMPTS;
-					
+
 					if (m_portToForward == 0 && m_doPortForwarding)
 					{
 						//firt time setup
 						m_portToForward = getAssignedPortFromRakNetSocket();
-						
-						m_rakPeer->CloseConnection(address, true, 0, HIGH_PRIORITY);//close the connection to NAT server, we will connect to it again after port forwarding finishes
-						
+
+						m_rakPeer->CloseConnection(address, true, 1, HIGH_PRIORITY);//close the connection to NAT server, we will connect to it again after port forwarding finishes
+
 						doPortForwardingAsync();
 					}
 					else
@@ -721,9 +770,9 @@ namespace Nes {
 						if (!m_natServerConnected)
 						{
 							onNatServerConnected(true);
-							
+
 							m_natServerConnected = true;
-						
+
 							//invoke callback
 							if (this->serverConnectedCallback)
 								this->serverConnectedCallback(this);
@@ -735,7 +784,7 @@ namespace Nes {
 					char addressStr[256];
 					address.ToString(true, addressStr);
 					HQRemote::Log("* Connection to the remote peer %s successfully established.\n", addressStr);
-					
+
 					onPeerConnected(address, guid, connected);
 				}
 			}//if (connected)
@@ -744,13 +793,13 @@ namespace Nes {
 				   m_natPunchServerAddress)
 				{
 					HQRemote::Log("* Disconnected from the NAT punchthrough server.\n");
-					
+
 					bool portForwardingInProgress = false;
 					{
 						std::lock_guard<std::mutex> lg(g_globalLock);
 						portForwardingInProgress = m_portForwardAsyncData != nullptr;
 					}
-					
+
 					if (!portForwardingInProgress)//ignore if port forwarding is still in progress
 					{
 						if (!m_connected)
@@ -759,9 +808,9 @@ namespace Nes {
 							{
 								if (!m_natServerConnected)
 									onNatServerConnected(false);
-							
+
 								m_natServerConnected = false;
-							
+
 								setInternalError("Service is unavailable at the moment. Please try again later");//TODO: localize
 							}
 						}
@@ -769,7 +818,7 @@ namespace Nes {
 						{
 							if (!m_natServerConnected)
 								onNatServerConnected(false);
-							
+
 							m_natServerConnected = false;
 						}
 					}//if (!portForwardingInProgress)
@@ -779,20 +828,21 @@ namespace Nes {
 					char addressStr[256];
 					address.ToString(true, addressStr);
 					HQRemote::Log("* Disconnected from the remote peer %s.\n", addressStr);
-					
+
 					onPeerConnected(address, guid, connected);
 				}
 			}//if (connected)
 		}
-		
+
 		bool ConnectionHandlerRakNet::restart()
 		{
 			if (!m_natServerConnected)
 			{
 				m_natServerRemainReconnectionAttempts = MAX_RECONNECTION_ATTEMPTS;
-				
+
+				// connect to NAT server
 				auto connectRe = connectToNatServer();
-				
+
 				if (connectRe != RakNet::CONNECTION_ATTEMPT_STARTED &&
 					connectRe != RakNet::CONNECTION_ATTEMPT_ALREADY_IN_PROGRESS &&
 					connectRe != RakNet::ALREADY_CONNECTED_TO_ENDPOINT)
@@ -803,57 +853,74 @@ namespace Nes {
 				m_natServerConnected = false;
 				onConnected(m_natPunchServerAddress, RakNet::RakNetGUID(), true);
 			}
+
+			// connecto to proxy server
+			tryConnectToProxyServer();
+
 			return true;
 		}
-		
+
 		RakNet::ConnectionAttemptResult ConnectionHandlerRakNet::connectToNatServer() {
 			//connect to NAT punchthrough server
 			char natServerAddressStr[256];
 			m_natPunchServerAddress.ToString(false, natServerAddressStr);
-			
+
 			return m_rakPeer->Connect(natServerAddressStr, m_natPunchServerAddress.GetPort(), NULL, 0);
 		}
-		
+
 		bool ConnectionHandlerRakNet::tryReconnectToNatServer() {
 			if (m_natServerRemainReconnectionAttempts == 0)
 				return false;
-			
+
 			auto connectRe = connectToNatServer();
-			
+
 			if (connectRe != RakNet::CONNECTION_ATTEMPT_STARTED &&
 				connectRe != RakNet::CONNECTION_ATTEMPT_ALREADY_IN_PROGRESS &&
 				connectRe != RakNet::ALREADY_CONNECTED_TO_ENDPOINT)
 				return false;
-			
+
 			if (connectRe == RakNet::CONNECTION_ATTEMPT_STARTED)
 				m_natServerRemainReconnectionAttempts --;
-			
+
 			return true;
 		}
-		
+
+		RakNet::ConnectionAttemptResult ConnectionHandlerRakNet::tryConnectToProxyServer() {
+			if (m_proxyCoordinatorAddress == RakNet::UNASSIGNED_SYSTEM_ADDRESS)
+				return RakNet::CANNOT_RESOLVE_DOMAIN_NAME;
+			char addressStr[256];
+			m_proxyCoordinatorAddress.ToString(false, addressStr);
+
+			return m_rakPeer->Connect(addressStr, m_proxyCoordinatorAddress.GetPort(), NULL, 0);
+		}
+
 		void ConnectionHandlerRakNet::setActiveConnection(RakNet::SystemAddress address) {
 			std::lock_guard<std::mutex> lg(m_sendingLock);
-			
+
 			bool isReconnection = m_connected && m_remotePeerAddress == address;
-			
+
 			m_connected = true;
 			onConnected(isReconnection);//tell base class IConnectionHandler
-			
+
 			m_remotePeerAddress = address;
-			
+
 			//disconnect from NAT punchthrough server
 			m_sendingNATPunchthroughRequest = false;
-			m_rakPeer->CloseConnection(m_natPunchServerAddress, true, 0, HIGH_PRIORITY);
+			m_rakPeer->CloseConnection(m_natPunchServerAddress, true, 1, HIGH_PRIORITY);
+
+			// disconnect from proxy server
+			if (m_proxyCoordinatorAddress != RakNet::UNASSIGNED_SYSTEM_ADDRESS)
+				m_rakPeer->CloseConnection(m_proxyCoordinatorAddress, true, 1, HIGH_PRIORITY);
 		}
-		
+
 		void ConnectionHandlerRakNet::processPacket(RakNet::Packet* packet) {
 			//default implementation
 		}
-		
+
 		void ConnectionHandlerRakNet::onNatServerConnected(bool connected) {
 			//default implementation
 		}
-		
+
 		void ConnectionHandlerRakNet::onPeerConnected(RakNet::SystemAddress address, RakNet::RakNetGUID guid, bool connected) {
 			//default implementation
 			if (!connected) {
@@ -866,19 +933,19 @@ namespace Nes {
 				}
 			}
 		}
-		
+
 		void ConnectionHandlerRakNet::onPeerUnreachable(RakNet::SystemAddress connectedAddress, RakNet::RakNetGUID guid) {
 			//default implementation
 		}
-		
+
 		void ConnectionHandlerRakNet::additionalUpdateProc() {
 			//default implementation
 		}
-		
+
 		void ConnectionHandlerRakNet::pollingProc(RakNet::RakPeerInterface* peer)
 		{
 			assert(peer == m_rakPeer);
-			
+
 			for (auto packet = m_rakPeer->Receive();
 				 packet;
 				 m_rakPeer->DeallocatePacket(packet),
@@ -891,7 +958,7 @@ namespace Nes {
 					{
 						m_natServerRemainReconnectionAttempts = MAX_RECONNECTION_ATTEMPTS;
 						//close connection to the NAT server, the reconnection with new port mapping will be attempted later
-						m_rakPeer->CloseConnection(m_natPunchServerAddress, true, 0, HIGH_PRIORITY);
+						m_rakPeer->CloseConnection(m_natPunchServerAddress, true, 1, HIGH_PRIORITY);
 						auto re = connectToNatServer();
 					}
 						break;
@@ -907,14 +974,17 @@ namespace Nes {
 						if (packet->systemAddress != m_natPunchServerAddress)
 #endif
 							break;
-#if USE_NAT_SERVER_ACCEPT_SYSTEM						
+#if USE_NAT_SERVER_ACCEPT_SYSTEM
 					case ID_USER_PACKET_NAT_SERVER_ERR_GUID_ALREADY_EXIST:
 #endif
 						setInternalError(GUID_ALREADY_EXISTS_ERR_INTERNAL);//TODO: this is the agreement between this and user of this code
-						
+
 						m_natServerRemainReconnectionAttempts = 0;//no more reconnection attempt
-						m_rakPeer->CloseConnection(m_natPunchServerAddress, true, 0, HIGH_PRIORITY);
-						
+						m_rakPeer->CloseConnection(m_natPunchServerAddress, true, 1, HIGH_PRIORITY);
+
+						if (m_proxyCoordinatorAddress != RakNet::UNASSIGNED_SYSTEM_ADDRESS)
+							m_rakPeer->CloseConnection(m_proxyCoordinatorAddress, true, 1, HIGH_PRIORITY);
+
 						HQRemote::Log("* We already connected to NAT server elsewhere\n");
 						break;
 #if USE_NAT_SERVER_ACCEPT_SYSTEM
@@ -930,14 +1000,14 @@ namespace Nes {
 						break;
 					case ID_NAT_PUNCHTHROUGH_SUCCEEDED:
 						HQRemote::Log("* NAT punchthrough succeeded!\n");
-						
+
 						if(m_sendingNATPunchthroughRequest)
 						{
 							m_sendingNATPunchthroughRequest = false;
-							
+
 							char addressStr[256];
 							packet->systemAddress.ToString(false, addressStr);
-							
+
 							HQRemote::Log("* Connecting to the peer %s ...\n", addressStr);
 							m_rakPeer->Connect(addressStr,
 											   packet->systemAddress.GetPort(), 0, 0);
@@ -955,11 +1025,11 @@ namespace Nes {
 					case ID_NAT_CONNECTION_TO_TARGET_LOST:
 					{
 						HQRemote::Log("* NAT punchthrough error id=%d\n", (int)packet->data[0]);
-						
+
 						RakNet::RakNetGUID guid;
-						
+
 						memcpy(&guid.g, packet->data + 1, sizeof(guid.g));
-						
+
 						guid.g = ntohll(guid.g);
 						onPeerUnreachable(RakNet::SystemAddress(), guid);
 					}
@@ -971,7 +1041,7 @@ namespace Nes {
 						//TODO:
 					}
 						break;
-						
+
 					case ID_USER_PACKET_ENUM:
 					{
 						onReceivedUnreliableDataFragment(packet->data + 1, packet->length - 1);
@@ -1005,71 +1075,137 @@ namespace Nes {
 					default:
 						break;
 				} // check package identifier
-				
+
 				processPacket(packet);//sub-class's responsibility
 			} // package receive loop
-			
+
 			//check if there are any multicast packets
 			pollingMulticastData();
-			
+
 			//addtional update procedure
 			additionalUpdateProc();
 		}
-		
+
 		void ConnectionHandlerRakNet::pollingCallback(RakNet::RakPeerInterface* peer, void* userData) {
 			auto _thiz = static_cast<ConnectionHandlerRakNet*>(userData);
 			_thiz->pollingProc(peer);
 		}
-		
+
+		// ---------- implements UDPProxyClientResultHandler ---------------
+		void ConnectionHandlerRakNet::OnForwardingSuccess(const char *proxyIPAddress, unsigned short proxyPort,
+														  RakNet::SystemAddress proxyCoordinator,
+														  RakNet::SystemAddress sourceAddress,
+														  RakNet::SystemAddress targetAddress,
+														  RakNet::RakNetGUID targetGuid,
+														  RakNet::UDPProxyClient *proxyClientPlugin)  {
+			LogStream ss;
+
+			ss << "ConnectionHandlerRakNet::OnForwardingSuccess: proxyIPAddress=" << proxyIPAddress
+			   << " targetAddress=" << targetAddress
+			   << " targetGuid=" << targetGuid
+			   << '\n';
+
+		}
+
+		void ConnectionHandlerRakNet::OnForwardingNotification(const char *proxyIPAddress, unsigned short proxyPort,
+															   RakNet::SystemAddress proxyCoordinator,
+															   RakNet::SystemAddress sourceAddress, RakNet::SystemAddress targetAddress,
+															   RakNet::RakNetGUID targetGuid, RakNet::UDPProxyClient *proxyClientPlugin) {
+			LogStream ss;
+
+			ss << "ConnectionHandlerRakNet::OnForwardingNotification: proxyIPAddress=" << proxyIPAddress
+			   << " targetAddress=" << targetAddress
+			   << " targetGuid=" << targetGuid
+			   << '\n';
+		}
+
+		void ConnectionHandlerRakNet::OnNoServersOnline(RakNet::SystemAddress proxyCoordinator, RakNet::SystemAddress sourceAddress, RakNet::SystemAddress targetAddress, RakNet::RakNetGUID targetGuid, RakNet::UDPProxyClient *proxyClientPlugin) {
+			LogStream ss;
+
+			ss << "ConnectionHandlerRakNet::OnNoServersOnline: proxyCoordinator=" << proxyCoordinator
+			   << " targetAddress=" << targetAddress
+			   << " targetGuid=" << targetGuid
+			   << '\n';
+		}
+
+		void ConnectionHandlerRakNet::OnRecipientNotConnected(RakNet::SystemAddress proxyCoordinator, RakNet::SystemAddress sourceAddress, RakNet::SystemAddress targetAddress, RakNet::RakNetGUID targetGuid, RakNet::UDPProxyClient *proxyClientPlugin) {
+			LogStream ss;
+
+			ss << "ConnectionHandlerRakNet::OnRecipientNotConnected: proxyCoordinator=" << proxyCoordinator
+			   << " targetAddress=" << targetAddress
+			   << " targetGuid=" << targetGuid
+			   << '\n';
+		}
+
+		void ConnectionHandlerRakNet::OnAllServersBusy(RakNet::SystemAddress proxyCoordinator, RakNet::SystemAddress sourceAddress, RakNet::SystemAddress targetAddress, RakNet::RakNetGUID targetGuid, RakNet::UDPProxyClient *proxyClientPlugin) {
+			LogStream ss;
+
+			ss << "ConnectionHandlerRakNet::OnAllServersBusy: proxyCoordinator=" << proxyCoordinator
+			   << " targetAddress=" << targetAddress
+			   << " targetGuid=" << targetGuid
+			   << '\n';
+		}
+
+		void ConnectionHandlerRakNet::OnForwardingInProgress(const char *proxyIPAddress, unsigned short proxyPort, RakNet::SystemAddress proxyCoordinator, RakNet::SystemAddress sourceAddress, RakNet::SystemAddress targetAddress, RakNet::RakNetGUID targetGuid, RakNet::UDPProxyClient *proxyClientPlugin) {
+			LogStream ss;
+
+			ss << "ConnectionHandlerRakNet::OnForwardingInProgress: proxyCoordinator=" << proxyCoordinator
+			   << " targetAddress=" << targetAddress
+			   << " targetGuid=" << targetGuid
+			   << '\n';
+		}
+
 		/*--------   ConnectionHandlerRakNetServer ------*/
 		ConnectionHandlerRakNetServer::ConnectionHandlerRakNetServer(
 				const RakNet::RakNetGUID* myGUID,
 			    const char* natPunchServerAddress, int natPunchServerPort,
+				const char* proxyServerAddress, int proxyServerPort,
 				MasterServerConnectedCallback callback)
-		: ConnectionHandlerRakNetServer(myGUID, natPunchServerAddress, natPunchServerPort, nullptr, callback)
+		: ConnectionHandlerRakNetServer(myGUID, natPunchServerAddress, natPunchServerPort, proxyServerAddress, proxyServerPort, nullptr, callback)
 		{}
 
 		ConnectionHandlerRakNetServer::ConnectionHandlerRakNetServer(
 				const RakNet::RakNetGUID* myGUID,
-				const char* natPunchServerAddress,
-				int natPunchServerPort,
+				const char* natPunchServerAddress, int natPunchServerPort,
+				const char* proxyServerAddress, int proxyServerPort,
 				PublicServerMetaDataGenerator publicServerMetaGenerator,
 				MasterServerConnectedCallback callback)
-		:ConnectionHandlerRakNet(myGUID, natPunchServerAddress, natPunchServerPort, DEFAULT_SERVER_PORT, DEFAULT_MAX_INCOMING_CONNECTIONS, true, callback),
+		:ConnectionHandlerRakNet(myGUID, natPunchServerAddress, natPunchServerPort, proxyServerAddress, proxyServerPort, DEFAULT_SERVER_PORT, DEFAULT_MAX_INCOMING_CONNECTIONS, true, callback),
 		m_reconnectionWaitStartTime(0), m_invitationKey(0), m_dontWait(false), m_autoGenKey(true),
 		 m_publicServerMetaGenerator(publicServerMetaGenerator)
 		{}
-		
+
 		ConnectionHandlerRakNetServer::ConnectionHandlerRakNetServer(
 			const RakNet::RakNetGUID* myGUID,
 			const char* natPunchServerAddress, int natPunchServerPort,
+			const char* proxyServerAddress, int proxyServerPort,
 			uint64_t fixedInvitationKey,
 			PublicServerMetaDataGenerator publicServerMetaGenerator,
 			MasterServerConnectedCallback callback)
-		: ConnectionHandlerRakNet(myGUID, natPunchServerAddress, natPunchServerPort, DEFAULT_SERVER_PORT, DEFAULT_MAX_INCOMING_CONNECTIONS, true, callback),
+		: ConnectionHandlerRakNet(myGUID, natPunchServerAddress, natPunchServerPort, proxyServerAddress, proxyServerPort, DEFAULT_SERVER_PORT, DEFAULT_MAX_INCOMING_CONNECTIONS, true, callback),
 			m_reconnectionWaitStartTime(0), m_invitationKey(fixedInvitationKey), m_dontWait(false), m_autoGenKey(false),
-		  	m_publicServerMetaGenerator(publicServerMetaGenerator)
+			m_publicServerMetaGenerator(publicServerMetaGenerator)
 		{}
 		void ConnectionHandlerRakNetServer::createNewInvitation() {
 			std::lock_guard<std::mutex> lg(m_sendingLock);
-			
+
 			//do the work on update thread
 			unsigned char restartId = ID_USER_PACKET_REINVITE_FRIEND;
 			m_rakPeer->SendLoopback((char*)&restartId, sizeof(restartId));
 		}
-		
+
 		void ConnectionHandlerRakNetServer::stopExImpl() {
 			m_reconnectionWaitStartTime = 0;
 			if (m_autoGenKey)
 				m_invitationKey = 0;
 		}
-		
+
 		void ConnectionHandlerRakNetServer::onNatServerConnected(bool connected) {
 			if (!connected)
 				return;
 			if (!acceptIncomingConnection())
 				setInternalError("Failed to accept incoming connection");
-			
+
 			if (m_autoGenKey)
 				m_invitationKey = generateInvitationKey();//random generate invitation key
 
@@ -1096,7 +1232,7 @@ namespace Nes {
 		uint64_t ConnectionHandlerRakNetServer::generateInvitationKey() {
 			return RakNet::RakPeerInterface::Get64BitUniqueRandomNumber();
 		}
-		
+
 		void ConnectionHandlerRakNetServer::onPeerConnected(RakNet::SystemAddress address, RakNet::RakNetGUID guid, bool connected) {
 			if (!connected) {
 				if(address == m_remotePeerAddress)
@@ -1114,37 +1250,37 @@ namespace Nes {
 				}
 			}
 		}
-		
+
 		void ConnectionHandlerRakNetServer::additionalUpdateProc() {
 			std::lock_guard<std::mutex> lg(m_sendingLock);//guard m_reconnectionWaitStartTime & m_connected
-			
+
 			if (m_reconnectionWaitStartTime != 0)
 			{
 				auto curTime = HQRemote::getTimeCheckPoint64();
 				auto waitDuration = HQRemote::getElapsedTime64(m_reconnectionWaitStartTime, curTime);
-				
+
 				if (m_dontWait || waitDuration >= MAX_RECONNECTION_WAIT_DURATION) {
 					//waited for too long and client hasn't reconnected yet, so drop it
 					doRestart();
 				}
 			}//if (m_reconnectionWaitStartTime != 0)
 		}
-	
+
 		void ConnectionHandlerRakNetServer::doRestart() {
 			bool wasConnected = m_connected.load();
 			m_connected = false;
 			m_dontWait = false;
-			
+
 			m_reconnectionWaitStartTime = 0;//reset timer
 			m_remotePeerAddress = RakNet::SystemAddress();//invalidate connected peer's address
-			
+
 			// IConnectionHandler::onDisconnected();
 			if (wasConnected)
 				onDisconnected(); // notify base class
 
 			restart();
 		}
-		
+
 		void ConnectionHandlerRakNetServer::processPacket(RakNet::Packet* packet) {
 			switch (packet->data[0]) {
 				case ID_USER_PACKET_ENUM_REQUEST_TO_JOIN:
@@ -1154,10 +1290,10 @@ namespace Nes {
 					bool accept = false;
 					uint64_t requestInvitationKey = 0;
 					RakNet::BitStream bi(packet->data + 1, packet->length - 1, false);
-					
+
 					//read embedded invitation key
 					bi.Read(requestInvitationKey);
-					
+
 					if (m_connected)//already has a connected peer
 					{
 						//only reconnection is accepted to proceed
@@ -1169,25 +1305,25 @@ namespace Nes {
 						if (packet->data[0] != ID_USER_PACKET_ENUM_REQUEST_TO_REJOIN)
 							accept = true;
 					}
-					
+
 					//the embedded invitation key must match our invitation key
 					accept = accept && requestInvitationKey == m_invitationKey;
-					
+
 					if (!accept)
 					{
 						//refuse
 						RakNet::BitStream bs;
 						bs.Write(static_cast<unsigned char>(ID_USER_PACKET_ENUM_REFUSED));
-						
+
 						m_rakPeer->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 1, packet->systemAddress, false);
 					}
 					else {
 						//accepted
 						RakNet::BitStream bs;
 						bs.Write(static_cast<unsigned char>(ID_USER_PACKET_ENUM_ACCEPTED));
-						
+
 						m_rakPeer->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 1, packet->systemAddress, false);
-						
+
 						if (packet->data[0] == ID_USER_PACKET_ENUM_REQUEST_TO_JOIN ||
 							packet->data[0] == ID_USER_PACKET_ENUM_REQUEST_TO_REJOIN)
 							setActiveConnection(packet->systemAddress);
@@ -1213,9 +1349,9 @@ namespace Nes {
 					{
 						//close current connection
 						m_rakPeer->CloseConnection(m_remotePeerAddress, true);
-						
+
 						m_dontWait = true;
-					} 
+					}
 					else
 						doRestart();
 				}
@@ -1224,18 +1360,18 @@ namespace Nes {
 					break;
 			}
 		}
-		
+
 		/*--------   ConnectionHandlerRakNetClient ------*/
 		ConnectionHandlerRakNetClient::ConnectionHandlerRakNetClient(const RakNet::RakNetGUID* myGUID,
-																	 const char* natPunchServerAddress,
-																	 int natPunchServerPort,
+																	 const char* natPunchServerAddress, int natPunchServerPort,
+																	 const char* proxyServerAddress, int proxyServerPort,
 																	 const RakNet::RakNetGUID& remoteGUID,
 																	 std::string&& remoteLanIp,
 																	 unsigned short remoteLanPort,
 																	 uint64_t remoteInvitationKey,
 																	 bool testConnectivityOnly,
 																	 MasterServerConnectedCallback callback)
-		:ConnectionHandlerRakNet(myGUID, natPunchServerAddress, natPunchServerPort, 0, 1, false, callback),
+		:ConnectionHandlerRakNet(myGUID, natPunchServerAddress, natPunchServerPort, proxyServerAddress, proxyServerPort, 0, 1, false, callback),
 		m_remoteGUID(remoteGUID), m_remoteInvitationKey(remoteInvitationKey),
 		m_remoteLanIpString(std::move(remoteLanIp)), m_remoteLanPort(remoteLanPort),
 		m_testOnly(testConnectivityOnly), m_testCallback(nullptr),
@@ -1245,6 +1381,11 @@ namespace Nes {
 		{
 			if (m_remoteLanIpString.size() != 0 && m_remoteLanPort != 0)
 				m_remoteLanAddress = RakNet::SystemAddress(m_remoteLanIpString.c_str(), m_remoteLanPort);
+		}
+
+		bool ConnectionHandlerRakNetClient::isConnectedThroughProxy() const {
+			return m_connected && m_remotePeerAddress != RakNet::UNASSIGNED_SYSTEM_ADDRESS
+				   && m_remotePeerAddress == m_remoteProxyAddress;
 		}
 
 		ConnectionHandlerRakNetClient& ConnectionHandlerRakNetClient::setTestingConnectivityCallback(ConnectivityResultCallback callback) {
@@ -1268,41 +1409,76 @@ namespace Nes {
 			if (m_onStopCallback)
 				m_onStopCallback(this);
 		}
-		
+
 		void ConnectionHandlerRakNetClient::onNatServerConnected(bool connected) {
 			if (!connected)
 			{
 				return;
 			}
-			
+
 			acceptIncomingConnection();//needed by Ping reply
-			
+
 			if (!attemptNatPunchthrough(m_remoteGUID))
 				setInternalError("Failed to establish peer connection");//TODO: localize
-			
+
 			m_remainReconnectionAttempts = MAX_RECONNECTION_ATTEMPTS;//allow peer reconnection in future
 		}
-		
+
+		void ConnectionHandlerRakNetClient::tryLanConnection() {
+			// try to connect to LAN Ip address
+#if !SKIP_LAN_CONNECTION
+			if (m_remoteLanIpString.size() && !m_tryConnectToLanIp)
+			{
+				m_tryConnectToLanIp = true;
+
+				HQRemote::Log("* Connecting to the peer through LAN address %s:%u ...\n", m_remoteLanIpString.c_str(), m_remoteLanPort);
+				m_rakPeer->Connect(m_remoteLanIpString.c_str(),
+								   m_remoteLanPort, 0, 0);
+			}
+			else
+#endif // SKIP_LAN_CONNECTION
+			{
+				tryRelayConnection(false);
+			}
+		}
+
+		void ConnectionHandlerRakNetClient::tryRelayConnection(bool hasSendingLock) {
+			if (m_proxyCoordinatorAddress == RakNet::UNASSIGNED_SYSTEM_ADDRESS) {
+				// no proxy server? use LAN discovery approach next
+				tryDiscoverLanServer(hasSendingLock);
+				return;
+			}
+
+			HQRemote::Log("* Attempt to use proxy server\n");
+
+			m_proxyClient.RequestForwarding(
+					m_proxyCoordinatorAddress,
+					RakNet::UNASSIGNED_SYSTEM_ADDRESS,
+					m_remoteGUID,
+					DEFAULT_RELAY_ATTEMPT_TIMEOUT_MS
+			);
+		}
+
 		bool ConnectionHandlerRakNetClient::tryReconnect(RakNet::SystemAddress address) {
 			//TODO: reliable data won't be resent if it is lost during connection loss
 			if (m_remainReconnectionAttempts == 0)
 				return false;
-			
+
 			char addressStr[256];
 			address.ToString(false, addressStr);
-			
+
 			HQRemote::Log("* Attempt to reconnect to %s:%d\n", addressStr, (int)address.GetPort());
-			
+
 			auto connectRe = m_rakPeer->Connect(addressStr, address.GetPort(), 0, 0);
-			
+
 			if (connectRe != RakNet::CONNECTION_ATTEMPT_STARTED &&
 				connectRe != RakNet::CONNECTION_ATTEMPT_ALREADY_IN_PROGRESS &&
 				connectRe != RakNet::ALREADY_CONNECTED_TO_ENDPOINT)
 				return false;
-			
+
 			if (connectRe == RakNet::CONNECTION_ATTEMPT_STARTED)
 				m_remainReconnectionAttempts --;
-			
+
 			return true;
 		}
 
@@ -1314,7 +1490,7 @@ namespace Nes {
 
 			return pingMulticastGroup(hasSendingLock);
 		}
-		
+
 		void ConnectionHandlerRakNetClient::onPeerConnected(RakNet::SystemAddress connectedAddress, RakNet::RakNetGUID guid, bool connected) {
 			if (guid == m_remoteGUID || (m_connected && connectedAddress == m_remotePeerAddress))
 			{
@@ -1324,13 +1500,13 @@ namespace Nes {
 					bs.Write(static_cast<unsigned char>(m_testOnly ?
 														ID_USER_PACKET_ENUM_TEST_CONNECTIVITY :
 														m_connected ? ID_USER_PACKET_ENUM_REQUEST_TO_REJOIN : ID_USER_PACKET_ENUM_REQUEST_TO_JOIN));
-				
+
 					//embed the invitation key
 					bs.Write(m_remoteInvitationKey);
-				
+
 					//request server to join/test the connectivity of the game
 					m_rakPeer->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 1, connectedAddress, false);
-					
+
 					m_remainReconnectionAttempts = MAX_RECONNECTION_ATTEMPTS;//allow future reconnection attempts
 				}
 				else {
@@ -1339,7 +1515,7 @@ namespace Nes {
 						bool wasConnected = m_connected.load();
 
 						m_connected = false;
-						
+
 						// IConnectionHandler::onDisconnected();
 						if (wasConnected && !m_testOnly)
 							onDisconnected(); // notify base class
@@ -1353,25 +1529,30 @@ namespace Nes {
 
 				HQRemote::Log("* Connecting to the peer through LAN address %s failed\n", m_remoteLanIpString.c_str());
 
-				// now try to discover whether that remote host is in the same LAN or not
+				// try the relay approach
+				tryRelayConnection(true);
+			} else if (connectedAddress == m_remoteProxyAddress) {
+				// is this proxy address's first attempt? then try discover LAN server next
+				m_remoteProxyAddress = RakNet::UNASSIGNED_SYSTEM_ADDRESS;
+
 				tryDiscoverLanServer(true);
 			}
 		}
-		
+
 		void ConnectionHandlerRakNetClient::onPeerUnreachable(RakNet::SystemAddress connectedAddress, RakNet::RakNetGUID guid) {
 			if (guid == m_remoteGUID)
 			{
 				setInternalError("Unreachable peer. Probably because the game session already has enough players or has ended.");//TODO: localize
 			}
 		}
-		
+
 		void ConnectionHandlerRakNetClient::processPacket(RakNet::Packet* packet) {
 			switch (packet->data[0]) {
 				case ID_USER_PACKET_ENUM_ACCEPTED:
 					if (packet->guid == m_remoteGUID)
 					{
 						HQRemote::Log("* Connection accepted\n");
-						
+
 						if (m_testOnly)
 						{
 							//close connection
@@ -1394,9 +1575,9 @@ namespace Nes {
 
 						//close connection
 						m_rakPeer->CloseConnection(packet->systemAddress, true);
-						
+
 						m_remainReconnectionAttempts = 0;//no more attempt
-						
+
 						onPeerConnected(packet->systemAddress, packet->guid, false);
 						onPeerUnreachable(packet->systemAddress, packet->guid);
 
@@ -1409,25 +1590,15 @@ namespace Nes {
 					///  packet::guid contains the destination field of NatPunchthroughClient::OpenNAT(). Byte 1 contains 1 if you are the sender, 0 if not
 				case ID_NAT_PUNCHTHROUGH_FAILED:
 				{
-					HQRemote::Log("* NAT punchthrough error id=%d\n", (int)packet->data[0]);
+					char addressStr[128];
+					packet->systemAddress.ToString(false, addressStr);
+
+					HQRemote::Log("* NAT punchthrough error id=%d address=%s\n", (int)packet->data[1], addressStr);
 					if (packet->data[1])//sender
 					{
-						// try to connect to LAN Ip address
-						if (m_remoteLanIpString.size() && !m_tryConnectToLanIp)
-						{
-							m_tryConnectToLanIp = true;
-
-							HQRemote::Log("* Connecting to the peer through LAN address %s:%u ...\n", m_remoteLanIpString.c_str(), m_remoteLanPort);
-							m_rakPeer->Connect(m_remoteLanIpString.c_str(),
-											   m_remoteLanPort, 0, 0);
-						}
-						else {
-							// try to discover whether the remote host is in the same LAN
-							// by sending broadcast and multicast ping
-							tryDiscoverLanServer(false);
-						}
+						tryLanConnection();
 					}
-					
+
 				}
 					break;
 				case ID_UNCONNECTED_PONG:
@@ -1435,10 +1606,10 @@ namespace Nes {
 					//we found our server inside LAN by using ping broadcasting, connect to it
 					if (packet->guid == m_remoteGUID && m_sendingNATPunchthroughRequest) {
 						m_sendingNATPunchthroughRequest = false;
-						
+
 						char addressStr[128];
 						packet->systemAddress.ToString(false, addressStr);
-						
+
 						HQRemote::Log("* Connecting to the peer %s ...\n", addressStr);
 						m_rakPeer->Connect(addressStr,
 										   packet->systemAddress.GetPort(), 0, 0);
@@ -1450,15 +1621,15 @@ namespace Nes {
 					//we found our server inside LAN, connect to it
 					RakNet::RakNetGUID srcGuid;
 					memcpy(&srcGuid.g, packet->data + 1, sizeof(srcGuid.g));
-					
+
 					srcGuid.g = ntohll(srcGuid.g);
-					
+
 					if (srcGuid == m_remoteGUID && m_sendingNATPunchthroughRequest) {
 						m_sendingNATPunchthroughRequest = false;
-						
+
 						char addressStr[128];
 						packet->systemAddress.ToString(false, addressStr);
-						
+
 						HQRemote::Log("* Connecting to the peer %s ...\n", addressStr);
 						m_rakPeer->Connect(addressStr,
 										   packet->systemAddress.GetPort(), 0, 0);
@@ -1476,70 +1647,136 @@ namespace Nes {
 					break;
 			}
 		}
-		
+
+		/// Called when our forwarding request was completed. We can now connect to \a targetAddress by using \a proxyAddress instead
+		/// \param[out] proxyIPAddress IP Address of the proxy server, which will forward messages to targetAddress
+		/// \param[out] proxyPort Remote port to use on the proxy server, which will forward messages to targetAddress
+		/// \param[out] proxyCoordinator \a proxyCoordinator parameter originally passed to UDPProxyClient::RequestForwarding
+		/// \param[out] sourceAddress \a sourceAddress parameter passed to UDPProxyClient::RequestForwarding. If it was UNASSIGNED_SYSTEM_ADDRESS, it is now our external IP address.
+		/// \param[out] targetAddress \a targetAddress parameter originally passed to UDPProxyClient::RequestForwarding
+		/// \param[out] targetGuid \a targetGuid parameter originally passed to UDPProxyClient::RequestForwarding
+		/// \param[out] proxyClient The plugin that is calling this callback
+		void ConnectionHandlerRakNetClient::OnForwardingSuccess(const char *proxyIPAddress, unsigned short proxyPort,
+																RakNet::SystemAddress proxyCoordinator,
+																RakNet::SystemAddress sourceAddress,
+																RakNet::SystemAddress targetAddress,
+																RakNet::RakNetGUID targetGuid,
+																RakNet::UDPProxyClient *proxyClientPlugin) {
+			ConnectionHandlerRakNet::OnForwardingSuccess(proxyIPAddress, proxyPort, proxyCoordinator, sourceAddress, targetAddress, targetGuid, proxyClientPlugin);
+
+			HQRemote::Log("* Connecting to the peer through proxy address %s:%u ...\n", proxyIPAddress, proxyPort);
+			m_rakPeer->Connect(proxyIPAddress,
+							   proxyPort, 0, 0);
+
+			m_remoteProxyAddress = RakNet::SystemAddress(proxyIPAddress, proxyPort);
+		}
+
+		/// Called when our forwarding request failed, because no UDPProxyServers are connected to UDPProxyCoordinator
+		/// \param[out] proxyCoordinator \a proxyCoordinator parameter originally passed to UDPProxyClient::RequestForwarding
+		/// \param[out] sourceAddress \a sourceAddress parameter passed to UDPProxyClient::RequestForwarding. If it was UNASSIGNED_SYSTEM_ADDRESS, it is now our external IP address.
+		/// \param[out] targetAddress \a targetAddress parameter originally passed to UDPProxyClient::RequestForwarding
+		/// \param[out] targetGuid \a targetGuid parameter originally passed to UDPProxyClient::RequestForwarding
+		/// \param[out] proxyClient The plugin that is calling this callback
+		void ConnectionHandlerRakNetClient::OnNoServersOnline(RakNet::SystemAddress proxyCoordinator, RakNet::SystemAddress sourceAddress, RakNet::SystemAddress targetAddress, RakNet::RakNetGUID targetGuid, RakNet::UDPProxyClient *proxyClientPlugin) {
+			ConnectionHandlerRakNet::OnNoServersOnline(proxyCoordinator, sourceAddress, targetAddress, targetGuid, proxyClientPlugin);
+
+			// try to discover whether the remote host is in the same LAN
+			// by sending broadcast and multicast ping
+			tryDiscoverLanServer(false);
+		}
+
+		/// Called when our forwarding request failed, because no UDPProxyServers are connected to UDPProxyCoordinator
+		/// \param[out] proxyCoordinator \a proxyCoordinator parameter originally passed to UDPProxyClient::RequestForwarding
+		/// \param[out] sourceAddress \a sourceAddress parameter passed to UDPProxyClient::RequestForwarding. If it was UNASSIGNED_SYSTEM_ADDRESS, it is now our external IP address.
+		/// \param[out] targetAddress \a targetAddress parameter originally passed to UDPProxyClient::RequestForwarding
+		/// \param[out] targetGuid \a targetGuid parameter originally passed to UDPProxyClient::RequestForwarding
+		/// \param[out] proxyClient The plugin that is calling this callback
+		void ConnectionHandlerRakNetClient::OnRecipientNotConnected(RakNet::SystemAddress proxyCoordinator, RakNet::SystemAddress sourceAddress, RakNet::SystemAddress targetAddress, RakNet::RakNetGUID targetGuid, RakNet::UDPProxyClient *proxyClientPlugin) {
+			ConnectionHandlerRakNet::OnRecipientNotConnected(proxyCoordinator, sourceAddress, targetAddress, targetGuid, proxyClientPlugin);
+
+			// try to discover whether the remote host is in the same LAN
+			// by sending broadcast and multicast ping
+			tryDiscoverLanServer(false);
+		}
+
+		/// Called when our forwarding request failed, because all UDPProxyServers that are connected to UDPProxyCoordinator are at their capacity
+		/// Either add more servers, or increase capacity via UDPForwarder::SetMaxForwardEntries()
+		/// \param[out] proxyCoordinator \a proxyCoordinator parameter originally passed to UDPProxyClient::RequestForwarding
+		/// \param[out] sourceAddress \a sourceAddress parameter passed to UDPProxyClient::RequestForwarding. If it was UNASSIGNED_SYSTEM_ADDRESS, it is now our external IP address.
+		/// \param[out] targetAddress \a targetAddress parameter originally passed to UDPProxyClient::RequestForwarding
+		/// \param[out] targetGuid \a targetGuid parameter originally passed to UDPProxyClient::RequestForwarding
+		/// \param[out] proxyClient The plugin that is calling this callback
+		void ConnectionHandlerRakNetClient::OnAllServersBusy(RakNet::SystemAddress proxyCoordinator, RakNet::SystemAddress sourceAddress, RakNet::SystemAddress targetAddress, RakNet::RakNetGUID targetGuid, RakNet::UDPProxyClient *proxyClientPlugin) {
+			ConnectionHandlerRakNet::OnAllServersBusy(proxyCoordinator, sourceAddress, targetAddress, targetGuid, proxyClientPlugin);
+
+			// try to discover whether the remote host is in the same LAN
+			// by sending broadcast and multicast ping
+			tryDiscoverLanServer(false);
+		}
+
 		/*------------- RakNetValidGuidChecker --------------*/
 		RakNetValidGuidChecker::RakNetValidGuidChecker(const RakNet::RakNetGUID* myGUID,
 													   const char* natPunchServerAddress,
 													   int natPunchServerPort)
-		:ConnectionHandlerRakNet(myGUID, natPunchServerAddress, natPunchServerPort, 0, 1, false),
+		:ConnectionHandlerRakNet(myGUID, natPunchServerAddress, natPunchServerPort, nullptr, 0, 0, 1, false),
 		 invalidGuidsNotificationCallback(nullptr)
-		{												   
+		{
 		}
-		
+
 		void RakNetValidGuidChecker::checkIfGuidsValid(const RakNet::RakNetGUID* guids, size_t _numGuidsToCheck) {
 			std::lock_guard<std::mutex> lg(m_pendingDataLock);
-			
+
 			if (_numGuidsToCheck > MAX_GUIDS_TO_CHECK)
 				_numGuidsToCheck = MAX_GUIDS_TO_CHECK;
-			
+
 			auto bs = std::make_shared<RakNet::BitStream>();
 			bs->Write(static_cast<unsigned char>(ID_USER_PACKET_ENUM_CHECK_GUID));
 			bs->Write(static_cast<unsigned int>(_numGuidsToCheck));
-			
+
 			for (size_t i = 0; i < _numGuidsToCheck; ++i) {
 				bs->Write(guids[i]);
 			}
-			
+
 			//if connected to NAT server, send the query immediately, otherwise buffer it
 			if (m_natServerConnected)
 				m_rakPeer->Send(bs.get(), HIGH_PRIORITY, RELIABLE_ORDERED, 1, m_natPunchServerAddress, false);
 			else
-			{	
+			{
 				m_pendingDataToSend.push_back(bs);
 			}
 		}
-		
+
 		void RakNetValidGuidChecker::onNatServerConnected(bool connected) {
 			if (connected) {
 				//send the pending request data to NAT server
 				std::lock_guard<std::mutex> lg(m_pendingDataLock);
-				
+
 				for (auto &data : m_pendingDataToSend) {
 					m_rakPeer->Send(data.get(), HIGH_PRIORITY, RELIABLE_ORDERED, 1, m_natPunchServerAddress, false);
 				}
 			}
 		}
-		
+
 		void RakNetValidGuidChecker::processPacket(RakNet::Packet* packet) {
 			switch (packet->data[0]) {
 				case ID_USER_PACKET_ENUM_INVALID_GUID_LIST:
 				{
 					//NAT server has returned use the list of invalid GUIDs
 					RakNet::BitStream bi(packet->data + 1, packet->length - 1, false);
-					
+
 					RakNet::RakNetGUID invalidGuids[MAX_GUIDS_TO_CHECK];
-					
+
 					unsigned int numInvalidGuids;
-					
+
 					bi.Read(numInvalidGuids);
-					
+
 					if (numInvalidGuids > MAX_GUIDS_TO_CHECK)
 						numInvalidGuids = MAX_GUIDS_TO_CHECK;
-					
+
 					for (unsigned int i = 0; i < numInvalidGuids; ++i) {
 						bi.Read(invalidGuids[i]);
 					}
-					
+
 					//notify observer
 					if (invalidGuidsNotificationCallback)
 						invalidGuidsNotificationCallback(this, invalidGuids, numInvalidGuids);
