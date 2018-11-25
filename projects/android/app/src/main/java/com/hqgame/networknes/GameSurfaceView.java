@@ -44,6 +44,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.MotionEventCompat;
 import android.util.AttributeSet;
+import android.util.Base64;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -62,6 +63,8 @@ import com.google.android.gms.games.multiplayer.turnbased.TurnBasedMatchConfig;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
@@ -78,6 +81,7 @@ import javax.microedition.khronos.opengles.GL10;
 public class GameSurfaceView extends GLSurfaceView {
     private static final int FB_INVITE_CTX = 0;
     private static final int GOOGLE_INVITE_CTX = 1;
+    private static final int NO_INVITE_CTX = 2;
 
     private static volatile long sNativeHandle = 0;
     private static ThreadLocal<GameSurfaceView> sJavaHandle = new ThreadLocal<>();
@@ -462,7 +466,13 @@ public class GameSurfaceView extends GLSurfaceView {
         loadRemoteInternet(google_match_id, invite_data, clientGUID, clientName, GOOGLE_INVITE_CTX);
     }
 
-    public void loadRemoteInternet(final String invite_id, final String invite_data, final String clientGUID, final String clientName, final int context) {
+    public void loadRemoteInternetPublic(final String invite_data, final String clientGUID, final String clientName) {
+        cancelExistingAsyncOps();
+
+        loadRemoteInternet("", invite_data, clientGUID, clientName, NO_INVITE_CTX);
+    }
+
+    private void loadRemoteInternet(final String invite_id, final String invite_data, final String clientGUID, final String clientName, final int context) {
         aggregatePlayTimeAndResetTimer(System.nanoTime(), false);
 
         queueEvent(mLastLoadRemoteCommand = new Runnable() {
@@ -491,6 +501,14 @@ public class GameSurfaceView extends GLSurfaceView {
                 }//if (!re)
             }
         });
+    }
+
+    public static String getLobbyServerAddress() {
+        return getLobbyServerAddressNative();
+    }
+
+    public static String getLobbyAppId() {
+        return getLobbyAppIdNative();
     }
 
     public void resetGame() {
@@ -624,16 +642,20 @@ public class GameSurfaceView extends GLSurfaceView {
     }
 
     public void enableRemoteControllerInternetFb(final String hostGUID, final String hostName) {
-        enableRemoteControllerInternet(hostGUID, hostName, FB_INVITE_CTX);
+        enableRemoteControllerInternet(hostGUID, hostName, FB_INVITE_CTX, false);
     }
 
     public void enableRemoteControllerInternetGoogle(final String hostGUID, final String hostName) {
 
 
-        enableRemoteControllerInternet(hostGUID, hostName, GOOGLE_INVITE_CTX);
+        enableRemoteControllerInternet(hostGUID, hostName, GOOGLE_INVITE_CTX, false);
     }
 
-    public void enableRemoteControllerInternet(final String hostGUID, final String hostName, final int context) {
+    public void enableRemoteControllerInternetPublic(final String hostGUID, final String hostName) {
+        enableRemoteControllerInternet(hostGUID, hostName, NO_INVITE_CTX, true);
+    }
+
+    private void enableRemoteControllerInternet(final String hostGUID, final String hostName, final int context, final boolean isPublic) {
         cancelExistingAsyncOps();
 
         queueEvent(new Runnable() {
@@ -648,7 +670,7 @@ public class GameSurfaceView extends GLSurfaceView {
                     }
                 });
 
-                boolean re = enableRemoteControllerInternetNative(sNativeHandle, hostGUID, hostName, context);
+                boolean re = enableRemoteControllerInternetNative(sNativeHandle, hostGUID, hostName, context, isPublic);
                 if (!re) {
                     dismissProgressDialog();
                     fatalError("Failed to establish remote connection");
@@ -1247,7 +1269,7 @@ public class GameSurfaceView extends GLSurfaceView {
 
                     String errorMsg = value;
                     if (value.equals("guid_exist"))
-                        errorMsg = "One of your devices is already playing using this Facebook account. You cannot play multiplayer using the same account on multiple devices.";//TODO: localize
+                        errorMsg = "One of your devices is already playing using this account. You cannot play multiplayer using the same account on multiple devices.";//TODO: localize
 
                     errorMessage(errorMsg,
                             retryCallback,
@@ -1527,6 +1549,22 @@ public class GameSurfaceView extends GLSurfaceView {
         private volatile boolean mCanceled = false;
     }
 
+    private static String createPublicServerMetaData(final String publicName, final String inviteData, final int context) {
+        try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put(Settings.PUBLIC_SERVER_ROM_NAME_KEY, loadedGameNameNative(sNativeHandle));
+            jsonObject.put(Settings.PUBLIC_SERVER_INVITE_DATA_KEY, inviteData);
+            jsonObject.put(Settings.PUBLIC_SERVER_NAME_KEY, publicName);
+
+            String re = Base64.encodeToString(jsonObject.toString().getBytes("UTF-8"), Base64.URL_SAFE | Base64.NO_PADDING | Base64.NO_WRAP);
+            return re;
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            return null;
+        }
+    }
+
     private static void displayInviteDialog(final String inviteData, final int context) {
         if (Settings.DEBUG)
             System.out.println("displaying invite dialog with invite_data=" + inviteData);
@@ -1592,7 +1630,7 @@ public class GameSurfaceView extends GLSurfaceView {
         // display Google Play Games Invite dialog
         activity.displayGooglePlayGamesInviteUIWithoutRoom(
                 1,
-                true,
+                false,
                 new BaseActivity.GooglePlayGamesMatchCreateCallback<Bundle>() {
                     @Override
                     public void onComplete(BaseActivity activity, Bundle result) {
@@ -1966,7 +2004,11 @@ public class GameSurfaceView extends GLSurfaceView {
     private static native boolean verifyGameNative(long nativeHandle, String path);
     private static native boolean isGameLoadedNative(long nativeHandle);
 
-    private native String loadedGameNative(long nativeHandle);
+    private static native String getLobbyServerAddressNative();
+    private static native String getLobbyAppIdNative();
+
+    private static native String loadedGameNative(long nativeHandle);
+    private static native String loadedGameNameNative(long nativeHandle);
 
     private static native void invokeNativeFunction(long nativeHandle, long nativeFunctionId, long nativeFunctionArg);
 
@@ -1976,7 +2018,7 @@ public class GameSurfaceView extends GLSurfaceView {
     private native void resetGameNative(long nativeHandle);
     private native void shutdownGameNative(long nativeHandle);
     private native boolean enableRemoteControllerNative(long nativeHandle, int port, String hostName, @Nullable String hostIpBound);
-    private native boolean enableRemoteControllerInternetNative(long nativeHandle, String hostGUID, String hostName, int context);
+    private native boolean enableRemoteControllerInternetNative(long nativeHandle, String hostGUID, String hostName, int context, boolean isPublic);
     private native boolean reinviteNewFriendForRemoteControllerInternetNative(long nativeHandle);
     private native void disableRemoteControllerNative(long nativeHandle);
     private native boolean isRemoteControllerEnabledNative(long nativeHandle);//is remote controller enabled

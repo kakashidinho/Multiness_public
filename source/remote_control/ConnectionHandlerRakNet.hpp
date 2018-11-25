@@ -67,6 +67,8 @@ namespace Nes {
 			
 			//IConnectionHandler implementation
 			virtual bool connected() const override;
+
+			static uint64_t getIdForThisApp();
 			
 			MasterServerConnectedCallback serverConnectedCallback;//this is called when connection to central server finished successfully 
 		private:
@@ -151,16 +153,27 @@ namespace Nes {
 		
 		class ConnectionHandlerRakNetServer: public ConnectionHandlerRakNet {
 		public:
+			typedef std::function<std::string (const ConnectionHandlerRakNetServer*)> PublicServerMetaDataGenerator;
+
 			ConnectionHandlerRakNetServer(const RakNet::RakNetGUID* myGUID,
-										  const char* natPunchServerAddress, int natPunchServerPort, MasterServerConnectedCallback callback);
+										  const char* natPunchServerAddress, int natPunchServerPort,
+										  MasterServerConnectedCallback callback = nullptr);
+
+			ConnectionHandlerRakNetServer(const RakNet::RakNetGUID* myGUID,
+										  const char* natPunchServerAddress, int natPunchServerPort,
+										  PublicServerMetaDataGenerator publicServerMetaGenerator = nullptr, // if this is not null, the server will be made public with returned meta data from this callback
+										  MasterServerConnectedCallback callback = nullptr);
 
 			ConnectionHandlerRakNetServer(const RakNet::RakNetGUID* myGUID,
 										  const char* natPunchServerAddress, int natPunchServerPort, 
 										  uint64_t fixedInvitationKey,
+										  PublicServerMetaDataGenerator publicServerMetaGenerator = nullptr, // if this is not null, the server will be made public with returned meta data from this callback
 										  MasterServerConnectedCallback callback = nullptr);
 			
 			uint64_t getInvitationKey() const { return m_invitationKey; }
 			void createNewInvitation();//this will kick current connected player if any
+
+			static uint64_t generateInvitationKey();
 		private:
 			virtual void stopExImpl() override;
 			
@@ -175,6 +188,7 @@ namespace Nes {
 			uint64_t m_reconnectionWaitStartTime;
 			uint64_t m_invitationKey;
 
+			PublicServerMetaDataGenerator m_publicServerMetaGenerator;
 			bool m_dontWait;
 			bool m_autoGenKey;//key is auto generated every time a new session is created
 		};

@@ -67,6 +67,7 @@
     <string name="must_signin_internet_title">Log in required</string>
     <string name="must_signin_fb_title_msg">You must log in with Facebook before using Facebook Internet Multiplayer Mode.</string>
     <string name="must_signin_google_title_msg">You must log in with Google before using Google Internet Multiplayer Mode.</string>
+    <string name="must_signin_msg">You must log in with Google or Facebook before using Google Internet Multiplayer Mode.</string>
     <string name="dpad_scale_size_lbl">Onscreen D-pad\'s size</string>
     <string name="audio_volum_lbl">Audio volume</string>
     <string name="vibration_lbl">Onscreen buttons\' vibration</string>
@@ -167,6 +168,9 @@
     <string name="iap_generic_err_msg">Failed to process Payment. Error code=%1$d.</string>
     <string name="iap_already_owned_msg">You already bought this item.</string>
     <string name="ui_buttons_editor_help">Use one finger to move.\nUse two fingers to scale.</string>
+    <string name="create_public_room_text">Host Public Game</string>
+    <string name="private_rooms_text">Private Games</string>
+    <string name="lobby_page_title">Available Public Servers</string>
 
 
     <!--

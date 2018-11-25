@@ -124,6 +124,10 @@ public class InternetMultiplayerPage extends BaseMenuPage {
         Button hostGpgBtn = (Button)view.findViewById(R.id.btnHostGpg);
         Button joinGpgBtn = (Button)view.findViewById(R.id.btnJoinGpg);
         Button quickJoinGpgBtn = (Button)view.findViewById(R.id.btnQuickJoinGpg);
+
+        // disable random join button now as we have lobby system
+        quickJoinGpgBtn.setVisibility(View.GONE);
+
         Button hostFbBtn = (Button)view.findViewById(R.id.btnHostFb);
         Button joinFbBtn = (Button)view.findViewById(R.id.btnJoinFb);
         hostGpgBtn.setOnClickListener(buttonClickListener);

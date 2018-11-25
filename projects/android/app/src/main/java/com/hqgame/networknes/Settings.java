@@ -111,6 +111,10 @@ class Settings {
 
     public static final List<String> FACEBOOK_PERMISSIONS = Arrays.asList("user_friends", "public_profile");
 
+    public static final String PUBLIC_SERVER_ROM_NAME_KEY = "PUBLIC_SERVER_ROM_NAME_KEY";
+    public static final String PUBLIC_SERVER_INVITE_DATA_KEY = "PUBLIC_SERVER_INVITE_DATA_KEY";
+    public static final String PUBLIC_SERVER_NAME_KEY = "PUBLIC_SERVER_NAME_KEY";
+
     public static enum RemoteControl {
         NO_REMOTE_CONTROL,
         ENABLE_LAN_REMOTE_CONTROL,
@@ -118,8 +122,10 @@ class Settings {
         CONNECT_LAN_REMOTE_CONTROL,
         ENABLE_INTERNET_REMOTE_CONTROL_FB,
         ENABLE_INTERNET_REMOTE_CONTROL_GOOGLE,
+        ENABLE_INTERNET_REMOTE_CONTROL_PUBLIC,
         JOIN_INTERNET_REMOTE_CONTROL_FB,
         JOIN_INTERNET_REMOTE_CONTROL_GOOGLE,
+        JOIN_INTERNET_REMOTE_CONTROL_PUBLIC,
         QUICKJOIN_INTERNET_REMOTE_CONTROL_GOOGLE,
     }
 

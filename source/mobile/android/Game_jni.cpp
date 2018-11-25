@@ -61,6 +61,7 @@
 #include <sstream>
 #include <fstream>
 #include <atomic>
+#include <cinttypes>
 
 using namespace Nes;
 
@@ -80,6 +81,7 @@ static const char RUN_ON_GAMETHREAD_METHOD_NAME[] = "runOnGameThread";
 static const char DISPLAY_INVITE_DIALOG_METHOD_NAME[] = "displayInviteDialog";
 static const char CLIENT_ABOUT_TO_CONNECT_METHOD_NAME[] = "clientAboutToConnectToRemote";
 static const char CLIENT_CONNECT_TEST_CALLBACK_METHOD_NAME[] = "clientConnectivityTestCallback";
+static const char CREATE_PUB_SERVER_META_METHOD_NAME[] = "createPublicServerMetaData";
 
 static const char IS_VOICE_ENABLED_METHOD_NAME[] = "isVoiceChatEnabled";
 
@@ -100,6 +102,7 @@ static jmethodID g_runOnGameThreadMethodID;
 static jmethodID g_displayInviteDialogMethodID;
 static jmethodID g_clientAboutToConnectToRemoteMethodID;
 static jmethodID g_clientConnectTestCallbackMethodID;
+static jmethodID g_createPublicServerMetaDataMethodID;
 
 static jmethodID g_isVoiceEnabledMethodID;
 
@@ -341,29 +344,41 @@ static void LogCallback(const char* format, va_list args)
 	__android_log_vprint(ANDROID_LOG_DEBUG, "Nes", format, args);
 }
 
+static bool InitInternetServerConnectionInfo(const RakNet::RakNetGUID& my_rakGuid, uint64_t key, unsigned short lanPort, char* serverInfo, size_t serverInfoBufSize) {
+	if (serverInfoBufSize < 256)
+		return false;
+
+	// server info for accepting connection = "<key>_<guid>_<lan ip>_<lan port>"
+	auto writtenBytes = sprintf(serverInfo, "%" PRIu64 "_", key);
+	if (writtenBytes <= 0)
+		return false;//TODO: error handling
+
+	//concatenate with guid
+	my_rakGuid.ToString(serverInfo + writtenBytes);
+
+	writtenBytes = strlen(serverInfo);
+
+	// append LAN address & port
+	auto lanIp = GetLanIpAddress();
+	if (lanIp.size()) {
+		writtenBytes = sprintf(serverInfo + writtenBytes, "_%s_%d", lanIp.c_str(), lanPort);
+		if (writtenBytes <= 0)
+			return false;//TODO: error handling
+	}
+
+	return true;
+}
+
 static void DisplayInviteDialog(const RakNet::RakNetGUID& my_rakGuid, uint64_t key, unsigned short lanPort, int context) {
 	auto env = Jni::GetCurrenThreadJEnv();
 	if (!env || !g_displayInviteDialogMethodID)
 		return;
 	
-	//invite data = "<key>_<guid>_<lan ip>_<lan port>"
+	//invite data
 	char inviteDataString[256];
-	auto writtenBytes = sprintf(inviteDataString, "%llu_", key);
-	if (writtenBytes <= 0)
-		return;//TODO: error handling
-	
-	//concatenate with guid
-	my_rakGuid.ToString(inviteDataString + writtenBytes);
 
-	writtenBytes = strlen(inviteDataString);
-
-	// append LAN address & port
-	auto lanIp = GetLanIpAddress();
-	if (lanIp.size()) {
-		writtenBytes = sprintf(inviteDataString + writtenBytes, "_%s_%d", lanIp.c_str(), lanPort);
-		if (writtenBytes <= 0)
-			return;//TODO: error handling
-	}
+	if (!InitInternetServerConnectionInfo(my_rakGuid, key, lanPort, inviteDataString, sizeof(inviteDataString)))
+		return;
 	
 	auto jinviteDataString = env->NewStringUTF(inviteDataString);
 	if (jinviteDataString)
@@ -372,6 +387,46 @@ static void DisplayInviteDialog(const RakNet::RakNetGUID& my_rakGuid, uint64_t k
 		
 		env->DeleteLocalRef(jinviteDataString);
 	}
+}
+
+static inline std::string CreatePublicServerMetaData(const char* publicName, const char* inviteDataString, int context) {
+	auto env = Jni::GetCurrenThreadJEnv();
+	if (!env || !g_createPublicServerMetaDataMethodID)
+		return "";
+
+	HQRemote::JStringRef jinviteDataString = env->NewStringUTF(inviteDataString);
+	HQRemote::JStringRef jpublicName = env->NewStringUTF(publicName);
+	if (jinviteDataString && jpublicName)
+	{
+		auto jstr = (jstring)env->CallStaticObjectMethod(g_GameSurfaceViewClass, g_createPublicServerMetaDataMethodID, jpublicName.get(), jinviteDataString.get(), context);
+
+		std::string re_str;
+
+		if (jstr) {
+			// convert to C string
+			const char* cstr;
+			if ((cstr = env->GetStringUTFChars(jstr, NULL)) != NULL)
+			{
+				// convert to C++ string
+				try {
+					re_str = cstr;
+				} catch (...) {
+					re_str = "";
+				}
+				env->ReleaseStringUTFChars(jstr, cstr);
+			}
+
+			env->DeleteLocalRef(jstr);
+		}
+
+#ifdef DEBUG
+		__android_log_print(ANDROID_LOG_DEBUG, "Nes", "Created Room meta data=%s\n", re_str.c_str());
+#endif
+
+		return re_str;
+	}
+
+	return "";
 }
 
 static bool ParseInviteData(const char* invite_data,
@@ -395,12 +450,12 @@ static bool ParseInviteData(const char* invite_data,
 	char* tok_ctx = nullptr;
 	// key
 	auto token = strtok_r(invite_data_copy.get(), "_", &tok_ctx);
-	if (token == nullptr || sscanf(token, "%llu", &inviteKey) != 1)
+	if (token == nullptr || sscanf(token, "%" PRIu64 "", &inviteKey) != 1)
 		return false;
 
 	// guid
 	token = strtok_r(nullptr, "_", &tok_ctx);
-	if (token == nullptr || sscanf(token, "%llu", &remoteGuid.g) != 1)
+	if (token == nullptr || sscanf(token, "%" PRIu64 "", &remoteGuid.g) != 1)
 		return false;
 
 	// lan ip
@@ -667,6 +722,7 @@ extern "C" {
 			g_displayInviteDialogMethodID = env->GetStaticMethodID(g_GameSurfaceViewClass, DISPLAY_INVITE_DIALOG_METHOD_NAME, "(Ljava/lang/String;I)V");
 			g_clientAboutToConnectToRemoteMethodID = env->GetStaticMethodID(g_GameSurfaceViewClass, CLIENT_ABOUT_TO_CONNECT_METHOD_NAME, "(Ljava/lang/String;Ljava/lang/String;I)V");
 			g_clientConnectTestCallbackMethodID = env->GetStaticMethodID(g_GameSurfaceViewClass, CLIENT_CONNECT_TEST_CALLBACK_METHOD_NAME, "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Object;Z)V");
+			g_createPublicServerMetaDataMethodID = env->GetStaticMethodID(g_GameSurfaceViewClass, CREATE_PUB_SERVER_META_METHOD_NAME, "(Ljava/lang/String;Ljava/lang/String;I)Ljava/lang/String;");
 
 		}//if (g_GameSurfaceViewClass == NULL)
 	}
@@ -758,6 +814,18 @@ extern "C" {
 		auto system = (NesSystem*)nativePtr;
 		try {
 			auto path = system->LoadedFile();
+			return env->NewStringUTF(path.c_str());
+		} catch (...) {
+			return NULL;
+		}
+	}
+
+	JNIEXPORT jstring JNICALL
+	Java_com_hqgame_networknes_GameSurfaceView_loadedGameNameNative(JNIEnv *env, jobject thiz, jlong nativePtr)
+	{
+		auto system = (NesSystem*)nativePtr;
+		try {
+			auto path = system->LoadedFileName();
 			return env->NewStringUTF(path.c_str());
 		} catch (...) {
 			return NULL;
@@ -1039,15 +1107,37 @@ extern "C" {
 	}
 	
 	JNIEXPORT jboolean JNICALL
-	Java_com_hqgame_networknes_GameSurfaceView_enableRemoteControllerInternetNative(JNIEnv *env, jobject thiz, jlong nativePtr, jstring hostGUID, jstring hostName, jint context)
+	Java_com_hqgame_networknes_GameSurfaceView_enableRemoteControllerInternetNative(JNIEnv *env, jobject thiz, jlong nativePtr, jstring hostGUID, jstring hostName, jint context, jboolean isPublic)
 	{
 		auto system = (NesSystem*)nativePtr;
 		
 		auto chostGUID = guidFromJString(env, hostGUID);
+
+		Remote::ConnectionHandlerRakNetServer::PublicServerMetaDataGenerator publicServerMetaDataGenerator = nullptr;
+		if (isPublic) {
+			// this server will be public.
+			// use host name as public room's name
+			const char* cpublicName = hostName ? env->GetStringUTFChars(hostName, NULL) : "A player";
+			auto publicNameRef = std::make_shared<std::string>(cpublicName);
+			if (hostName)
+				env->ReleaseStringUTFChars(hostName, cpublicName);
+
+			// need to generate public server's meta data, only java side needs it, so let it creates it for us.
+			// The meta data will be stored on cloud lobby server. Java side can query later using http request.
+			publicServerMetaDataGenerator = [context, publicNameRef] (const Remote::ConnectionHandlerRakNetServer* hostHandler) -> std::string {
+				std::ostringstream ss;
+				char serverInfo[256];
+				if (!InitInternetServerConnectionInfo(hostHandler->getGUID(), hostHandler->getInvitationKey(), hostHandler->getLanPort(), serverInfo, sizeof(serverInfo)))
+					return "";
+
+				return CreatePublicServerMetaData(publicNameRef->c_str(), serverInfo, context);
+			};
+		}
 		
 		auto connHandler = std::make_shared<Remote::ConnectionHandlerRakNetServer>(&chostGUID,
 																				   NAT_SERVER,
 																				   NAT_SERVER_PORT,
+																				   publicServerMetaDataGenerator,
 																				   [context](const Remote::ConnectionHandlerRakNet* handler)
 																				   {
 																					   //successfully connected to central server
@@ -1071,6 +1161,18 @@ extern "C" {
 			system->EnableAudioInput(true);
 		
 		return re;
+	}
+
+	JNIEXPORT jstring JNICALL
+	Java_com_hqgame_networknes_GameSurfaceView_getLobbyServerAddressNative(JNIEnv *env, jobject thiz) {
+		return env->NewStringUTF(NAT_SERVER);
+	}
+
+	JNIEXPORT jstring JNICALL
+	Java_com_hqgame_networknes_GameSurfaceView_getLobbyAppIdNative(JNIEnv *env, jobject thiz) {
+		char buf[64];
+		sprintf(buf, "%" PRIu64, Remote::ConnectionHandlerRakNet::getIdForThisApp());
+		return env->NewStringUTF(buf);
 	}
 	
 	JNIEXPORT jboolean JNICALL

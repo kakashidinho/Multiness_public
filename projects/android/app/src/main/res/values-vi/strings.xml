@@ -65,6 +65,7 @@
     <string name="must_signin_internet_title">Bạn cần phải log in</string>
     <string name="must_signin_fb_title_msg">Bạn phải log in với Facebook trước khi dùng chế độ Facebook Internet Multiplayer.</string>
     <string name="must_signin_google_title_msg">Bạn phải log in với Google trước khi dùng chế độ Google Internet Multiplayer.</string>
+    <string name="must_signin_msg">Bạn phải log in với Google hoặc Facebook trước khi dùng chế độ Internet Multiplayer.</string>
     <string name="dpad_scale_size_lbl">Kích cỡ D-pad trên màn hình</string>
     <string name="audio_volum_lbl">Âm lượng</string>
     <string name="vibration_lbl">Rung nút điều khiển trên màn hình</string>
@@ -157,6 +158,9 @@
     <string name="iap_generic_err_msg">Có lỗi xảy ra khi mua hàng. Mã=%1$d.</string>
     <string name="iap_already_owned_msg">Bạn đã mua sản phẩm này trước đây. Không cần phải mua lại.</string>
     <string name="ui_buttons_editor_help">Dùng một ngón để dịch chuyển.\nHai ngón để thay đổi kích cỡ.</string>
+    <string name="create_public_room_text">Host Game Công Khai</string>
+    <string name="private_rooms_text">Game Riêng Tư</string>
+    <string name="lobby_page_title">Danh sách Online Servers</string>
 
     <!--
     <string name="appwarp_connect_error_msg">Failed to connect to Game Server using Google Account. Error code=%1$d. Please try again later.</string>

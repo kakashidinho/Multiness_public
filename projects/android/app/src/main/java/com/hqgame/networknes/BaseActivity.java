@@ -1634,7 +1634,18 @@ public final class BaseActivity extends AppCompatActivity
         if (name == null)
             name = getGooglePlayerName();
 
+        if (name != null)
+            return name;
+
         return getString(R.string.a_player);
+    }
+
+    public String getDefaultHostGUID() {
+        String id = getFbPlayerId();
+        if (id == null)
+            id = getGoogleAccountId();
+
+        return id;
     }
 
     // ------------ Wifi Direct ---------------------

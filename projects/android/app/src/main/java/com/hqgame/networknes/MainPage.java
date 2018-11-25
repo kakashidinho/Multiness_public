@@ -724,6 +724,15 @@ public class MainPage extends BaseMenuPage implements PurchasesUpdatedListener {
 
     private void selectInternetModeDialog()
     {
-        goToPage(BasePage.create(InternetMultiplayerPage.class));
+        if (!isFbSignedIn() && !isGoogleSignedIn()) {
+            Utils.alertDialog(
+                    getContext(),
+                    getString(R.string.must_signin_internet_title),
+                    getString(R.string.must_signin_msg),
+                    null);
+            return;
+        }
+
+        goToPage(BasePage.create(LobbyPage.class));
     }
 }

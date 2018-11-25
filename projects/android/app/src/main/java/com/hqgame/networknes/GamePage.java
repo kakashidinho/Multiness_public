@@ -229,10 +229,15 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
                     mGameView.enableRemoteControllerInternetGoogle(BaseActivity.tryGetGooglePlayerId(), BaseActivity.tryGetGooglePlayerName());
                 }
                 break;
+                case ENABLE_INTERNET_REMOTE_CONTROL_PUBLIC: {
+                    mGameView.enableRemoteControllerInternetPublic(getBaseActivity().getDefaultHostGUID(), getBaseActivity().getDefaultHostRoomName());
+                }
+                break;
                 case QUICKJOIN_INTERNET_REMOTE_CONTROL_GOOGLE:
                     mRemoteCtlType = Settings.RemoteControl.JOIN_INTERNET_REMOTE_CONTROL_GOOGLE;
                 case JOIN_INTERNET_REMOTE_CONTROL_FB:
                 case JOIN_INTERNET_REMOTE_CONTROL_GOOGLE:
+                case JOIN_INTERNET_REMOTE_CONTROL_PUBLIC:
                 {
                     game = null;//ignore game, since we will connect and play game hosted by remote side
                     String host_invitation_data = settings.getString(Settings.GAME_ACTIVITY_REMOTE_INVITATION_DATA_KEY);
@@ -240,9 +245,11 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
                     if (mRemoteCtlType == Settings.RemoteControl.JOIN_INTERNET_REMOTE_CONTROL_FB) {
                         String host_invitation_id = settings.getString(Settings.GAME_ACTIVITY_REMOTE_FB_INVITATION_ID_KEY);
                         mGameView.loadRemoteInternetFb(host_invitation_id, host_invitation_data, BaseActivity.getFbPlayerId(), BaseActivity.getFbPlayerName());
-                    } else {
+                    } else if (mRemoteCtlType == Settings.RemoteControl.JOIN_INTERNET_REMOTE_CONTROL_GOOGLE) {
                         String match_id = settings.getString(Settings.GAME_ACTIVITY_REMOTE_GOOGLE_MATCH_ID, null);
                         mGameView.loadRemoteInternetGoogle(match_id, host_invitation_data, BaseActivity.tryGetGoogleAccountId(), BaseActivity.tryGetGooglePlayerName());
+                    } else {
+                        mGameView.loadRemoteInternetPublic( host_invitation_data, getBaseActivity().getDefaultHostGUID(), getBaseActivity().getDefaultHostRoomName());
                     }
                 }
                 break;
@@ -291,6 +298,7 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
             case CONNECT_LAN_REMOTE_CONTROL:
             case JOIN_INTERNET_REMOTE_CONTROL_FB:
             case JOIN_INTERNET_REMOTE_CONTROL_GOOGLE:
+            case JOIN_INTERNET_REMOTE_CONTROL_PUBLIC:
             case QUICKJOIN_INTERNET_REMOTE_CONTROL_GOOGLE:
                 return false;
             default:
@@ -394,7 +402,7 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         System.out.println("GamePage.onCreateOptionsMenu()");
 
-        boolean isInternetHost =
+        boolean isInvitingInternetHost =
                 mRemoteCtlType == Settings.RemoteControl.ENABLE_INTERNET_REMOTE_CONTROL_FB
                 || mRemoteCtlType == Settings.RemoteControl.ENABLE_INTERNET_REMOTE_CONTROL_GOOGLE;
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -404,7 +412,7 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
         menu.setGroupVisible(R.id.menu_save_load_group, isGameOwner());
         menu.setGroupVisible(R.id.menu_game_power_control_group, isGameOwner());
         menu.setGroupVisible(R.id.menu_remote_control_group, mRemoteCtlType != Settings.RemoteControl.NO_REMOTE_CONTROL);
-        menu.setGroupVisible(R.id.menu_remote_control_internet_host_group, isInternetHost);
+        menu.setGroupVisible(R.id.menu_remote_control_internet_host_group, isInvitingInternetHost);
 
         final MenuItem a_turbo_checkbox_item = menu.findItem(R.id.action_a_turbo);
         final MenuItem b_turbo_checkbox_item = menu.findItem(R.id.action_b_turbo);
@@ -445,7 +453,7 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
         if (mRemoteCtlType == Settings.RemoteControl.NO_REMOTE_CONTROL)//if not in remote control mode, disable chat feature
             chatBtn.setVisibility(View.INVISIBLE);
 
-        if (!isInternetHost)//if we are not internet host, disable invite button
+        if (!isInvitingInternetHost)//if we are not internet host, disable invite button
             inviteBtn.setVisibility(View.INVISIBLE);
 
     }

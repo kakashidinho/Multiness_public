@@ -66,10 +66,12 @@ typedef int socklen_t;
 
 //#define DEBUG
 
-#define USE_NAT_SERVER_ACCEPT_SYSTEM 0
+#define USE_NAT_SERVER_ACCEPT_SYSTEM 1
 
 namespace Nes {
 	namespace Remote {
+		static const uint64_t THIS_GAME_ID = 0;
+
 		static const unsigned short DEFAULT_SERVER_PORT = 62989;
 		static const unsigned short DEFAULT_MAX_INCOMING_CONNECTIONS = 100;
 		
@@ -104,6 +106,7 @@ namespace Nes {
 			ID_USER_PACKET_NAT_SERVER_ERR_GUID_ALREADY_EXIST,
 			ID_USER_PACKET_NAT_SERVER_ACCEPTED,
 #endif
+			ID_USER_PACKET_CREATE_PUBLIC_ROOM = ID_USER_PACKET_ENUM_INVALID_GUID_LIST + 3,
 		};
 
 		static std::mutex g_globalLock;
@@ -192,6 +195,10 @@ namespace Nes {
 			std::lock_guard<std::mutex> lg(g_globalLock);
 			
 			delete m_rakPeer;
+		}
+
+		uint64_t ConnectionHandlerRakNet::getIdForThisApp() {
+			return THIS_GAME_ID;
 		}
 		
 		RakNet::RakNetGUID ConnectionHandlerRakNet::getGUID() const {
@@ -894,7 +901,9 @@ namespace Nes {
 							onConnected(packet->systemAddress, packet->guid, true);
 						break;
 					case ID_ALREADY_CONNECTED:
+#if 0 // ignore for now
 						if (packet->systemAddress != m_natPunchServerAddress)
+#endif
 							break;
 #if USE_NAT_SERVER_ACCEPT_SYSTEM						
 					case ID_USER_PACKET_NAT_SERVER_ERR_GUID_ALREADY_EXIST:
@@ -1011,18 +1020,33 @@ namespace Nes {
 		}
 		
 		/*--------   ConnectionHandlerRakNetServer ------*/
-		ConnectionHandlerRakNetServer::ConnectionHandlerRakNetServer(const RakNet::RakNetGUID* myGUID, const char* natPunchServerAddress, int natPunchServerPort, MasterServerConnectedCallback callback)
+		ConnectionHandlerRakNetServer::ConnectionHandlerRakNetServer(
+				const RakNet::RakNetGUID* myGUID,
+			    const char* natPunchServerAddress, int natPunchServerPort,
+				MasterServerConnectedCallback callback)
+		: ConnectionHandlerRakNetServer(myGUID, natPunchServerAddress, natPunchServerPort, nullptr, callback)
+		{}
+
+		ConnectionHandlerRakNetServer::ConnectionHandlerRakNetServer(
+				const RakNet::RakNetGUID* myGUID,
+				const char* natPunchServerAddress,
+				int natPunchServerPort,
+				PublicServerMetaDataGenerator publicServerMetaGenerator,
+				MasterServerConnectedCallback callback)
 		:ConnectionHandlerRakNet(myGUID, natPunchServerAddress, natPunchServerPort, DEFAULT_SERVER_PORT, DEFAULT_MAX_INCOMING_CONNECTIONS, true, callback),
-		m_reconnectionWaitStartTime(0), m_invitationKey(0), m_dontWait(false), m_autoGenKey(true)
+		m_reconnectionWaitStartTime(0), m_invitationKey(0), m_dontWait(false), m_autoGenKey(true),
+		 m_publicServerMetaGenerator(publicServerMetaGenerator)
 		{}
 		
 		ConnectionHandlerRakNetServer::ConnectionHandlerRakNetServer(
 			const RakNet::RakNetGUID* myGUID,
 			const char* natPunchServerAddress, int natPunchServerPort,
 			uint64_t fixedInvitationKey,
+			PublicServerMetaDataGenerator publicServerMetaGenerator,
 			MasterServerConnectedCallback callback)
 		: ConnectionHandlerRakNet(myGUID, natPunchServerAddress, natPunchServerPort, DEFAULT_SERVER_PORT, DEFAULT_MAX_INCOMING_CONNECTIONS, true, callback),
-			m_reconnectionWaitStartTime(0), m_invitationKey(fixedInvitationKey), m_dontWait(false), m_autoGenKey(false)
+			m_reconnectionWaitStartTime(0), m_invitationKey(fixedInvitationKey), m_dontWait(false), m_autoGenKey(false),
+		  	m_publicServerMetaGenerator(publicServerMetaGenerator)
 		{}
 		void ConnectionHandlerRakNetServer::createNewInvitation() {
 			std::lock_guard<std::mutex> lg(m_sendingLock);
@@ -1045,7 +1069,30 @@ namespace Nes {
 				setInternalError("Failed to accept incoming connection");
 			
 			if (m_autoGenKey)
-				m_invitationKey = RakNet::RakPeerInterface::Get64BitUniqueRandomNumber();//random generate invitation key
+				m_invitationKey = generateInvitationKey();//random generate invitation key
+
+			// make this server public?
+			if (m_publicServerMetaGenerator) {
+				auto meta = m_publicServerMetaGenerator(this);
+
+				// | game_id | meta_length | meta
+				RakNet::BitStream bs;
+
+				uint32_t meta_length = static_cast<uint32_t>(meta.size());
+				if (meta_length == 0)
+					return;
+
+				bs.Write(static_cast<unsigned char>(ID_USER_PACKET_CREATE_PUBLIC_ROOM));
+				bs.Write(THIS_GAME_ID);
+				bs.Write(meta_length);
+				bs.Write(meta.c_str(), meta_length);
+
+				m_rakPeer->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 1, m_natPunchServerAddress, false);
+			}
+		}
+
+		uint64_t ConnectionHandlerRakNetServer::generateInvitationKey() {
+			return RakNet::RakPeerInterface::Get64BitUniqueRandomNumber();
 		}
 		
 		void ConnectionHandlerRakNetServer::onPeerConnected(RakNet::SystemAddress address, RakNet::RakNetGUID guid, bool connected) {

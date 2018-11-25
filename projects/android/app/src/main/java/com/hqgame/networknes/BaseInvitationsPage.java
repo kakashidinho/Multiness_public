@@ -78,11 +78,15 @@ public abstract class BaseInvitationsPage<InvitationObj> extends BasePage {
         return lhs != null && lhs == rhs;
     }
 
+    protected View createView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.page_invitations, container, false);
+    }
+
     @Override
     public View onCreateViewWithDefaultToolbar(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setLabel(getString(R.string.title_invitations));
 
-        View v = inflater.inflate(R.layout.page_invitations, container, false);
+        View v = createView(inflater, container, savedInstanceState);
 
         //create inflater for list view's items
         listItemInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -191,7 +195,7 @@ public abstract class BaseInvitationsPage<InvitationObj> extends BasePage {
         acceptedInvitation(selectedInvitation);
     }
 
-    private void cancelInvitationsFetching() {
+    protected void cancelInvitationsFetching() {
         dismissProgressDialog();
 
         if (invitationsFetchOp != null) {
