@@ -33,6 +33,7 @@
 #include "MessageIdentifiers.h"
 #include "BitStream.h"
 #include "UDPProxyClient.h"
+#include "RakNetStatistics.h"
 
 #include "../../third-party/RemoteController/ConnectionHandler.h"
 
@@ -68,6 +69,7 @@ namespace Nes {
 
 			//IConnectionHandler implementation
 			virtual bool connected() const override;
+			virtual bool isLimitedBySendingBandwidth() const override;
 
 			static uint64_t getIdForThisApp();
 
@@ -86,6 +88,8 @@ namespace Nes {
 			virtual HQRemote::_ssize_t sendRawDataImpl(const void* data, size_t size) override;
 			virtual void flushRawDataImpl() override;
 			virtual HQRemote::_ssize_t sendRawDataUnreliableImpl(const void* data, size_t size) override;
+
+			void flushRawDataNoLock();
 
 			void reconnectToNatServerAsync();
 
@@ -160,6 +164,7 @@ namespace Nes {
 			RakNet::SystemAddress m_remotePeerAddress;
 			RakNet::NatPunchthroughClient m_natPunchthroughClient;
 			NatPunchthroughDebugInterface_Log m_natPunchthroughClientLogger;
+			mutable RakNet::RakNetStatistics m_stats;
 
 			RakNet::SystemAddress m_proxyCoordinatorAddress;
 			RakNet::UDPProxyClient m_proxyClient;

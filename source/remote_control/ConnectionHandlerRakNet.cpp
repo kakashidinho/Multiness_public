@@ -263,6 +263,13 @@ namespace Nes {
 			return m_connected.load(std::memory_order_relaxed);
 		}
 
+		bool ConnectionHandlerRakNet::isLimitedBySendingBandwidth() const {
+			if (!connected())
+				return false;
+			m_rakPeer->GetStatistics(m_remotePeerAddress, &m_stats);
+			return m_stats.isLimitedByCongestionControl;
+		}
+
 		bool ConnectionHandlerRakNet::startImpl()
 		{
 			//create multicast socket
@@ -698,7 +705,7 @@ namespace Nes {
 
 				if (copySize == 0)
 				{
-					flushRawDataImpl();
+					flushRawDataNoLock();
 					copySize = min(size, RELIABLE_MSG_MAX_SIZE);
 				}
 
@@ -709,16 +716,23 @@ namespace Nes {
 
 			return -1;
 		}
-		void ConnectionHandlerRakNet::flushRawDataImpl()
-		{
+		void ConnectionHandlerRakNet::flushRawDataImpl() {
 			std::lock_guard<std::mutex> lg(m_sendingLock);
 
+			flushRawDataNoLock();
+		}
+
+		void ConnectionHandlerRakNet::flushRawDataNoLock()
+		{
 			if (m_connected.load(std::memory_order_relaxed) &&
 				m_reliableBuffer.GetNumberOfBytesUsed() > 0)
 			{
 				m_rakPeer->Send(&m_reliableBuffer, HIGH_PRIORITY, RELIABLE_ORDERED, 1, m_remotePeerAddress, false);
 
 				m_reliableBuffer.Reset();
+
+				//write message's tag
+				m_reliableBuffer.Write(static_cast<unsigned char>(ID_USER_PACKET_ENUM_RELIABLE));
 			}
 		}
 
