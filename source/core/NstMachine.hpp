@@ -74,7 +74,8 @@ namespace Nes
 		class Cheats;
 		class ImageDatabase;
 
-		class NesFrameCompressor;//LHQ
+		class FrameCompressorBase;//LHQ
+		class FrameDecompressorBase;//LHQ
 
 		class Machine
 		{
@@ -159,9 +160,11 @@ namespace Nes
 			typedef void (Machine::*remote_audio_mix_handler)(unsigned char* output, const unsigned char* remoteAudioData, size_t size);
 
 			void StopRemoteControl();
-			void HandleRemoteEventsAsClient(uint &remoteBurstPhase, Sound::Output* soundOutput);
+			void UseFrameCompressorType(int type);
+			void UseFrameDecompressorType(int type);
+			void HandleRemoteEventsAsClient(Video::Output* videoOutput, Sound::Output* soundOutput);
 			void HandleGenericRemoteEventAsClient();
-			void HandleRemoteFrameEventAsClient(uint &remoteBurstPhase);
+			void HandleRemoteFrameEventAsClient(Video::Output* videoOutput);
 			void HandleRemoteAudioEventAsClient(Sound::Output* soundOutput);
 
 			void HandleRemoteEventsAsServer();
@@ -200,7 +203,8 @@ namespace Nes
 
 			std::shared_ptr<HQRemote::Engine> hostEngine;
 			std::shared_ptr<HQRemote::Client> clientEngine;
-			std::shared_ptr<NesFrameCompressor> remoteFrameCompressor;
+			std::shared_ptr<FrameCompressorBase> remoteFrameCompressor;
+			std::shared_ptr<FrameDecompressorBase> remoteFrameDecompressor;
 			int clientState;
 			std::string hostName;//name of remote control's host
 			std::string clientInfo;//name of remote control's client
@@ -209,8 +213,6 @@ namespace Nes
 			size_t numberOfRemoteDataRateIncreaseAttempts;
 			uint64_t lastRemoteDataRateUpdateTime;
 			uint64_t lastRemoteDataRateReducingTime;
-			uint64_t lastReceivedRemoteFrame;
-			uint64_t lastReceivedRemoteFrameTime;
 			uint64_t lastSentInputId;
 			uint64_t lastSentInputTime;
 			uint lastSentInput;

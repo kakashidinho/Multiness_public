@@ -550,14 +550,34 @@ namespace Nes
 			}
 
 			Renderer::Renderer()
-			: filter(NULL) {}
+			:	filter(NULL),
+				enableCacheRenderedFrame(false),
+				cachedRenderedFrameFilter(NULL)
+			{
+				// LHQ
+				cachedRenderedFrame.pixels = new byte[GetCachedRenderedFrameSize()];
+				cachedRenderedFrame.pitch = 0;
+				// end LHQ
+			}
 
 			Renderer::~Renderer()
 			{
 				delete filter;
+				delete[] cachedRenderedFrame.pixels;
+				delete cachedRenderedFrameFilter;
 			}
 
 			//LHQ
+			const void* Renderer::GetCachedRenderedFrameData() const {
+				return cachedRenderedFrame.pixels; 
+			}
+
+			uint Renderer::GetCachedRenderedFrameSize() const {
+				if (filter)
+					return Input::PIXELS * filter->format.bpp / 8;
+				return Input::PIXELS * sizeof(dword);
+			}
+
 			Result Renderer::ResetState() {
 				RenderState curState;
 				GetState(curState);
@@ -662,6 +682,11 @@ namespace Nes
 							break;
 					#endif
 					}
+
+					// use no filtering to render cached frame
+					if (this->cachedRenderedFrameFilter)
+						delete this->cachedRenderedFrameFilter;
+					this->cachedRenderedFrameFilter = new FilterNone(renderState);
 				}
 				catch (const std::bad_alloc&)
 				{
@@ -850,6 +875,13 @@ namespace Nes
 
 						Output::unlockCallback( output );
 					}
+				}
+
+				// LHQ: cache rendered frame (no filtering), useful for sending frame to remote client
+				if (enableCacheRenderedFrame)
+				{
+					this->cachedRenderedFrame.pitch = filter->format.bpp / 8 * Output::WIDTH;
+					this->cachedRenderedFrameFilter->Blit(input, this->cachedRenderedFrame, burstPhase);
 				}
 			}
 		}

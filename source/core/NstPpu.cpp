@@ -107,7 +107,8 @@ namespace Nes
 		model  (PPU_RP2C02),
 		rgbMap (NULL),
 		yuvMap (NULL),
-		colorUseCountShouldRestart(false)//LHQ
+		colorUseCountShouldRestart(false),//LHQ
+		enableColorUseCount(false) //LHQ
 		{
 			cycles.one = PPU_RP2C02_CC;
 			PowerOff();
@@ -1412,7 +1413,8 @@ namespace Nes
 			*target = output.palette[pixel];
 
 			//LHQ
-			RenderPixelPostProcess((uint)(target - output.pixels), *target);
+			if (this->enableColorUseCount)
+				RenderPixelPostProcess((uint)(target - output.pixels), *target);
 		}
 
 		NST_SINGLE_CALL void Ppu::RenderPixel255()
@@ -1442,7 +1444,8 @@ namespace Nes
 			*target = output.palette[pixel];
 
 			//LHQ
-			RenderPixelPostProcess((uint)(target - output.pixels), *target);
+			if (this->enableColorUseCount)
+				RenderPixelPostProcess((uint)(target - output.pixels), *target);
 		}
 
 		NST_NO_INLINE void Ppu::Run()

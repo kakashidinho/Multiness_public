@@ -77,6 +77,11 @@ namespace Nes
 				Result SetHue(int);
 				void Blit(Output&,Input&,uint);
 
+				// LHQ: get cached result of Blit() method. Valid if EnableRenderedFrameCaching(true) was called
+				// The cached result is unfiltered rendered. And each pixel is RGB 32 bits.
+				const void* GetCachedRenderedFrameData() const;
+				uint GetCachedRenderedFrameSize() const;
+
 				Result SetDecoder(const Decoder&);
 
 				Result SetPaletteType(PaletteType);
@@ -247,9 +252,16 @@ namespace Nes
 				State state;
 				Palette palette;
 
+				Output cachedRenderedFrame; // LHQ
+				bool enableCacheRenderedFrame; // LHQ
+				Filter * cachedRenderedFrameFilter; // LHQ
 			public:
 
 				uint bgColor;
+
+				void EnableRenderedFrameCaching(bool e) {
+					this->enableCacheRenderedFrame = e;
+				}
 				
 				Result SetBrightness(int brightness)
 				{

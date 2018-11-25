@@ -22,6 +22,8 @@ set(MY_SRC_FILES
     NstCrc32.cpp
     NstFds.cpp
     NstFile.cpp
+    NstFrameCompressorCommon.cpp
+    NstFrameCompressorZlib.cpp
     NstImage.cpp
     NstImageDatabase.cpp
     NstLog.cpp

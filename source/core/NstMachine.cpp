@@ -29,6 +29,11 @@
 #include "NstNsf.hpp"
 #include "NstImageDatabase.hpp"
 #include "NstRemoteEvent.hpp"
+#include "NstFrameCompressorCommon.hpp"
+#if REMOTE_USE_H264
+#include "NstFrameCompressorH264.hpp"
+#endif
+#include "NstFrameCompressorZlib.hpp"
 #include "input/NstInpDevice.hpp"
 #include "input/NstInpAdapter.hpp"
 #include "input/NstInpPad.hpp"
@@ -43,43 +48,22 @@
 #include <algorithm>
 #include <assert.h>
 
-#ifdef WIN32
-#	define thread_local __declspec(thread) 
-#	define USE_PTHREAD_KEY_FOR_REMOTE_FRAME_COMPRESS 0
-#else
-#	define USE_PTHREAD_KEY_FOR_REMOTE_FRAME_COMPRESS 1
-#	include <pthread.h>
-#endif
-
-#define DEFAULT_REMOTE_FPS 28
-#define DEFAULT_REMOTE_FRAME_INTERVAL (1.0 / DEFAULT_REMOTE_FPS)
-
-#define SLOW_NET_REMOTE_FPS 20
-#define SLOW_NET_REMOTE_FRAME_INTERVAL (1.0 / SLOW_NET_REMOTE_FPS)
-
 #define REMOTE_INPUT_SEND_INTERVAL 0.2
-
-#define ENABLE_REMAP_REMOTE_COLOR 1
-#define ENABLE_REMOTE_KEYFRAME 1
-#define ENABLE_REMOTE_FRAME_COMPRESS 1
 
 #define REMOTE_RCV_RATE_UPDATE_INTERVAL 2.0
 #define REMOTE_SND_RATE_UPDATE_INTERVAL 2.0
 #define REMOTE_DATA_RATE_INCREASE_INTERVAL 30.0
-#define MAX_REMOTE_DATA_RATE_INCREASE_ATTEMPTS 5
-#define MIN_REMOTE_DATA_RATE_REPORTS_TO_START_ADAPT_FPS 5
-#define MIN_REMOTE_DATA_RATE_REPORTS_TO_START_ADAPT_RES 5
+#define MAX_REMOTE_DATA_RATE_INCREASE_ATTEMPTS 2
+#define MIN_REMOTE_DATA_RATE_REPORTS_TO_START_ADAPT_CLIENT_SIDE 5
+#define MIN_REMOTE_DATA_RATE_REPORTS_TO_START_ADAPT_SERVER_SIDE 5
 #define REMOTE_DATA_ADAPT_TO_LOWER_FPS_DECISION_FACTOR 1.0 / 5
 #define REMOTE_DATA_ADAPT_TO_HIGHER_FPS_DECISION_FACTOR 9.0 / 10
-#define REMOTE_DATA_ADAPT_TO_LOWER_RES_DECISION_FACTOR 1.0 / 7
-#define REMOTE_DATA_ADAPT_TO_HIGHER_RES_DECISION_FACTOR 9.0 / 10
+#define REMOTE_DATA_SERVER_SIDE_ADAPT_TO_SLOW_NET_FACTOR 1.0 / 7
+#define REMOTE_DATA_SERVER_SIDE_ADAPT_TO_FAST_NET_FACTOR 9.0 / 10
 
-#if ENABLE_REMOTE_FRAME_COMPRESS
-#	define ENABLE_REMOTE_FRAME_SIZE_LIMIT 1
-#	define MIN_REMOTE_SEND_RATE_BUDGET (50 * 1024)
-#endif//if ENABLE_REMOTE_FRAME_COMPRESS
+#define REMOTE_DATE_RATE_IS_SLOW(rcvRate, sndRate) (rcvRate < sndRate * 0.8f)
 
-#define REMOTE_KEYFRAME_INTERVAL 4//interval that one frame becomes keyframe
+#define REMOTE_DATA_RATE_COUNTERS_RESET_INTERVAL 20
 
 #define REMOTE_FRAME_BUNDLE 1
 
@@ -87,10 +71,8 @@
 #define REMOTE_AUDIO_STEREO_CHANNELS false
 
 #if defined DEBUG || defined _DEBUG
-#	define PROFILE_REMOTE_FRAME_COMPRESSION 0
 #	define PROFILE_EXECUTION_TIME 0
 #else
-#	define PROFILE_REMOTE_FRAME_COMPRESSION 0
 #	define PROFILE_EXECUTION_TIME 0
 #endif//#if defined DEBUG || defined _DEBUG
 
@@ -111,118 +93,7 @@ namespace Nes
 {
 	namespace Core
 	{
-		//encode a ULEB128Ex value.
-		static inline void encodeULEB128Ex(uint32_t Value, unsigned char *p, unsigned int bitOffset, unsigned char** nextAddr, unsigned int *nextBitOffset) {
-			assert(bitOffset < 8 && (bitOffset % 4) == 0);
-
-			do {
-				unsigned char HalfByte = Value & 0x7;
-				Value >>= 3;
-				if (Value != 0)
-					HalfByte |= 0x8; // Mark this half byte to show that more half bytes will follow.
-				*p &= ~(0xf << bitOffset);
-				*p |= HalfByte << bitOffset;
-				bitOffset += 4;
-
-				if (bitOffset == 8)
-				{
-					p++;
-					bitOffset = 0;
-				}
-			} while (Value != 0);
-
-			*nextAddr = p;
-			*nextBitOffset = bitOffset;
-		}
-
-		//decode a ULEB128 value.
-		static inline uint32_t decodeULEB128Ex(const unsigned char* address, unsigned int bitOffset, const unsigned char **nextAddr, unsigned int* nextBitOffset) {
-			assert(bitOffset < 8 && (bitOffset % 4) == 0);
-			
-			const unsigned char* p = address;
-			uint32_t value = 0;
-			unsigned int shift = 0;
-			unsigned char halfByte;
-			int steps = 0;//in case the data is corrupted
-			do {
-				halfByte = ((*p) >> bitOffset) & 0xf;
-				value += uint32_t(halfByte & 0x7) << shift;
-				shift += 3;
-
-				bitOffset += 4;
-				if (bitOffset == 8)
-				{
-					p++;
-					bitOffset = 0;
-				}
-			} while (halfByte >= 0x8 && (++steps) < 4);
-
-			*nextAddr = p;
-			*nextBitOffset = bitOffset;
-
-			return value;
-		}
-
-		//encode a SLEB128 value
-		static inline void encodeSLEB128Ex(int32_t Value, unsigned char *p, unsigned int bitOffset, unsigned char** nextAddr, unsigned int *nextBitOffset) {
-			assert(bitOffset < 8 && (bitOffset % 4) == 0);
-			
-			bool more;
-			do {
-				unsigned char HalfByte = Value & 0x7;
-				Value >>= 3;
-
-				more = !((((Value == 0) && ((HalfByte & 0x4) == 0)) ||
-						 ((Value == -1) && ((HalfByte & 0x4) != 0))));
-				if (more)
-					HalfByte |= 0x8; // Mark this half byte to show that more half bytes will follow.
-
-				*p &= ~(0xf << bitOffset);
-				*p |= HalfByte << bitOffset;
-				bitOffset += 4;
-
-				if (bitOffset == 8)
-				{
-					p++;
-					bitOffset = 0;
-				}
-			} while (more);
-
-			*nextAddr = p;
-			*nextBitOffset = bitOffset;
-		}
-
-		//decode a SLEB128 value.
-		static inline int32_t decodeSLEB128Ex(const unsigned char* address, unsigned int bitOffset, const unsigned char **nextAddr, unsigned int* nextBitOffset) {
-			assert(bitOffset < 8 && (bitOffset % 4) == 0);
-
-			const unsigned char* p = address;
-			int32_t value = 0;
-			unsigned int shift = 0;
-			unsigned char halfByte;
-			int steps = 0;//in case the data is corrupted
-			do {
-				halfByte = ((*p) >> bitOffset) & 0xf;
-				value |= (halfByte & 0x7) << shift;
-				shift += 3;
-
-				bitOffset += 4;
-				if (bitOffset == 8)
-				{
-					p++;
-					bitOffset = 0;
-				}
-			} while (halfByte >= 0x8 && (++steps) < 4);
-
-			//sign extend negative numbers.
-			if (halfByte & 0x4)
-				value |= int32_t(-1) << shift;
-
-			*nextAddr = p;
-			*nextBitOffset = bitOffset;
-
-			return value;
-		}
+		
 
 		/*--------------- NesFrameCapturer -------------------*/
 		class NesFrameCapturer : public HQRemote::IFrameCapturer {
@@ -245,504 +116,6 @@ namespace Nes
 		private:
 			Machine& emulator;
 		};
-
-		class NesFrameCompressor : public HQRemote::ZlibImgComressor {
-		public:
-			NesFrameCompressor()
-				: HQRemote::ZlibImgComressor(ENABLE_REMOTE_FRAME_COMPRESS ? 0 : -1),
-				downSample(false), m_lastKeyframeId(0), m_avgKeyframeSize(0)
-				, m_compressSizeBudget(0), m_dataRateBudget(0)
-#if PROFILE_REMOTE_FRAME_COMPRESSION
-				, m_avgCompressionTime(0), m_totalCompressionWindowTime(0)
-#endif
-			{
-			}
-			
-			~NesFrameCompressor()
-			{
-			}
-
-			std::atomic<uint32_t> downSample;
-
-			virtual HQRemote::DataRef compress(HQRemote::ConstDataRef src, uint64_t id, uint32_t width, uint32_t height, unsigned int numChannels) override
-			{
-				assert(width == Core::Video::Screen::WIDTH);
-				assert(height == Core::Video::Screen::HEIGHT);
-				assert(numChannels == 1);
-
-				uint32_t willDownSample = this->downSample.load(std::memory_order_relaxed);
-
-#if PROFILE_REMOTE_FRAME_COMPRESSION
-				HQRemote::ScopedTimeProfiler scopedProfiler("framecomp", m_avgCompressionTimeLock, m_avgCompressionTime, m_totalCompressionWindowTime);
-#endif//#if PROFILE_REMOTE_FRAME_COMPRESSION
-
-				//captured frame data = burst phase | screen | colors' usage count table
-				auto screen = (const Video::Screen*)(src->data() + 1 *  sizeof(uint32_t));
-				auto colorUseCounts = (const Ppu::ColorUseCount*)(screen + 1);
-
-#if ENABLE_REMAP_REMOTE_COLOR
-				uint16_t remapColorTbl[Video::Screen::PALETTE];
-				//make sure uint16_t can hold any color index
-				static_assert(sizeof(remapColorTbl[0]) == sizeof(Video::Screen::Pixel), "Incompatible type");
-				uint32_t numUsedColors = 0;
-#else
-				uint numUsedColors = Video::Screen::PALETTE;
-#endif//if ENABLE_REMAP_REMOTE_COLOR
-
-				//packed data structure = keyframe id | burst phase | downsample flag | num colors | pixels | palette table
-				const auto bufferSize = sizeof(Video::Screen) + sizeof(uint32_t) * 3 + sizeof(uint64_t);
-#if USE_PTHREAD_KEY_FOR_REMOTE_FRAME_COMPRESS
-				auto buffer = getOrCreateThreadSpecificBuffer(bufferSize);
-				if (!buffer)
-					return nullptr;
-#else
-				static thread_local unsigned char buffer[bufferSize];//TODO: local variable (may cause stack overflow) or static thread local buffer?
-#endif//if USE_PTHREAD_KEY_FOR_REMOTE_FRAME_COMPRESS
-				
-				uint64_t* const pKeyFrameId = (uint64_t*)buffer;
-				uint32_t* const pBurstPhase = (uint32_t*)(pKeyFrameId + 1);
-				uint32_t* const pDownSample = pBurstPhase + 1;
-				uint32_t* const pNumUsedColors = pDownSample + 1;
-
-				memcpy(pBurstPhase, src->data(), sizeof(uint32_t));
-				size_t stepsX, stepsY;
-
-
-				size_t startX, startY, endY;
-				startX = startY = 0;
-				stepsX = 1;
-				endY = Video::Screen::HEIGHT;
-				if (willDownSample)
-				{
-					stepsY = 2;
-				}
-				else {
-					stepsY = 1;
-				}
-
-				try {
-
-#if ENABLE_REMOTE_KEYFRAME
-					bool isKeyFrame = false;
-					std::unique_lock<std::mutex> lk(m_lock, std::defer_lock);
-#endif//ENABLE_REMOTE_KEYFRAME
-
-#if ENABLE_REMAP_REMOTE_COLOR
-					
-					//remap the color so that color with most number of using pixels will have the smallest index
-					memset(remapColorTbl, 0, sizeof(remapColorTbl));
-					for (uint32_t i = 0; i < Video::Screen::PALETTE && colorUseCounts[i].count != 0; ++i) {
-						remapColorTbl[colorUseCounts[i].idx] = numUsedColors++;
-					}
-#endif//if ENABLE_REMAP_REMOTE_COLOR
-
-					if (numUsedColors == 0)
-						return nullptr;
-					
-				beginCompress:
-					unsigned char* packedPixels = (unsigned char*)(pNumUsedColors + 1);
-					unsigned int packedPixelsBitOffset = 0;
-
-					memcpy(pDownSample, &willDownSample, sizeof willDownSample);
-					memcpy(pNumUsedColors, &numUsedColors, sizeof numUsedColors);
-
-#if ENABLE_REMOTE_KEYFRAME
-					if (willDownSample || ((id - 1) % REMOTE_KEYFRAME_INTERVAL) == 0 || m_lastKeyframeId == 0)
-					{
-						//this is keyframe
-						if (!willDownSample)
-						{
-							isKeyFrame = true;
-
-							lk.lock();//lock other threads until we done constructing keyframe
-						}
-#else//ENABLE_REMOTE_KEYFRAME
-					{
-#endif//ENABLE_REMOTE_KEYFRAME
-
-						memset(pKeyFrameId, 0, sizeof(m_lastKeyframeId));
-
-						//update the pixels' color index
-						for (size_t y = startY; y < endY; y += stepsY) {
-							for (size_t x = startX; x < Video::Screen::WIDTH; x += stepsX) {
-								size_t i = y * Video::Screen::WIDTH + x;
-								uint32_t oldColorIdx = screen->pixels[i];
-#if ENABLE_REMAP_REMOTE_COLOR
-								auto newColorIdx = remapColorTbl[oldColorIdx];
-#else
-								auto newColorIdx = oldColorIdx;
-#endif//if ENABLE_REMAP_REMOTE_COLOR
-
-								const unsigned char* oldPtr = packedPixels;
-								auto oldOffset = packedPixelsBitOffset;
-								encodeULEB128Ex(newColorIdx, packedPixels, packedPixelsBitOffset, &packedPixels, &packedPixelsBitOffset);
-
-#if defined DEBUG || defined _DEBUG
-								if (newColorIdx > 7)
-								{
-									bool valid = (decodeULEB128Ex(oldPtr, oldOffset, &oldPtr, &oldOffset) == newColorIdx);
-									if (!valid)
-									{
-										int a = 0;//debugging
-									}
-									assert(valid);
-								}
-#endif
-
-#if ENABLE_REMOTE_KEYFRAME
-								//cache keyframe's pixel
-								if (!willDownSample)
-									m_lastKeyframe.pixels[i] = newColorIdx;
-#endif//if ENABLE_REMOTE_KEYFRAME
-
-							}//for (size_t x = startX; x < Video::Screen::WIDTH; x += stepsX)
-						}//for (size_t y = startY; y < endY; y += stepsY)
-					}//if (((id - 1) % REMOTE_KEYFRAME_INTERVAL) == 0 || m_lastKeyframeId == 0)
-
-#if ENABLE_REMOTE_KEYFRAME
-					else {
-						lk.lock();//wait for keyframe to be available
-						auto timeout = !m_cv.wait_for(lk, std::chrono::milliseconds(5000), [this, id] { return !m_running || id - m_lastKeyframeId < REMOTE_KEYFRAME_INTERVAL; });
-						lk.unlock();
-
-						if (timeout || !m_running)
-						{
-							if (timeout)
-								HQRemote::Log("compressor dropped a frame due to timeout");
-							return nullptr;
-						}
-						memcpy(pKeyFrameId, &m_lastKeyframeId, sizeof(m_lastKeyframeId));
-
-						//store the pixels' delta color index
-						for (size_t y = startY; y < endY; y += stepsY) {
-							for (size_t x = startX; x < Video::Screen::WIDTH; x += stepsX) {
-								size_t i = y * Video::Screen::WIDTH + x;
-								uint32_t oldColorIdx = screen->pixels[i];
-								uint32_t keyColorIdx = m_lastKeyframe.pixels[i];
-#if ENABLE_REMAP_REMOTE_COLOR
-								auto newColorIdx = remapColorTbl[oldColorIdx];
-#else
-								auto newColorIdx = oldColorIdx;
-#endif//if ENABLE_REMAP_REMOTE_COLOR
-								int32_t deltaColor = newColorIdx - keyColorIdx;
-
-								const unsigned char* oldPtr = packedPixels;
-								auto oldOffset = packedPixelsBitOffset;
-								encodeSLEB128Ex(deltaColor, packedPixels, packedPixelsBitOffset, &packedPixels, &packedPixelsBitOffset);
-
-#if defined DEBUG || defined _DEBUG
-								if (deltaColor > 7 || deltaColor < 0)
-								{
-									bool valid = (decodeSLEB128Ex(oldPtr, oldOffset, &oldPtr, &oldOffset) == deltaColor);
-									if (!valid)
-									{
-										int a = 0;//debugging
-									}
-									assert(valid);
-								}
-#endif
-							}//for (size_t x = startX; x < Video::Screen::WIDTH; x += stepsX)
-						}//for (size_t y = startY; y < endY; y += stepsY)
-					}//else of if (((id - 1) % REMOTE_KEYFRAME_INTERVAL) == 0 || m_lastKeyframeId == 0)
-
-					 //done constructing keyframe, wake other compression threads
-					if (isKeyFrame)
-					{
-						m_lastKeyframeId = id;
-
-						m_cv.notify_all();
-						lk.unlock();
-					}//if (isKeyFrame)
-#endif //if ENABLE_REMOTE_KEYFRAME
-
-					//write new color palette table
-					if (packedPixelsBitOffset > 0)
-						packedPixels++;
-					uint32_t *newColorTbl = (uint32_t*)(packedPixels);
-
-#if ENABLE_REMAP_REMOTE_COLOR
-					//fill the table
-					for (uint32_t i = 0; i < numUsedColors; ++i)
-					{
-						auto oldIdx = colorUseCounts[i].idx;
-						auto newIndex = remapColorTbl[oldIdx];
-
-						auto color = screen->palette[oldIdx];
-						auto newColorEntry = newColorTbl + newIndex;
-						
-						//don't use assignment because of potential misaligned integer's address
-						memcpy(newColorEntry, &color, sizeof(color));
-
-#if ENABLE_REMOTE_KEYFRAME
-						//cache keyframe's palette entry
-						if (isKeyFrame)
-							m_lastKeyframe.palette[newIndex] = color;
-#endif//ENABLE_REMOTE_KEYFRAME
-					}
-#else// if ENABLE_REMAP_REMOTE_COLOR
-					//clone the palette table
-					memcpy(newColorTbl, screen->palette, sizeof(screen->palette));
-					//cache keyframe's palette entry
-					if (m_lastKeyframeId == id)
-						memcpy(m_lastKeyframe.palette, screen->palette, sizeof(screen->palette));
-#endif//if ENABLE_REMAP_REMOTE_COLOR
-
-					size_t packedSize = (unsigned char*)(newColorTbl + *pNumUsedColors) - buffer;
-
-					//compress frame
-					auto dataToSend = ZlibImgComressor::compress(buffer, packedSize, width, height, numChannels);
-
-					//mutex scope
-					{
-						std::lock_guard<std::mutex> lg(m_lock);
-
-#if ENABLE_REMOTE_KEYFRAME
-						if (!isKeyFrame)//cannot downsample keyframe
-#endif//if ENABLE_REMOTE_KEYFRAME
-						{
-							//frame too large?
-							auto compressSizeBudget = m_compressSizeBudget.load(std::memory_order_relaxed);
-							if (!willDownSample &&
-#if ENABLE_REMOTE_FRAME_SIZE_LIMIT
-								compressSizeBudget > 0 && (HQRemote::_ssize_t)dataToSend->size() > compressSizeBudget
-#else
-								(HQRemote::_ssize_t)dataToSend->size() > m_avgKeyframeSize * 1.05
-#endif//if ENABLE_REMOTE_FRAME_SIZE_LIMIT
-								)
-							{
-								willDownSample = 1 | ADAPTIVE_DOWNSAMPLE_FLAG;//downsample
-								stepsY = 2;
-								//restart
-								goto beginCompress;
-							}
-						}
-					}//mutex scope
-
-#if ENABLE_REMOTE_KEYFRAME
-					if (isKeyFrame && dataToSend) {
-						if (m_avgKeyframeSize == 0)
-							m_avgKeyframeSize = dataToSend->size();
-						else
-							m_avgKeyframeSize = 0.8 * m_avgKeyframeSize + 0.2 * dataToSend->size();
-					}
-#endif//ENABLE_REMOTE_KEYFRAME
-
-					return dataToSend;
-				}
-				catch (...) {
-					return nullptr;
-				}
-			}
-
-			bool decompress(const void* compressed, size_t compressedSize, uint64_t id, Video::Screen& screen, uint& burstPhase, uint& permaDownsample)
-			{
-				uint32_t width, height, numChannels;
-				auto packedFrame = ZlibImgComressor::decompress(compressed, compressedSize, width, height, numChannels);
-				if (packedFrame != nullptr)
-				{
-					assert(width == Core::Video::Screen::WIDTH);
-					assert(height == Core::Video::Screen::HEIGHT);
-					assert(numChannels == 1);
-
-					const unsigned char* pEnd = packedFrame->data() + packedFrame->size();
-					auto fullPixels = sizeof(((Video::Screen*)0)->pixels) / sizeof(Video::Screen::Pixel);
-
-					//packed data structure = keyframe Id | burst phase | downsample flag | num colors | pixels | palette table
-					//parse burs phase & downsampling flag & number of used colors
-					uint64_t keyFrameId;
-					uint32_t wasDownsampled, numColors;
-					size_t stepsX, stepsY;
-					size_t startX, startY, endY;
-
-					memcpy(&keyFrameId, packedFrame->data(), sizeof(keyFrameId));
-					memcpy(&burstPhase, packedFrame->data() + sizeof(keyFrameId), sizeof(burstPhase));
-					memcpy(&wasDownsampled, packedFrame->data() + sizeof(keyFrameId) + sizeof(burstPhase), sizeof(wasDownsampled));
-					memcpy(&numColors, packedFrame->data() + sizeof(keyFrameId) + sizeof(burstPhase) + sizeof(wasDownsampled), sizeof(numColors));
-					const unsigned char* packedPixels = packedFrame->data() + sizeof(keyFrameId) + sizeof(burstPhase) + sizeof(wasDownsampled) + sizeof(numColors);
-
-					if (numColors > Video::Screen::PALETTE)//corruption
-						return false;
-
-					permaDownsample = 0;//indicates that host is using low resolution permanently or adaptively
-
-					if (wasDownsampled != 0)
-					{
-						startX = 0;
-						startY = 0;
-						endY = Video::Screen::HEIGHT;
-
-						stepsX = 1;
-						stepsY = 2;
-
-						assert(Video::Screen::PIXELS < fullPixels);
-						screen.pixels[Video::Screen::PIXELS] = 2;//mark the element after last pixel to indicate that we use downsampled frame
-
-						if (!(wasDownsampled & ADAPTIVE_DOWNSAMPLE_FLAG))//set <permaDownsample> to 1 if this is not adaptive downsample
-							permaDownsample = 1;
-					}
-					else {
-						startX = startY = 0;
-						endY = Video::Screen::HEIGHT;
-						stepsX = stepsY = 1;
-
-						assert(Video::Screen::PIXELS < fullPixels);
-						screen.pixels[Video::Screen::PIXELS] = 0;//mark the element after last pixel to indicate that we don't use downsampled frame
-					}
-
-					//unpacking pixels
-					unsigned int packedPixelsBitOffset = 0;
-
-					if (keyFrameId == 0)
-					{
-						//this is key frame or downsampled frame, it has full color info
-						if (!wasDownsampled)
-							m_lastKeyframeId = id;
-
-						//decode pixels' color directly
-						for (size_t y = startY; y < endY; y += stepsY) {
-							for (size_t x = startX; x < Video::Screen::WIDTH; x += stepsX) {
-								size_t i = y * Video::Screen::WIDTH + x;
-								auto colorIdx = (Video::Screen::Pixel)decodeULEB128Ex(packedPixels, packedPixelsBitOffset, &packedPixels, &packedPixelsBitOffset);
-								if (colorIdx < numColors)
-									screen.pixels[i] = colorIdx;
-								else
-									screen.pixels[i] = 0;
-
-								if (!wasDownsampled)
-									m_lastKeyframe.pixels[i] = screen.pixels[i];
-							}//for (size_t x = startX; x < Video::Screen::WIDTH; x += stepsX)
-						}//for (size_t y = startY; y < endY; y += stepsY)
-					}//if (keyFrameId == 0)
-					else {
-						//decode pixels' color base on difference from last key frame's pixels
-						if (m_lastKeyframeId != keyFrameId)
-							return false;
-
-						for (size_t y = startY; y < endY; y += stepsY) {
-							for (size_t x = startX; x < Video::Screen::WIDTH; x += stepsX) {
-								size_t i = y * Video::Screen::WIDTH + x;
-								auto delta = decodeSLEB128Ex(packedPixels, packedPixelsBitOffset, &packedPixels, &packedPixelsBitOffset);
-								Video::Screen::Pixel colorIdx = delta + m_lastKeyframe.pixels[i];
-
-								if (colorIdx < numColors)
-									screen.pixels[i] = colorIdx;
-								else
-									screen.pixels[i] = 0;
-							}//for (size_t x = startX; x < Video::Screen::WIDTH; x += stepsX)
-						}//for (size_t y = startY; y < endY; y += stepsY)
-					}//if (keyFrameId == 0)
-
-					//copy the color palette table
-					if (packedPixelsBitOffset > 0)
-						packedPixels++;
-					const uint32_t *colorTbl = (const uint32_t*)(packedPixels);
-					if ((unsigned char*)(colorTbl + numColors) > pEnd)//corruption
-						return false;
-					memcpy(screen.palette, colorTbl, numColors * sizeof(colorTbl[0]));
-
-					if (keyFrameId == 0 && !wasDownsampled)
-					{
-						//cache key frame's palette
-						memcpy(m_lastKeyframe.palette, screen.palette, numColors * sizeof(colorTbl[0]));
-					}//if (keyFrameId == 0)
-
-					return true;
-				}//if (packedFrame != nullptr)
-
-				return false;
-			}
-
-			void start() {
-				m_running = true;
-
-				m_lastKeyframeId = 0;
-				m_avgKeyframeSize = 0;
-			}
-
-			void stop() {
-				std::lock_guard<std::mutex> lg(m_lock);
-				m_running = false;
-
-				//wake all waiting threads
-				m_cv.notify_all();
-			}
-
-			// bytes per second
-			void enableDataRateBudget(size_t rate, double frame_interval) {
-				m_dataRateBudget = rate;
-#if defined MIN_REMOTE_SEND_RATE_BUDGET
-				if (m_dataRateBudget > 0 && m_dataRateBudget < MIN_REMOTE_SEND_RATE_BUDGET)
-					m_dataRateBudget = MIN_REMOTE_SEND_RATE_BUDGET;
-#endif
-				HQRemote::Log("frame compressor's data rate budget changed to %u", (uint)m_dataRateBudget);
-				updateFrameInterval(frame_interval);
-			}
-
-			void updateFrameInterval(double frame_interval) {
-				if (m_dataRateBudget && frame_interval > 0.001) {
-					m_compressSizeBudget = (size_t)(frame_interval * m_dataRateBudget);
-				} else {
-					m_compressSizeBudget = 0;
-				}
-
-				HQRemote::Log("frame compressor's size budget changed to %u", (uint)m_compressSizeBudget.load(std::memory_order_relaxed));
-			}
-
-		private:
-			
-#if USE_PTHREAD_KEY_FOR_REMOTE_FRAME_COMPRESS
-			static void makeThreadKey()
-			{
-				pthread_key_create(&s_threadKey, onThreadExit);
-			}
-				
-			static void onThreadExit(void * arg)
-			{
-				//release thread key and buffer
-				auto buffer = (unsigned char*)arg;
-				
-				free(buffer);
-			}
-				
-			static unsigned char* getOrCreateThreadSpecificBuffer(size_t size)
-			{
-				pthread_once(&s_threadKeyCreateOnce, makeThreadKey);
-				
-				auto threadBuffer = (unsigned char*)pthread_getspecific(s_threadKey);
-				if (threadBuffer == nullptr)
-				{
-					threadBuffer = (unsigned char*)malloc(size);
-					if (threadBuffer)
-						pthread_setspecific(s_threadKey, threadBuffer);
-				}
-				
-				return threadBuffer;
-			}
-				
-			static pthread_once_t s_threadKeyCreateOnce;
-			static pthread_key_t s_threadKey;
-#endif//#if USE_PTHREAD_KEY_FOR_REMOTE_FRAME_COMPRESS
-
-#if PROFILE_REMOTE_FRAME_COMPRESSION
-			std::mutex m_avgCompressionTimeLock;
-			float m_avgCompressionTime;
-			float m_totalCompressionWindowTime;
-#endif //if PROFILE_REMOTE_FRAME_COMPRESSION
-				
-			std::atomic<bool> m_running;
-			std::mutex m_lock;
-			std::condition_variable m_cv;
-			Video::Screen m_lastKeyframe;
-			uint64_t m_lastKeyframeId;
-			double m_avgKeyframeSize;
-			std::atomic<size_t> m_compressSizeBudget;
-			size_t m_dataRateBudget;
-		};
-		
-#if USE_PTHREAD_KEY_FOR_REMOTE_FRAME_COMPRESS
-		pthread_once_t NesFrameCompressor::s_threadKeyCreateOnce = PTHREAD_ONCE_INIT;
-		pthread_key_t NesFrameCompressor::s_threadKey;
-#endif // if USE_PTHREAD_KEY_FOR_REMOTE_FRAME_COMPRESS
 
 		class NesServerAudioCapturer : public HQRemote::IAudioCapturer {
 		public:
@@ -791,7 +164,6 @@ namespace Nes
 			cheats(NULL),
 			imageDatabase(NULL),
 			ppu(cpu),
-			remoteFrameCompressor(std::make_shared<NesFrameCompressor>()),
 			lastSentInputId(0), lastSentInputTime(0), 
 			avgExecuteTime(0), executeWindowTime(0),
 			avgCpuExecuteTime(0), cpuExecuteWindowTime(0),
@@ -808,7 +180,10 @@ namespace Nes
 			Unload();
 
 			//frame compressor must be stopped before stopping host engine to prevent deadlock
-			this->remoteFrameCompressor->stop();
+			if (this->remoteFrameCompressor)
+				this->remoteFrameCompressor->Stop();
+			if (this->remoteFrameDecompressor)
+				this->remoteFrameDecompressor->Stop();
 			if (hostEngine)
 				hostEngine->stop();
 			if (clientEngine)
@@ -929,8 +304,9 @@ namespace Nes
 
 				this->hostName.clear();//invalidate host name until receiving update from host
 
-				this->lastReceivedRemoteFrameTime = 0;
-				this->lastReceivedRemoteFrame = 0;
+				// by default use zlib frame decompressor
+				UseFrameDecompressorType(FRAME_COMPRESSOR_TYPE_ZLIB);
+
 				this->lastSentInputId = 0;
 				this->lastSentInput = 0;
 				this->lastSentInputTime = 0;
@@ -956,6 +332,10 @@ namespace Nes
 
 		void Machine::StopRemoteControl()
 		{
+			if (remoteFrameDecompressor) {
+				remoteFrameDecompressor->Stop();
+				remoteFrameDecompressor = nullptr;
+			}
 			if (clientEngine)
 			{
 				clientEngine->stop();
@@ -968,6 +348,52 @@ namespace Nes
 
 
 			state &= ~uint(Api::Machine::REMOTE);
+		}
+
+		void Machine::UseFrameCompressorType(int type) {
+			if (!this->hostEngine)
+				return;
+			if (!this->remoteFrameCompressor || this->remoteFrameCompressor->type != type) {
+				switch (type) {
+#if REMOTE_USE_H264
+				case FRAME_COMPRESSOR_TYPE_H264:
+					this->remoteFrameCompressor = std::make_shared<H264FrameCompressor>(*this);
+					ppu.EnableColorUseCount(false);
+					renderer.EnableRenderedFrameCaching(true);
+					break;
+#endif
+				default:
+					this->remoteFrameCompressor = std::make_shared<ZlibFrameCompressor>(*this->hostEngine);
+					ppu.EnableColorUseCount(true);
+					renderer.EnableRenderedFrameCaching(false);
+				}
+
+				this->remoteFrameCompressor->Start();
+				this->hostEngine->setImageCompressor(this->remoteFrameCompressor);
+			}
+			else {
+				this->remoteFrameCompressor->Restart();
+			}
+		}
+
+		void Machine::UseFrameDecompressorType(int type) {
+			if (!this->clientEngine)
+				return;
+			if (!this->remoteFrameDecompressor || this->remoteFrameDecompressor->type != type) {
+				switch (type) {
+#if REMOTE_USE_H264
+				case FRAME_COMPRESSOR_TYPE_H264:
+					this->remoteFrameDecompressor = std::make_shared<H264FrameDecompressor>(*this, *this->clientEngine);
+					this->clientEngine->setMaxPendingFrames(10);
+					break;
+#endif
+				default:
+					this->remoteFrameDecompressor = std::make_shared<ZlibFrameDecompressor>(*this, *this->clientEngine);
+					this->clientEngine->setMaxPendingFrames(4);
+				}
+			}
+
+			this->remoteFrameDecompressor->Start();
 		}
 
 		Result Machine::EnableRemoteController(uint idx, int networkListenPort, const char* hostInfo) {
@@ -984,12 +410,17 @@ namespace Nes
 			
 			auto frameCapturer = std::make_shared<NesFrameCapturer>(*this);
 			auto audioCapturer = std::make_shared<NesServerAudioCapturer>(*this);
-			this->hostEngine = std::make_shared<HQRemote::Engine>(connHandler, frameCapturer, audioCapturer, this->remoteFrameCompressor, REMOTE_FRAME_BUNDLE);
+
+			this->hostEngine = std::make_shared<HQRemote::Engine>(connHandler, frameCapturer, audioCapturer, nullptr, REMOTE_FRAME_BUNDLE);
 			this->hostEngine->setDesc(hostInfo);
 
-			this->remoteFrameCompressor->start();
+			// by default use zlib frame compressor
+			UseFrameCompressorType(FRAME_COMPRESSOR_TYPE_ZLIB);
+
+			// start server engine
 			if (!this->hostEngine->start()) {
-				this->remoteFrameCompressor->stop();
+				this->remoteFrameCompressor->Stop();
+				this->remoteFrameCompressor = nullptr;
 				this->hostEngine = nullptr;
 
 				Api::Machine::eventCallback(Api::Machine::EVENT_REMOTE_CONTROLLER_ENABLED, (Result)RESULT_ERR_CONNECTION);
@@ -1045,7 +476,10 @@ namespace Nes
 			//TODO: support more than 1 remote controller
 			if (hostEngine) {
 				//frame compressor must be stopped before stopping host engine to prevent deadlock
-				this->remoteFrameCompressor->stop();
+				if (this->remoteFrameCompressor) {
+					this->remoteFrameCompressor->Stop();
+					this->remoteFrameCompressor = nullptr;
+				}
 
 				hostEngine->stop();
 				hostEngine = nullptr;
@@ -1168,7 +602,7 @@ namespace Nes
 			}
 		}
 
-		void Machine::HandleRemoteEventsAsClient(uint &remoteBurstPhase, Sound::Output* soundOutput) {
+		void Machine::HandleRemoteEventsAsClient(Video::Output* videoOutput, Sound::Output* soundOutput) {
 			if (this->clientEngine->connected() == false) {
 				auto errorMsg = this->clientEngine->getConnectionInternalError();
 				if (errorMsg || this->clientEngine->timeSinceStart() > 30.0f || this->clientState != 0)
@@ -1210,9 +644,9 @@ namespace Nes
 
 				HQRemote::PlainEvent event;
 
-				// enable adaptive frame size compression based on data receiving speed from client
+				// request server to enable adaptive frame size compression based on data receiving speed from client
 				// it is not enabled by default to allow compatibility with older client
-				event.event.type = Remote::REMOTE_ADAPTIVE_DATA_RATE;
+				event.event.type = Remote::REMOTE_ENABLE_ADAPTIVE_DATA_RATE;
 				this->clientEngine->sendEvent(event);
 
 				//tell host to send frames in specified interval
@@ -1227,6 +661,12 @@ namespace Nes
 				//tell host to send its info
 				event.event.type = (HQRemote::HOST_INFO);
 				this->clientEngine->sendEvent(event);
+
+#if REMOTE_USE_H264
+				// request host to use H264 frame comrepssion
+				event.event.type = (Remote::REMOTE_USE_H264_COMPRESSOR);
+				this->clientEngine->sendEvent(event);
+#endif
 
 				event.event.type = Remote::REMOTE_MODE;
 				this->clientEngine->sendEvent(event);
@@ -1250,14 +690,14 @@ namespace Nes
 					HQRemote::PlainEvent event;
 					event.event.type = Remote::REMOTE_DATA_RATE;
 					event.event.floatValue = rate;
-					this->clientEngine->sendEvent(event);
+					this->clientEngine->sendEventUnreliable(event);
 
 					this->lastRemoteDataRateUpdateTime = time;
 				}
 			}//update data rate
 
 			HandleGenericRemoteEventAsClient();
-			HandleRemoteFrameEventAsClient(remoteBurstPhase);
+			HandleRemoteFrameEventAsClient(videoOutput);
 			HandleRemoteAudioEventAsClient(soundOutput);
 		}
 
@@ -1313,7 +753,14 @@ namespace Nes
 					if (this->clientState < CLIENT_EXCHANGE_DATA_STATE)
 						this->clientState++;
 				}
+					break; 
+#if REMOTE_USE_H264
+				case Remote::REMOTE_USE_H264_COMPRESSOR: {
+					// server confirmed that H264 can be used
+					UseFrameDecompressorType(FRAME_COMPRESSOR_TYPE_H264);
+				}
 					break;
+#endif
 				case HQRemote::MESSAGE:
 				case HQRemote::MESSAGE_ACK:
 					HandleCommonEvent(event);
@@ -1323,12 +770,18 @@ namespace Nes
 						auto ourRate = this->clientEngine->getReceiveRate();
 						auto hostSendRate = event.floatValue;
 
-						if (ourRate < hostSendRate * 0.8f) {
+						if (this->lastRemoteDataRateReducingTime == 0 && this->numRemoteDataRateReports > REMOTE_DATA_RATE_COUNTERS_RESET_INTERVAL) {
+							// reset counters only when we are in fast data rate mode
+							this->numRemoteDataRateReports = 0;
+							this->numRemoteDataRateReportsSlower = 0;
+						}
+
+						if (REMOTE_DATE_RATE_IS_SLOW(ourRate, hostSendRate)) {
 							this->numRemoteDataRateReportsSlower ++;
 						}
 						this->numRemoteDataRateReports ++;
 
-						if (this->numRemoteDataRateReports < MIN_REMOTE_DATA_RATE_REPORTS_TO_START_ADAPT_FPS)
+						if (this->numRemoteDataRateReports < MIN_REMOTE_DATA_RATE_REPORTS_TO_START_ADAPT_CLIENT_SIDE)
 							break;
 
 						auto ratio = (double) this->numRemoteDataRateReportsSlower / this->numRemoteDataRateReports;
@@ -1386,6 +839,9 @@ namespace Nes
 				}
 					break;
 				default:
+					if (this->clientState < CLIENT_EXCHANGE_DATA_STATE)
+						break;
+					this->remoteFrameDecompressor->OnRemoteEvent(event);
 					break;
 				}
 			}//if (eventRef != nullptr)
@@ -1393,48 +849,16 @@ namespace Nes
 			if (this->clientState < CLIENT_EXCHANGE_DATA_STATE && this->clientState >= CLIENT_CONNECTED_STATE + numHandledEventsToStartRcvFrames)
 			{
 				this->clientState = CLIENT_EXCHANGE_DATA_STATE;
-
 				//we have all info needed from host. Now tell it to start sending frames
+				this->remoteFrameDecompressor->Start();
+
 				HQRemote::PlainEvent eventToHost(HQRemote::START_SEND_FRAME);
 				this->clientEngine->sendEvent(eventToHost);
 			}
 		}
 
-		void Machine::HandleRemoteFrameEventAsClient(uint &remoteBurstPhase) {
-			//handle frame event
-			auto eventRef = this->clientEngine->getFrameEvent();
-			if (eventRef != nullptr) {
-				auto & event = eventRef->event;
-				assert(event.type == HQRemote::RENDERED_FRAME);
-
-				auto frameId = event.renderedFrameData.frameId;
-				if (this->lastReceivedRemoteFrame < frameId)
-				{
-					uint remoteUsePermaLowres = 0;//host is using low resolution permanently or not?
-
-					auto time = HQRemote::getTimeCheckPoint64();
-
-					auto elapsedSinceLastFrame = this->lastReceivedRemoteFrameTime > 0 ? HQRemote::getElapsedTime64(this->lastReceivedRemoteFrameTime, time) : 0;
-
-					auto intentedInterval = this->clientEngine->getFrameInterval() - 0.0001;
-					//if (elapsedSinceLastFrame >= intentedInterval || elapsedSinceLastFrame == 0.0)
-					{
-						if (this->remoteFrameCompressor->decompress(event.renderedFrameData.frameData, event.renderedFrameData.frameSize, frameId, ppu.GetScreen(), remoteBurstPhase, remoteUsePermaLowres))
-						{
-							this->lastReceivedRemoteFrame = frameId;
-							this->lastReceivedRemoteFrameTime = time;
-
-							//check if host changed its frame resolution
-							if (remoteUsePermaLowres != this->remoteFrameCompressor->downSample)
-							{
-								this->remoteFrameCompressor->downSample = remoteUsePermaLowres;
-
-								Api::Machine::eventCallback(Api::Machine::EVENT_REMOTE_LOWRES, remoteUsePermaLowres ? RESULT_OK : RESULT_ERR_GENERIC);
-							}
-						}//if (event.renderedFrameData.frameSize == sizeof(screen))
-					}//if (elapsedSinceLastFrame >= intentedInterval || elapsedSinceLastFrame == 0.0)
-				}//if (this->lastRenderedRemoteFrame < event.renderedFrameData.frameId)
-			}//if (eventRef != nullptr)
+		void Machine::HandleRemoteFrameEventAsClient(Video::Output* videoOutput) {
+			this->remoteFrameDecompressor->FrameStep(videoOutput);
 		}
 
 		//TODO: move all audio processing functions to Apu class
@@ -1647,8 +1071,8 @@ namespace Nes
 					// reset timer
 					this->lastRemoteDataRateUpdateTime = 0;
 
-					// enable 50KB budget for 20 fps by default to be compatible with older client
-					this->remoteFrameCompressor->enableDataRateBudget(MIN_REMOTE_SEND_RATE_BUDGET, SLOW_NET_REMOTE_FRAME_INTERVAL);
+					// reset to default zlib compressor
+					UseFrameCompressorType(FRAME_COMPRESSOR_TYPE_ZLIB);
 				}
 				else
 					return;
@@ -1680,7 +1104,7 @@ namespace Nes
 				HQRemote::PlainEvent event;
 				event.event.type = Remote::REMOTE_DATA_RATE;
 				event.event.floatValue = rate;
-				this->hostEngine->sendEvent(event);
+				this->hostEngine->sendEventUnreliable(event);
 
 				this->lastRemoteDataRateUpdateTime = time;
 			}
@@ -1745,13 +1169,20 @@ namespace Nes
 				}
 			}
 				break;
+#if REMOTE_USE_H264
+			case Remote::REMOTE_USE_H264_COMPRESSOR: {
+				// client requests us to use H264 compressor
+				UseFrameCompressorType(FRAME_COMPRESSOR_TYPE_H264);
+
+				// send confirm to client
+				HQRemote::PlainEvent event(Remote::REMOTE_USE_H264_COMPRESSOR);
+				this->hostEngine->sendEvent(event);
+			}
+				break;
+#endif
 			case HQRemote::MESSAGE:
 			case HQRemote::MESSAGE_ACK:
 				HandleCommonEvent(event);
-				break;
-			case HQRemote::FRAME_INTERVAL: {
-				this->remoteFrameCompressor->updateFrameInterval(event.frameInterval);
-			}
 				break;
 			case Remote::REMOTE_DATA_RATE: {
 				if (this->clientState < CLIENT_EXCHANGE_DATA_STATE)
@@ -1761,12 +1192,18 @@ namespace Nes
 				auto clientRcvRate = event.floatValue;
 				auto ourSendRate = this->hostEngine->getSendRate();
 
-				if (clientRcvRate < ourSendRate * 0.8f) {
+				if (this->lastRemoteDataRateReducingTime == 0 && this->numRemoteDataRateReports > REMOTE_DATA_RATE_COUNTERS_RESET_INTERVAL) {
+					// reset counters only when we are in fast data rate mode
+					this->numRemoteDataRateReports = 0;
+					this->numRemoteDataRateReportsSlower = 0;
+				}
+
+				if (REMOTE_DATE_RATE_IS_SLOW(clientRcvRate, ourSendRate)) {
 					this->numRemoteDataRateReportsSlower++;
 				}
 
 				this->numRemoteDataRateReports++;
-				if (this->numRemoteDataRateReports < MIN_REMOTE_DATA_RATE_REPORTS_TO_START_ADAPT_RES)
+				if (this->numRemoteDataRateReports < MIN_REMOTE_DATA_RATE_REPORTS_TO_START_ADAPT_SERVER_SIDE)
 					break;
 
 				auto ratio = (double) this->numRemoteDataRateReportsSlower / this->numRemoteDataRateReports;
@@ -1778,12 +1215,16 @@ namespace Nes
 							  ratio);
 #endif
 
-				if (ratio >= REMOTE_DATA_ADAPT_TO_LOWER_RES_DECISION_FACTOR) {
-					// try to reduce frame compression size budget since client's data receiving rate is too low
-					this->remoteFrameCompressor->enableDataRateBudget((size_t)clientRcvRate, this->hostEngine->getFrameInterval());
+				if (ratio >= REMOTE_DATA_SERVER_SIDE_ADAPT_TO_SLOW_NET_FACTOR) {
+					if (this->lastRemoteDataRateReducingTime == 0) {
+						// try to reduce frame compression size budget since client's data receiving rate is too low
+						this->remoteFrameCompressor->AdaptToClientSlowRecvRate(clientRcvRate, ourSendRate);
 
-					this->lastRemoteDataRateReducingTime = currentTime;
-				} else if (ratio <= REMOTE_DATA_ADAPT_TO_HIGHER_RES_DECISION_FACTOR)
+						this->lastRemoteDataRateReducingTime = currentTime;
+
+						HQRemote::Log("Adapt host to slow client receive rate\n");
+					}
+				} else if (ratio <= REMOTE_DATA_SERVER_SIDE_ADAPT_TO_FAST_NET_FACTOR)
 				{
 					// attempt to increase frame compression size budget
 					auto elapsedSinceLastReduce = HQRemote::getElapsedTime64(this->lastRemoteDataRateReducingTime, currentTime);
@@ -1796,24 +1237,27 @@ namespace Nes
 
 						this->numberOfRemoteDataRateIncreaseAttempts++;
 
-						this->remoteFrameCompressor->enableDataRateBudget(0, this->hostEngine->getFrameInterval());
+						this->remoteFrameCompressor->AdaptToClientFastRecvRate(clientRcvRate, ourSendRate);
+
+						HQRemote::Log("Adapt host to fast client receive rate\n");
 					}
 				}
 			}
 				break;
-			case Remote::REMOTE_ADAPTIVE_DATA_RATE:
+			case Remote::REMOTE_ENABLE_ADAPTIVE_DATA_RATE:
 				// reset timer
 				this->lastRemoteDataRateReducingTime = 0;
 				this->numberOfRemoteDataRateIncreaseAttempts = 0;
 				this->numRemoteDataRateReportsSlower = 0;
 				this->numRemoteDataRateReports = 0;
 
-				// reset budget
-				this->remoteFrameCompressor->enableDataRateBudget(0, DEFAULT_REMOTE_FRAME_INTERVAL);
+				this->remoteFrameCompressor->OnRemoteEvent(event);
 
 				break;
 			default:
+				// cpu may receive reset input event, which can be sent before CLIENT_EXCHANGE_DATA_STATE state
 				cpu.OnRemoteEvent(event);
+				this->remoteFrameCompressor->OnRemoteEvent(event);
 				break;
 			}
 
@@ -1946,28 +1390,42 @@ namespace Nes
 
 		//implement HQRemote::IFrameCapturer
 		size_t Machine::GetFrameSize() {
-			return sizeof(Core::Video::Screen) + sizeof(uint) + sizeof(Ppu::ColorUseCountTable);
+			if (!this->remoteFrameCompressor)
+				return 0;
+			if (this->remoteFrameCompressor->UseIndexedColor())
+				return sizeof(Core::Video::Screen) + sizeof(uint) + sizeof(Ppu::ColorUseCountTable);
+
+			return renderer.GetCachedRenderedFrameSize();
 		}
 		unsigned int Machine::GetNumColorChannels() {
 			return 1;
 		}
 		void Machine::CaptureFrame(unsigned char * prevFrameDataToCopy) {
+			if (!this->remoteFrameCompressor)
+				return;
 			if (prevFrameDataToCopy == NULL)
 				return;
-			auto& screen = ppu.GetScreen();
-			auto burstPhase = ppu.GetBurstPhase();
-			auto& colorUseCountTable = ppu.GetColorUseCountTable();
 
-			//layout: burst phase | screen | colors' usage count table
-			memcpy(prevFrameDataToCopy, &burstPhase, sizeof(burstPhase));
-			memcpy(prevFrameDataToCopy + sizeof burstPhase, &screen, sizeof(screen));
-			auto& copiedTable = *(Ppu::ColorUseCountTable*)(prevFrameDataToCopy + sizeof burstPhase + sizeof screen);
-			memcpy(&copiedTable, colorUseCountTable, sizeof(Ppu::ColorUseCountTable));
+			if (this->remoteFrameCompressor->UseIndexedColor()) {// the legacy way of capture frame
+				auto& screen = ppu.GetScreen();
+				auto burstPhase = ppu.GetBurstPhase();
+				auto& colorUseCountTable = ppu.GetColorUseCountTable();
 
-			//sort colors' usage count table 
-			std::sort(&copiedTable[0], &copiedTable[Video::Screen::PALETTE], [](const Ppu::ColorUseCount& a, const Ppu::ColorUseCount& b) { return a.count > b.count; });
+				//layout: burst phase | screen | colors' usage count table
+				memcpy(prevFrameDataToCopy, &burstPhase, sizeof(burstPhase));
+				memcpy(prevFrameDataToCopy + sizeof burstPhase, &screen, sizeof(screen));
+				auto& copiedTable = *(Ppu::ColorUseCountTable*)(prevFrameDataToCopy + sizeof burstPhase + sizeof screen);
+				memcpy(&copiedTable, colorUseCountTable, sizeof(Ppu::ColorUseCountTable));
 
-			ppu.MarkColorUseCountTableToReset();
+				//sort colors' usage count table 
+				std::sort(&copiedTable[0], &copiedTable[Video::Screen::PALETTE], [](const Ppu::ColorUseCount& a, const Ppu::ColorUseCount& b) { return a.count > b.count; });
+
+				ppu.MarkColorUseCountTableToReset();
+			}
+			else {
+				// the new way of capturing frame, we capture the rendered frame by renderer instead
+				memcpy(prevFrameDataToCopy, renderer.GetCachedRenderedFrameData(), renderer.GetCachedRenderedFrameSize());
+			}
 		}
 		//end IFrameCapturer implementation
 
@@ -2394,17 +1852,11 @@ namespace Nes
 
 				//handle remote event
 				EnsureCorrectRemoteSoundSettings();
-				HandleRemoteEventsAsClient(remoteBurstPhase, sound);
+				HandleRemoteEventsAsClient(video, sound);
 
 				//capture input sound (e.g. mic) and send to host
 				if (this->clientEngine)//need to check here as the pointer may be invalidated by HandleRemoteEventsAsClient()
 					this->clientEngine->captureAndSendAudio();
-
-				//render remote frame
-				if (video)
-				{
-					renderer.Blit(*video, ppu.GetScreen(), remoteBurstPhase);
-				}
 			}
 			else if (!(state & Api::Machine::SOUND))
 			{
@@ -2457,6 +1909,9 @@ namespace Nes
 				//LHQ
 				if (this->hostEngine)
 				{
+					// update frame compressor
+					this->remoteFrameCompressor->FrameStep(video);
+
 					//capture frame & audio
 					EnsureCorrectRemoteSoundSettings();
 

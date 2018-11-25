@@ -48,7 +48,11 @@ namespace Nes
 				REMOTE_MODE,
 				REMOTE_DOWNSAMPLE_FRAME,
 				REMOTE_DATA_RATE, // either sending rate from host side or receiving rate on client side
-				REMOTE_ADAPTIVE_DATA_RATE, // enable adaptive frame compression size based on data rate
+				REMOTE_ENABLE_ADAPTIVE_DATA_RATE, // enable adaptive frame compression size based on data rate, some compression methods might ignore this
+				// for video compression method
+				REMOTE_FORCE_RESTART_COMPRESSION_STREAM,
+				REMOTE_BROKEN_COMPRESSION_STREAM,
+				REMOTE_USE_H264_COMPRESSOR,
 			};
 
 			struct RemoteInput {

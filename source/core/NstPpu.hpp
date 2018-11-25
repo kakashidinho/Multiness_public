@@ -442,6 +442,7 @@ namespace Nes
 
 			ColorUseCountTable colorUseCountTable;//LHQ
 			bool colorUseCountShouldRestart;//LHQ
+			bool enableColorUseCount; // LHQ
 
 		public:
 			Output output;
@@ -564,6 +565,17 @@ namespace Nes
 
 			void MarkColorUseCountTableToReset() {
 				this->colorUseCountShouldRestart = true;
+			}
+
+			bool EnabledColorUseCount() const {
+				return this->enableColorUseCount;
+			}
+			
+			void EnableColorUseCount(bool enable) {
+				if (enable == this->enableColorUseCount)
+					return;
+				this->enableColorUseCount = enable;
+				MarkColorUseCountTableToReset();
 			}
 		};
 	}
