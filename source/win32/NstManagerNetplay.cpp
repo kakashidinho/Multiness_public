@@ -1114,8 +1114,8 @@ namespace Nestopia
 
 			auto connHandler = std::make_shared<Nes::Remote::ConnectionHandlerRakNetClient>(
 				nullptr,
-				this->natServerAddr.Ptr(),
-				this->natServerPort,
+				this->natServerAddr.Ptr(), this->natServerPort,
+				nullptr, 0,
 				remoteGUID,
 				"",
 				0,

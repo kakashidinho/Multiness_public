@@ -946,8 +946,8 @@ namespace Nestopia
 
 					auto connHandler = std::make_shared<Nes::Remote::ConnectionHandlerRakNetServer>(
 						&guid,
-						this->natServerAddr.Ptr(),
-						this->natServerPort,
+						this->natServerAddr.Ptr(), this->natServerPort,
+						nullptr, 0,
 						modeParams.internetParams.pin);
 
 					emulator.EnableRemoteController(idx, connHandler, guid_str);
