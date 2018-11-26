@@ -97,7 +97,6 @@ namespace Nes
 					//create system memory
 					m_sysMem.insert(m_sysMem.end(), width * height * 4, 0);
 					
-					
 					Core::Log() << "Using system memory\n";
 				}
 				
@@ -259,6 +258,13 @@ namespace Nes
 					m_impl = new PBOImpl(width, height);
 				else
 					m_impl = new SysmemImpl(width, height);
+
+				// initialize texture with zeros data
+				auto data = m_impl->Lock();
+				if (data) {
+					memset(data, 0, width * height * 4);
+					m_impl->Unlock();
+				}
 			}
 
 			MutableTexture::~MutableTexture() {
