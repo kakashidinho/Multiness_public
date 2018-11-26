@@ -66,8 +66,6 @@
 #	define PROFILE_EXECUTION_TIME 0
 #endif//#if defined DEBUG || defined _DEBUG
 
-#define ADAPTIVE_DOWNSAMPLE_FLAG 0x80000000
-
 #define CLIENT_CONNECTED_STATE 1
 #define CLIENT_EXCHANGE_DATA_STATE 0x7fffffff
 
