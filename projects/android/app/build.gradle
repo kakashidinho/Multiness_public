@@ -29,7 +29,8 @@ android {
                 arguments "-DANDROID_CPP_FEATURES=exceptions",
                         "-DANDROID_PLATFORM=android-10",
                         "-DANDROID_ARM_MODE=arm",
-                        "-DANDROID_STL=c++_shared"
+                        "-DANDROID_STL=c++_shared",
+                        "-DANDROID_ARM_NEON=TRUE"
             }
         }
 
