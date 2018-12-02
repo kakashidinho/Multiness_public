@@ -226,7 +226,7 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
                 }
                 break;
                 case ENABLE_INTERNET_REMOTE_CONTROL_GOOGLE: {
-                    mGameView.enableRemoteControllerInternetGoogle(BaseActivity.tryGetGooglePlayerId(), BaseActivity.tryGetGooglePlayerName());
+                    mGameView.enableRemoteControllerInternetGoogle(BaseActivity.tryGetGoogleAccountId(), BaseActivity.tryGetGooglePlayerName());
                 }
                 break;
                 case ENABLE_INTERNET_REMOTE_CONTROL_PUBLIC: {
