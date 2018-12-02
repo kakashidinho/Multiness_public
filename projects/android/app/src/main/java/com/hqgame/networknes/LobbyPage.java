@@ -25,9 +25,15 @@ import java.util.ArrayList;
 public class LobbyPage extends BaseInvitationsPage<LobbyPage.Room> implements View.OnClickListener {
     private static final int EXPECTED_MAX_INVITATIONS_TO_FETCH = 25;
 
+    private static String sCountryCode = null;
+
     private ArrayList<Room> mRooms = new ArrayList<>();
     private RequestQueue mQueue;
     private int mCurrentPage = 0;
+
+    public static String getCountryCode() {
+        return sCountryCode;
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -56,6 +62,40 @@ public class LobbyPage extends BaseInvitationsPage<LobbyPage.Room> implements Vi
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+        // detect current country by using 3rd party website
+        if (sCountryCode == null) {
+            JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET,
+                    "http://125.212.218.120:8090/iplocation",
+                    null,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            try {
+                                if (response.has("countryCode")) {
+                                    sCountryCode = response.getString("countryCode");
+
+                                    System.out.println("LobbyPage: detected country = " + sCountryCode);
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            // ignore
+                        }
+                    });
+
+            mQueue.add(request);
+        }
+    }
+
+    @Override
     protected void deleteInvitation(@NonNull Room room, final Runnable finishCallback) {
         throw new UnsupportedOperationException("");
     }
@@ -72,6 +112,8 @@ public class LobbyPage extends BaseInvitationsPage<LobbyPage.Room> implements Vi
             // indicate we are joining the host on lobby instead of from FB or Google invitation
             settings.putSerializable(Settings.GAME_ACTIVITY_REMOTE_CTL_TYPE_KEY, Settings.RemoteControl.JOIN_INTERNET_REMOTE_CONTROL_PUBLIC);
             settings.putString(Settings.GAME_ACTIVITY_REMOTE_INVITATION_DATA_KEY, info.inviteData);
+            if (sCountryCode != null)
+                settings.putString(Settings.GAME_ACTIVITY_COUNTRY_CODE_KEY, sCountryCode);
 
             BasePage intent = BasePage.create(GamePage.class);
             intent.setExtras(settings);
@@ -195,8 +237,10 @@ public class LobbyPage extends BaseInvitationsPage<LobbyPage.Room> implements Vi
                 final Bundle settings = existSettings != null ? existSettings : new Bundle();
 
                 try {
-                    // indicate we are joining the host on lobby instead of from FB or Google invitation
+                    // indicate we are hosting on lobby instead of using FB or Google invitation
                     settings.putSerializable(Settings.GAME_ACTIVITY_REMOTE_CTL_TYPE_KEY, Settings.RemoteControl.ENABLE_INTERNET_REMOTE_CONTROL_PUBLIC);
+                    if (sCountryCode != null)
+                        settings.putString(Settings.GAME_ACTIVITY_COUNTRY_CODE_KEY, sCountryCode);
 
                     BasePage intent = BasePage.create(GameChooserPage.class);
                     intent.setExtras(settings);

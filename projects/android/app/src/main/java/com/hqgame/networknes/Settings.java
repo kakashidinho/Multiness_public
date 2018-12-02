@@ -86,6 +86,7 @@ class Settings {
     public static final String GAME_ACTIVITY_REMOTE_INVITATION_DATA_KEY = "com.hqgame.networknes.REMOTE_INVITATION_DATA";
     public static final String GAME_ACTIVITY_REMOTE_GOOGLE_MATCH_ID = "com.hqgame.networknes.REMOTE_GOOGLE_MATCH_ID";
     public static final String GAME_ACTIVITY_REMOTE_APPWARP_MATCH_ID = "com.hqgame.networknes.REMOTE_APPWARP_MATCH_ID";
+    public static final String GAME_ACTIVITY_COUNTRY_CODE_KEY = "com.hqgame.networksnes.COUNTRY_CODE";
 
     public static final String APPWARP_ROOM_OWNER_GOOGLE_ID_KEY = "com.hqgame.networknes.APPWARP_ROOM_OWNER_GOOGLE_ID_KEY";
 

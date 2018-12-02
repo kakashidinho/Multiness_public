@@ -230,7 +230,7 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
                 }
                 break;
                 case ENABLE_INTERNET_REMOTE_CONTROL_PUBLIC: {
-                    mGameView.enableRemoteControllerInternetPublic(getBaseActivity().getDefaultHostGUID(), getBaseActivity().getDefaultHostRoomName());
+                    mGameView.enableRemoteControllerInternetPublic(getBaseActivity().getDefaultHostGUID(), getNameForPublicMultiplayer(settings));
                 }
                 break;
                 case QUICKJOIN_INTERNET_REMOTE_CONTROL_GOOGLE:
@@ -249,7 +249,7 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
                         String match_id = settings.getString(Settings.GAME_ACTIVITY_REMOTE_GOOGLE_MATCH_ID, null);
                         mGameView.loadRemoteInternetGoogle(match_id, host_invitation_data, BaseActivity.tryGetGoogleAccountId(), BaseActivity.tryGetGooglePlayerName());
                     } else {
-                        mGameView.loadRemoteInternetPublic( host_invitation_data, getBaseActivity().getDefaultHostGUID(), getBaseActivity().getDefaultHostRoomName());
+                        mGameView.loadRemoteInternetPublic( host_invitation_data, getBaseActivity().getDefaultHostGUID(), getNameForPublicMultiplayer(settings));
                     }
                 }
                 break;
@@ -291,6 +291,20 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
         persistenState.setRemoteCtlType(mRemoteCtlType);
 
         return mContentView;
+    }
+
+    private String getNameForPublicMultiplayer(Bundle settings) {
+        String name = getBaseActivity().getDefaultHostRoomName();
+        if (name == null)
+            name = getString(R.string.a_player);
+        String countryCode = settings.getString(Settings.GAME_ACTIVITY_COUNTRY_CODE_KEY, null);
+        if (countryCode == null)
+            countryCode = LobbyPage.getCountryCode();
+
+        if (countryCode != null && countryCode.length() <= 4)
+            name = "[" + countryCode + "] " + name;
+
+        return name;
     }
 
     private boolean isGameOwner() {
