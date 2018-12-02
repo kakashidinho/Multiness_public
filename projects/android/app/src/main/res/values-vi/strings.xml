@@ -158,7 +158,8 @@
     <string name="iap_generic_err_msg">Có lỗi xảy ra khi mua hàng. Mã=%1$d.</string>
     <string name="iap_already_owned_msg">Bạn đã mua sản phẩm này trước đây. Không cần phải mua lại.</string>
     <string name="ui_buttons_editor_help">Dùng một ngón để dịch chuyển.\nHai ngón để thay đổi kích cỡ.</string>
-    <string name="create_public_room_text">Host Game Công Khai</string>
+    <string name="create_public_room_text">P1: Host Game Công Khai</string>
+    <string name="join_public_room">P2: Kết nối</string>
     <string name="private_rooms_text">Game Riêng Tư</string>
     <string name="lobby_page_title">Danh sách Online Servers</string>
     <string name="new_feature_title">Tính năng mới</string>
@@ -166,6 +167,7 @@
     <string name="connected_via_proxy">Hệ thống phát hiện bạn chỉ có thể kết nối với người chơi bên kia thông qua Relay Server thay vì p2p. Băng thông đường truyền có thể sẽ bị giới hạn.</string>
     <string name="skip_autosearch_on_resume_msg">Bạn có muốn bỏ qua quá trình tự động tìm game mỗi khi vào trang chọn game này?</string>
     <string name="enable_autosearch_on_resume">Tự động tìm game nếu danh sách Chọn Game rỗng</string>
+    <string name="public_rooms_text">Public Server</string>
 
     <!--
     <string name="appwarp_connect_error_msg">Failed to connect to Game Server using Google Account. Error code=%1$d. Please try again later.</string>

@@ -124,6 +124,7 @@ public class InternetMultiplayerPage extends BaseMenuPage {
         Button hostGpgBtn = (Button)view.findViewById(R.id.btnHostGpg);
         Button joinGpgBtn = (Button)view.findViewById(R.id.btnJoinGpg);
         Button quickJoinGpgBtn = (Button)view.findViewById(R.id.btnQuickJoinGpg);
+        Button publicLobbyBtn = (Button)view.findViewById(R.id.btnPublicLobby);
 
         // disable random join button now as we have lobby system
         quickJoinGpgBtn.setVisibility(View.GONE);
@@ -133,6 +134,7 @@ public class InternetMultiplayerPage extends BaseMenuPage {
         hostGpgBtn.setOnClickListener(buttonClickListener);
         joinGpgBtn.setOnClickListener(buttonClickListener);
         quickJoinGpgBtn.setOnClickListener(buttonClickListener);
+        publicLobbyBtn.setOnClickListener(buttonClickListener);
         if (hostFbBtn != null)
             hostFbBtn.setOnClickListener(buttonClickListener);
         if (joinFbBtn != null)
@@ -180,6 +182,21 @@ public class InternetMultiplayerPage extends BaseMenuPage {
                 mode = Settings.RemoteControl.JOIN_INTERNET_REMOTE_CONTROL_FB;
             }
             break;
+            case R.id.btnPublicLobby:
+            {
+                if (!isFbSignedIn() && !isGoogleSignedIn()) {
+                    Utils.alertDialog(
+                            getContext(),
+                            getString(R.string.must_signin_internet_title),
+                            getString(R.string.must_signin_msg),
+                            null);
+                    return;
+                }
+
+                goToPage(BasePage.create(LobbyPage.class));
+
+                return;
+            }
             default:
                 return;
         }

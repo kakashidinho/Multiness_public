@@ -50,6 +50,7 @@ import android.widget.TextView;
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.PurchasesUpdatedListener;
+import com.google.android.gms.games.multiplayer.Multiplayer;
 
 import java.util.List;
 
@@ -764,15 +765,6 @@ public class MainPage extends BaseMenuPage implements PurchasesUpdatedListener {
 
     private void selectInternetModeDialog()
     {
-        if (!isFbSignedIn() && !isGoogleSignedIn()) {
-            Utils.alertDialog(
-                    getContext(),
-                    getString(R.string.must_signin_internet_title),
-                    getString(R.string.must_signin_msg),
-                    null);
-            return;
-        }
-
-        goToPage(BasePage.create(LobbyPage.class));
+        goToPage(BasePage.create(InternetMultiplayerPage.class));
     }
 }

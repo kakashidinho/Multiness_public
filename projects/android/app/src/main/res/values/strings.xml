@@ -168,7 +168,8 @@
     <string name="iap_generic_err_msg">Failed to process Payment. Error code=%1$d.</string>
     <string name="iap_already_owned_msg">You already bought this item.</string>
     <string name="ui_buttons_editor_help">Use one finger to move.\nUse two fingers to scale.</string>
-    <string name="create_public_room_text">Host Public Game</string>
+    <string name="create_public_room_text">P1: Host Public Game</string>
+    <string name="join_public_room">P2: Join</string>
     <string name="private_rooms_text">Private Games</string>
     <string name="lobby_page_title">Available Public Servers</string>
     <string name="new_feature_title">New feature</string>
@@ -176,7 +177,7 @@
     <string name="connected_via_proxy">The system detected that you are only able to connect to remote player via Relay Server instead of direct p2p. You may experience limited bandwidth.</string>
     <string name="skip_autosearch_on_resume_msg">Do you want to skip the auto search process that would start whenever you enter this page?</string>
     <string name="enable_autosearch_on_resume">Start auto search if Select Game list is empty</string>
-
+    <string name="public_rooms_text">Public Servers</string>
     <!--
     <string name="appwarp_connect_error_msg">Failed to connect to Game Server using Google Account. Error code=%1$d. Please try again later.</string>
     <string name="appwarp_auth_error_msg">Failed to connect to Game Server using Google Account. Probably you already logged in on another device. Please log out from that device first.</string>

@@ -55,6 +55,19 @@
                 android:layout_alignRight="@+id/btnHostGpg"
                 android:layout_alignEnd="@+id/btnHostGpg"
                 android:drawableRight="@drawable/ic_gpg_controller_black" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical|left"
+                android:text="@string/public_rooms_text"
+                android:id="@+id/btnPublicLobby"
+                android:layout_below="@+id/btnQuickJoinGpg"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignRight="@+id/btnHostGpg"
+                android:layout_alignEnd="@+id/btnHostGpg"
+                android:drawableRight="@drawable/ic_gpg_controller_black" />
         </RelativeLayout>
     </ScrollView>
 
