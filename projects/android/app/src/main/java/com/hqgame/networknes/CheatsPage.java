@@ -386,7 +386,7 @@ public class CheatsPage extends BasePage implements View.OnClickListener, Adapte
     }
 
     private static class CheatEntry extends Cheat{
-        private boolean enabled = false;
+        private boolean enabled = true;
 
         public boolean isEnabled() {
             return enabled;
