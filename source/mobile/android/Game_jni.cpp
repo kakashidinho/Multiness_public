@@ -1416,7 +1416,7 @@ extern "C" {
 		if (cvshader)
 			env->ReleaseStringUTFChars(vshader, cvshader);
 		if (cfshader)
-			env->ReleaseStringUTFChars(vshader, cfshader);
+			env->ReleaseStringUTFChars(fshader, cfshader);
 
 		return re ? JNI_TRUE : JNI_FALSE;
 	}
