@@ -94,7 +94,8 @@ namespace Nes
 			  m_filterRenderProgram(0),
 			  m_renderVBO(0), m_renderOutlineVBO(0),
 			  m_esVersionMajor(2),
-			  m_videoFullscreen(false)
+			  m_videoFullscreen(false),
+			  m_videoLinearSampling(false)
 			{
 				//setup render state
 				Api::Video::RenderState renderstate;
@@ -184,7 +185,8 @@ namespace Nes
 					m_filterRenderProgram = 0;
 				}
 
-				if (m_filterVShader.size() == 0 || m_filterFShader.size() == 0) {
+				if (m_filterVShader.size() == 0 || m_filterFShader.size() == 0
+					|| m_offscreenTexture == nullptr) {
 					Core::Log() << "No filter shader created\n";
 					return false;
 				}
@@ -207,6 +209,10 @@ namespace Nes
 				auto texSizeLoc = glGetUniformLocation(program, "nestexSize");
 				glUniform2f(texSizeLoc, Core::Video::Output::WIDTH, Core::Video::Output::HEIGHT);
 
+				auto outputSizeLoc = glGetUniformLocation(program, "outputSize");
+				if (outputSizeLoc != -1)
+					glUniform2f(outputSizeLoc, m_offscreenTexture->GetWidth(), m_offscreenTexture->GetHeight());
+
 				m_filterRenderTransformUniformLoc = glGetUniformLocation(program, "transform");
 
 				m_filterRenderProgram = program;
@@ -224,6 +230,8 @@ namespace Nes
 				if (m_videoTexture == nullptr || m_videoTexture->IsInvalid())
 				{
 					m_videoTexture = std::make_shared<MutableTexture>(m_esVersionMajor, Core::Video::Output::WIDTH, Core::Video::Output::HEIGHT);
+					m_videoTexture->SetFilterMode(m_videoLinearSampling);
+
 					Core::Log() << "Renderer created video texture\n";
 				}
 
@@ -329,25 +337,36 @@ namespace Nes
 				m_videoFullscreen = e;
 			}
 
-			bool Renderer::SetFilterShader(const char* vshader, const char* fshader, float scaleX, float scaleY) {
-				uint32_t scaledW = (uint32_t)(scaleX * Core::Video::Output::WIDTH);
-				uint32_t scaledH = (uint32_t)(scaleY * Core::Video::Output::HEIGHT);
-
-				if (m_offscreenTexture == nullptr
-					|| m_offscreenTexture->GetWidth() != scaledW
-					|| m_offscreenTexture->GetHeight() != scaledH) {
-					m_offscreenTexture = std::make_shared<RenderTargetTexture>(scaledW, scaledH);
-
-					Core::Log() << "Created offscreen texture with size=(" << scaledW << " & " << scaledH << ")\n";
-				}
+			bool Renderer::SetFilterShader(const char* vshader, const char* fshader, float scaleX, float scaleY, bool videoLinearSampling) {
+				// change texture filter mode for video texture
+				m_videoLinearSampling = videoLinearSampling;
+				if (m_videoTexture)
+					m_videoTexture->SetFilterMode(m_videoLinearSampling);
 
 				if (vshader && fshader) {
 					m_filterVShader = vshader;
 					m_filterFShader = fshader;
+
+					uint32_t scaledW = (uint32_t)(scaleX * Core::Video::Output::WIDTH);
+					uint32_t scaledH = (uint32_t)(scaleY * Core::Video::Output::HEIGHT);
+
+					if (m_offscreenTexture == nullptr
+						|| m_offscreenTexture->GetWidth() != scaledW
+						|| m_offscreenTexture->GetHeight() != scaledH) {
+						m_offscreenTexture = std::make_shared<RenderTargetTexture>(scaledW, scaledH);
+
+						Core::Log() << "Created offscreen texture with size=(" << scaledW << " & " << scaledH << ")\n";
+					}
+
 				} else {
 					m_filterVShader.clear();
 					m_filterFShader.clear();
+
+					m_offscreenTexture = nullptr;
+
+					Core::Log() << "No offscreen texture created\n";
 				}
+
 				return ResetFilterRenderProgram();
 			}
 

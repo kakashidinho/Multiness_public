@@ -790,11 +790,43 @@ public class GameSurfaceView extends GLSurfaceView {
         if (activity == null)
             return;
 
+        String shaderFileName = filterMode.toString();
         String vshader = null, fshader = null;
+        float scale = 1;
+        boolean linearSampling = false;
+
+        switch (filterMode) {
+            case CRT_CGWG_FAST:
+            case CRT_HYLLIAN:
+            case SCANLINE:
+                scale = 1;
+                linearSampling = false;
+                break;
+            case HQ2X: case _2XBR:
+                scale = 2;
+                break;
+            case HQ4X: case _4XBR:
+                scale = 4;
+                break;
+            case XBR_LV2_2X: case XBR_LV2_4X:
+                shaderFileName = "xbr lv2";
+                if (filterMode == Settings.DisplayFilterMode.XBR_LV2_2X)
+                    scale = 2;
+                else
+                    scale = 4;
+                break;
+            case XBR_LV2_FAST_2X: case XBR_LV2_FAST_4X:
+                shaderFileName = "xbr lv2 fast";
+                if (filterMode == Settings.DisplayFilterMode.XBR_LV2_FAST_2X)
+                    scale = 2;
+                else
+                    scale = 4;
+                break;
+        }
 
         if (filterMode != Settings.DisplayFilterMode.NONE) {
-            vshader = Utils.readTextAsset(activity, "shaders", filterMode.toString() + ".glslv");
-            fshader = Utils.readTextAsset(activity, "shaders", filterMode.toString() + ".glslf");
+            vshader = Utils.readTextAsset(activity, "shaders", shaderFileName + ".glslv");
+            fshader = Utils.readTextAsset(activity, "shaders", shaderFileName + ".glslf");
 
             if (vshader != null && vshader.length() == 0)
                 vshader = null;
@@ -802,17 +834,7 @@ public class GameSurfaceView extends GLSurfaceView {
                 fshader = null;
         }
 
-        float scale = 1;
-        switch (filterMode) {
-            case HQ2X: case _2XBR:
-                scale = 2;
-                break;
-            case HQ4X: case _4XBR: case XBR_LV2:
-                scale = 4;
-                break;
-        }
-
-        setFilteringShaderNative(sNativeHandle, vshader, fshader, scale);
+        setFilteringShaderNative(sNativeHandle, vshader, fshader, scale, linearSampling);
     }
 
     /*- hardware input ----*/
@@ -2096,7 +2118,7 @@ public class GameSurfaceView extends GLSurfaceView {
     private native void enableUIButtonsNative(long nativeHandle, boolean enable);
     private native void enableFullScreenNative(long nativeHandle, boolean enable);
     private native void switchABTurboModeNative(long nativeHandle, boolean enableATurbo, boolean enableBTurbo); // if set, the normal A/B will become auto A/B buttons
-    private native boolean setFilteringShaderNative(long nativeHandle, String vshader, String fshader, float scale);
+    private native boolean setFilteringShaderNative(long nativeHandle, String vshader, String fshader, float scale, boolean videoLinearSampling);
 
     // UI buttons editor
     private native void setUIButtonRectNative(long nativeHandle, int buttonCode, float x, float y, float width, float height);

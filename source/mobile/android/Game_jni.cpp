@@ -1402,7 +1402,7 @@ extern "C" {
 	}
 
 	JNIEXPORT jboolean JNICALL
-	Java_com_hqgame_networknes_GameSurfaceView_setFilteringShaderNative(JNIEnv *env, jobject thiz, jlong nativePtr, jstring vshader, jstring fshader, jfloat scale)
+	Java_com_hqgame_networknes_GameSurfaceView_setFilteringShaderNative(JNIEnv *env, jobject thiz, jlong nativePtr, jstring vshader, jstring fshader, jfloat scale, jboolean videoLinearSampling)
 	{
 		auto system = (NesSystem*)nativePtr;
 
@@ -1411,7 +1411,7 @@ extern "C" {
 
 		// __android_log_print(ANDROID_LOG_DEBUG, "Nes", "setFilteringShaderNative(%s, %s)\n", cvshader ? cvshader : "null", cfshader ? cfshader : "null");
 
-		auto re = system->GetRenderer().SetFilterShader(cvshader, cfshader, scale, scale);
+		auto re = system->GetRenderer().SetFilterShader(cvshader, cfshader, scale, scale, videoLinearSampling);
 
 		if (cvshader)
 			env->ReleaseStringUTFChars(vshader, cvshader);

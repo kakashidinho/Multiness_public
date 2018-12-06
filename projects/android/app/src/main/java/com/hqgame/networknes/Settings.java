@@ -150,7 +150,13 @@ class Settings {
         HQ4X,
         _2XBR,
         _4XBR,
-        XBR_LV2;
+        XBR_LV2_FAST_2X,
+        XBR_LV2_FAST_4X,
+        XBR_LV2_2X,
+        XBR_LV2_4X,
+        SCANLINE,
+        CRT_HYLLIAN,
+        CRT_CGWG_FAST;
 
         @Override
         public String toString() {
@@ -159,8 +165,18 @@ class Settings {
                     return "2xbr";
                 case _4XBR:
                     return "4xbr";
-                case XBR_LV2:
-                    return "xbr lv2";
+                case XBR_LV2_FAST_2X:
+                    return "2xbr lv2 fast";
+                case XBR_LV2_FAST_4X:
+                    return "4xbr lv2 fast";
+                case XBR_LV2_2X:
+                    return "2xbr lv2";
+                case XBR_LV2_4X:
+                    return "4xbr lv2";
+                case CRT_HYLLIAN:
+                    return "crt hyllian";
+                case CRT_CGWG_FAST:
+                    return "crt cgwg fast";
             }
             return name().toLowerCase();
         }

@@ -48,7 +48,7 @@ namespace Nes {
 
 				virtual void EnableFullScreenVideo(bool e) override ;
 
-				virtual bool SetFilterShader(const char* vshader, const char* fshader, float scaleX, float scaleY) override;
+				virtual bool SetFilterShader(const char* vshader, const char* fshader, float scaleX, float scaleY, bool videoLinearSampling) override;
 
 				unsigned int GetVideoMinX() const { return m_videoX; }
 				unsigned int GetVideoMinY() const { return m_videoY; }
@@ -73,6 +73,7 @@ namespace Nes {
 				virtual void VideoUnlock(Core::Video::Output& video) override;
 
 				bool m_videoFullscreen;
+				bool m_videoLinearSampling;
 				float m_videoX, m_videoY, m_videoWidth, m_videoHeight;
 				
 				std::shared_ptr<MutableTexture> m_videoTexture;

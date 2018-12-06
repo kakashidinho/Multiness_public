@@ -44,8 +44,8 @@ namespace Nes
 			{
 				glBindTexture(GL_TEXTURE_2D, texture);
 				
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filterMode);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filterMode);
+				setTextureFilterMode(filterMode);
+
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 				
@@ -79,6 +79,8 @@ namespace Nes
 				virtual void* Lock() = 0;
 				virtual void  Unlock() = 0;
 				virtual GLuint GetOutputTexture() = 0;
+
+				virtual void SetFilterMode(bool linear) = 0;
 				
 				virtual void Invalidate() = 0;
 				virtual bool IsInvalid() const = 0;
@@ -150,6 +152,15 @@ namespace Nes
 				
 				virtual void Invalidate() override  { m_outputTexture = 0; }
 				virtual bool IsInvalid() const override { return m_outputTexture == 0; }
+
+				virtual void SetFilterMode(bool linear) override {
+					glBindTexture(GL_TEXTURE_2D, m_outputTexture);
+
+					if (linear)
+						setTextureFilterMode(GL_LINEAR);
+					else
+						setTextureFilterMode(GL_NEAREST);
+				}
 			private:
 				GLuint m_outputTexture;
 				
@@ -245,6 +256,17 @@ namespace Nes
 					
 					return true;
 				}
+
+				virtual void SetFilterMode(bool linear) override {
+					for (auto texture: m_textures) {
+						glBindTexture(GL_TEXTURE_2D, texture);
+
+						if (linear)
+							setTextureFilterMode(GL_LINEAR);
+						else
+							setTextureFilterMode(GL_NEAREST);
+					}
+				}
 			private:
 				GLuint m_textures[2];
 				GLuint m_pbos[2];
@@ -282,6 +304,10 @@ namespace Nes
 					throw std::runtime_error("Cannot bind texture when it is locked");
 				
 				glBindTexture(GL_TEXTURE_2D, m_impl->GetOutputTexture());
+			}
+
+			void MutableTexture::SetFilterMode(bool linear) {
+				m_impl->SetFilterMode(linear);
 			}
 
 			void* MutableTexture::Lock() {

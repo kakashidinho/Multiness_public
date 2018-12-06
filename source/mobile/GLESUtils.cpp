@@ -152,6 +152,11 @@ namespace Nes {
 				
 				return program;
 			}
+
+			void setTextureFilterMode(GLint filterMode) {
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filterMode);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filterMode);
+			}
 		}
 	}
 }

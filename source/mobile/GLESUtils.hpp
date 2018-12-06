@@ -81,6 +81,8 @@ namespace Nes {
 			
 			GLuint createShader(GLenum type, const char* source);
 			GLuint createProgram(const char* vs, const char* fs);
+
+			void setTextureFilterMode(GLint mode);
 		}
 	}
 }

@@ -42,6 +42,7 @@ namespace Nes {
 				~MutableTexture();
 				
 				virtual void BindTexture() override;//this must be called after Unlock()
+				void SetFilterMode(bool linear);
 				void* Lock();
 				void Unlock();
 				
@@ -60,7 +61,7 @@ namespace Nes {
 				~RenderTargetTexture();
 
 				virtual void BindTexture() override;//this must be called after Unlock()
-				void SetActive(bool active);
+				void SetActive(bool active); // set as active render target
 
 				uint32_t GetWidth() const { return m_width; }
 				uint32_t GetHeight() const { return m_height; }
