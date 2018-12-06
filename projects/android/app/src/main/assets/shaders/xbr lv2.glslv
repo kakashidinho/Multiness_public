@@ -27,14 +27,14 @@ uniform highp vec4 transform;
 attribute vec2 position;
 attribute vec2 texcoord;
 
-varying mediump vec2 outTexCoord;
-varying mediump vec4 t1;
-varying mediump vec4 t2;
-varying mediump vec4 t3;
-varying mediump vec4 t4;
-varying mediump vec4 t5;
-varying mediump vec4 t6;
-varying mediump vec4 t7;
+varying vec2 outTexCoord;
+varying vec4 t1;
+varying vec4 t2;
+varying vec4 t3;
+varying vec4 t4;
+varying vec4 t5;
+varying vec4 t6;
+varying vec4 t7;
 
 void main() {
 

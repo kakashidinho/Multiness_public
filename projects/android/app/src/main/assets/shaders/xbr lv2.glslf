@@ -34,19 +34,23 @@
 
 #define lv2_cf XBR_LV2_COEFFICIENT
 
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
 precision mediump float;
+#endif
 
 uniform mediump vec2 nestexSize;
 uniform sampler2D nestex;
 
-varying mediump vec2 outTexCoord;
-varying mediump vec4 t1;
-varying mediump vec4 t2;
-varying mediump vec4 t3;
-varying mediump vec4 t4;
-varying mediump vec4 t5;
-varying mediump vec4 t6;
-varying mediump vec4 t7;
+varying vec2 outTexCoord;
+varying vec4 t1;
+varying vec4 t2;
+varying vec4 t3;
+varying vec4 t4;
+varying vec4 t5;
+varying vec4 t6;
+varying vec4 t7;
 
 #ifdef PARAMETER_UNIFORM
 uniform float XBR_Y_WEIGHT;
@@ -67,9 +71,9 @@ const float coef         = 2.0;
 const vec3 rgbw          = vec3(14.352, 28.176, 5.472);
 const vec4 eq_threshold  = vec4(15.0, 15.0, 15.0, 15.0);
 
-vec4 delta   = vec4(1.0/XBR_SCALE, 1.0/XBR_SCALE, 1.0/XBR_SCALE, 1.0/XBR_SCALE);
-vec4 delta_l = vec4(0.5/XBR_SCALE, 1.0/XBR_SCALE, 0.5/XBR_SCALE, 1.0/XBR_SCALE);
-vec4 delta_u = delta_l.yxwz;
+const vec4 delta   = vec4(1.0/XBR_SCALE, 1.0/XBR_SCALE, 1.0/XBR_SCALE, 1.0/XBR_SCALE);
+const vec4 delta_l = vec4(0.5/XBR_SCALE, 1.0/XBR_SCALE, 0.5/XBR_SCALE, 1.0/XBR_SCALE);
+const vec4 delta_u = delta_l.yxwz;
 
 const  vec4 Ao = vec4( 1.0, -1.0, -1.0, 1.0 );
 const  vec4 Bo = vec4( 1.0,  1.0, -1.0,-1.0 );
