@@ -20,10 +20,14 @@
 
 */
 
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
 precision mediump float;
+#endif
 
 uniform sampler2D nestex;
-varying mediump vec4 vTexCoord[7];
+varying vec4 vTexCoord[7];
 
 const float mx = 1.00;      // start smoothing wt.
 const float k = -1.10;      // wt. decrease factor

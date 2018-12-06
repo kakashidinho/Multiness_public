@@ -3,7 +3,7 @@ uniform highp vec4 transform;
 
 attribute vec2 position;
 attribute vec2 texcoord;
-varying mediump vec4 vTexCoord[5];
+varying vec4 vTexCoord[5];
 
 void main() {
   vec2 dg1 = 0.5 / nestexSize;

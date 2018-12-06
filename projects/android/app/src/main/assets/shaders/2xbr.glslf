@@ -20,12 +20,16 @@
 
 */
 
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
 precision mediump float;
+#endif
 
 uniform mediump vec2 nestexSize;
 uniform sampler2D nestex;
 
-varying mediump vec2 vTexCoord[3];
+varying vec2 vTexCoord[3];
 
 const vec3 dtt = vec3(65536.0, 255.0, 1.0);
 

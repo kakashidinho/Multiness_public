@@ -25,7 +25,7 @@ uniform highp vec4 transform;
 
 attribute vec2 position;
 attribute vec2 texcoord;
-varying mediump vec4 vTexCoord[7];
+varying vec4 vTexCoord[7];
 
 void main()
 {
