@@ -60,7 +60,7 @@
 #define REMOTE_AUDIO_SAMPLE_RATE 48000
 #define REMOTE_AUDIO_STEREO_CHANNELS false
 
-#define REMOTE_PREFERRED_DSCP_VALUE 34 // AF41
+#define REMOTE_PREFERRED_DSCP_VALUE 0 // 34 // AF41
 
 #if defined DEBUG || defined _DEBUG
 #	define PROFILE_EXECUTION_TIME 0
@@ -822,8 +822,10 @@ namespace Nes
 				eventToHost.event.type = (HQRemote::START_SEND_FRAME);
 				this->clientEngine->sendEvent(eventToHost);
 
+#if REMOTE_PREFERRED_DSCP_VALUE
 				// hint network driver to give higher priority for our packets
 				this->clientEngine->getConnHandler()->setDscp(REMOTE_PREFERRED_DSCP_VALUE);
+#endif
 
 				HQRemote::Log("Client ready\n");
 			}
@@ -1219,7 +1221,10 @@ namespace Nes
 
 				HQRemote::PlainEvent eventToClient(HQRemote::START_SEND_FRAME);
 				this->hostEngine->sendEvent(eventToClient);
+
+#if REMOTE_PREFERRED_DSCP_VALUE
 				this->hostEngine->getConnHandler()->setDscp(REMOTE_PREFERRED_DSCP_VALUE);
+#endif
 			}
 
 			return true;
