@@ -835,6 +835,10 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
 
         // resume view
         mGameView.onResume();
+
+        mContentView.setFocusable(true);
+        mContentView.setFocusableInTouchMode(true);
+        mContentView.requestFocus();
     }
 
     @Override
