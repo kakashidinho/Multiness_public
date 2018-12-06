@@ -62,6 +62,8 @@ namespace Nes {
 			virtual void Cleanup() = 0;//cleanup graphics resources
 			void Reset(float screenWidth, float screenHeight);
 
+			virtual bool SetFilterShader(const char* vshader, const char* fshader, float scaleX, float scaleY) = 0;
+
 			float GetScreenWidth() const { return m_screenWidth; }
 			float GetScreenHeight() const { return m_screenHeight; }
 			virtual void EnableFullScreenVideo(bool e) = 0;

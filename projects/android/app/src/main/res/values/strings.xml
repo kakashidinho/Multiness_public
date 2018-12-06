@@ -77,6 +77,7 @@
     <string name="screen_rotate_lbl">In-game display orientation</string>
     <string name="ui_controls_visiable_lbl">Onscreen buttons\' visibility</string>
     <string name="game_fullscreen_lbl">Fullscreen In-game display</string>
+    <string name="display_filter_lbl">Filtering effect</string>
     <string name="loading_fb_profile_msg">Loading facebook profile ...</string>
     <string name="loading_profile_err">Failed to load facebook profile</string>
     <string name="title_invitations">Invitations</string>

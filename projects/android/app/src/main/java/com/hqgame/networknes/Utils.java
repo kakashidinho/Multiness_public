@@ -50,9 +50,13 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
 import java.math.BigInteger;
 import java.net.InetAddress;
@@ -97,6 +101,28 @@ public class Utils {
         if (index == -1)
             return path;
         return path.substring(0, index);
+    }
+
+    public static String readTextAsset(Context context, String folder, String file) {
+        try {
+            InputStream is = context.getAssets().open(folder + "/" + file);
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+
+            String line;
+
+            StringBuffer sb = new StringBuffer();
+
+            while ((line = br.readLine()) != null) {
+                sb.append(line + "\n");
+            }
+
+            br.close();
+
+            return sb.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public static String getHostIPAddress(Context context)

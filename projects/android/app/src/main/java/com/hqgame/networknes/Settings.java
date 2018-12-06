@@ -60,6 +60,7 @@ class Settings {
     private static final String SETTINGS_UI_CONTROLS_RECTS_LANDSCAPE_KEY = SETTINGS_KEY_PREFIX + "UI_BTN_LANDSCAPE_RECTS";
     private static final String SETTINGS_UI_CONTROLS_RECTS_PORT_KEY = SETTINGS_KEY_PREFIX + "UI_BTN_PORT_RECTS";
     private static final String SETTINGS_SKIP_AUTO_SEARCH_DURING_RESUME_KEY = SETTINGS_KEY_PREFIX + "SKIP_AUTO_SEARCH_DURING_RESUME";
+    private static final String SETTINGS_DISPLAY_FILTER_MODE_KEY = SETTINGS_KEY_PREFIX + "DISPLAY_FILTER_MODE";
 
     public static final String IMMEDIATE_PREF_FILE = "last_session";
     public static final String LAST_PLAYED_GAME_KEY = "com.hqgame.networknes.LAST_GAME";
@@ -139,6 +140,28 @@ class Settings {
 
         @Override
         public String toString() {
+            return name().toLowerCase();
+        }
+    }
+
+    public static enum DisplayFilterMode {
+        NONE,
+        HQ2X,
+        HQ4X,
+        _2XBR,
+        _4XBR,
+        XBR_LV2;
+
+        @Override
+        public String toString() {
+            switch (this) {
+                case _2XBR:
+                    return "2xbr";
+                case _4XBR:
+                    return "4xbr";
+                case XBR_LV2:
+                    return "xbr lv2";
+            }
             return name().toLowerCase();
         }
     }
@@ -224,6 +247,7 @@ class Settings {
     private static boolean btnBTurbo = false;
     private static boolean disableAds = false; // this setting is not persistent
     private static boolean disableAutoSearchGamesOnResume = false;
+    private static DisplayFilterMode filterMode = DisplayFilterMode.NONE;
 
     private static TreeMap<Integer, HashSet<Button>> key2BtnMap = new TreeMap<>();
     private static TreeMap<Button, Integer> btn2KeyMap = new TreeMap<>();
@@ -243,6 +267,7 @@ class Settings {
     public static boolean isBtnBTurbo() { return btnBTurbo; }
     public static boolean isAdsDisabled() { return disableAds; }
     public static boolean isAutoSearchGamesOnResumeEnabled() { return !disableAutoSearchGamesOnResume; }
+    public static DisplayFilterMode getDisplayFilterMode() { return filterMode; }
 
     //Note: one key can be mapped to multiple buttons
     public static Iterable<Button> getMappedButton(int keycode) {
@@ -281,6 +306,7 @@ class Settings {
     public static void enableBtnBTurbo(boolean e) { btnBTurbo = e; }
     public static void enableAds(boolean e) { disableAds = !e; }
     public static void enableAutoSearchGamesOnResume(boolean e) { disableAutoSearchGamesOnResume = !e; }
+    public static void setDisplayFilterMode(DisplayFilterMode mode) { filterMode = mode; }
 
     public static void setUIButtonRect(@NonNull Button button, @NonNull Rect rect, boolean portrait) {
         if (portrait)
@@ -402,6 +428,14 @@ class Settings {
         disableAutoSearchGamesOnResume = pref.getBoolean(SETTINGS_SKIP_AUTO_SEARCH_DURING_RESUME_KEY, false);
 
         try {
+            String filterName = pref.getString(SETTINGS_DISPLAY_FILTER_MODE_KEY, DisplayFilterMode.NONE.name());
+            filterMode = DisplayFilterMode.valueOf(filterName);
+        } catch (Exception e) {
+            e.printStackTrace();
+            filterMode = DisplayFilterMode.NONE;
+        }
+
+        try {
             String orientationName = pref.getString(SETTINGS_ORIENTATION_KEY, Orientation.LANDSCAPE.name());
             orientation = Orientation.valueOf(Orientation.class, orientationName);
         } catch (Exception e) {
@@ -434,6 +468,7 @@ class Settings {
         editor.putBoolean(SETTINGS_A_IS_TURBO_KEY, btnATurbo);
         editor.putBoolean(SETTINGS_B_IS_TURBO_KEY, btnBTurbo);
         editor.putBoolean(SETTINGS_SKIP_AUTO_SEARCH_DURING_RESUME_KEY, disableAutoSearchGamesOnResume);
+        editor.putString(SETTINGS_DISPLAY_FILTER_MODE_KEY, filterMode.name());
 
         /*
         buttons mapping

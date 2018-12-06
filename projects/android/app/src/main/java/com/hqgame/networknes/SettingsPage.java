@@ -77,6 +77,12 @@ public class SettingsPage extends BasePage {
         ArrayAdapter<Settings.Orientation> ori_adapter = new ArrayAdapter<Settings.Orientation>(getContext(), android.R.layout.simple_spinner_dropdown_item, ori_items);
         orientationList.setAdapter(ori_adapter);
 
+        // display filter modes
+        Spinner filterModeList = (Spinner)v.findViewById(R.id.filter_effects_list);
+        Settings.DisplayFilterMode[] filterModes = Settings.DisplayFilterMode.values();
+        ArrayAdapter<Settings.DisplayFilterMode> filter_adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, filterModes);
+        filterModeList.setAdapter(filter_adapter);
+
         //apply saved settings
         audioBar.setProgress((int)(Settings.getAudioVolume() * audioBar.getMax()));
         vibrationCheckBox.setChecked(Settings.isButtonsVibrationEnabled());
@@ -85,6 +91,7 @@ public class SettingsPage extends BasePage {
         fullScreenCheckBox.setChecked(Settings.isFullscreenEnabled());
         enableAutoSearchOnResumeCheckBox.setChecked(Settings.isAutoSearchGamesOnResumeEnabled());
         orientationList.setSelection(Settings.getPreferedOrientation().ordinal());
+        filterModeList.setSelection(Settings.getDisplayFilterMode().ordinal());
 
         //register callbacks
         SeekBar.OnSeekBarChangeListener seekBarListener = (new SeekBar.OnSeekBarChangeListener() {
@@ -150,6 +157,18 @@ public class SettingsPage extends BasePage {
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 Settings.setPreferedOrientation(Settings.Orientation.AUTO);
+            }
+        });
+
+        filterModeList.setOnItemSelectedListener(new OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                onListItemSelected(parent, view, position, id);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                Settings.setDisplayFilterMode(Settings.DisplayFilterMode.NONE);
             }
         });
 
@@ -219,6 +238,12 @@ public class SettingsPage extends BasePage {
             {
                 Settings.Orientation orientation = (Settings.Orientation)parent.getItemAtPosition(position);
                 Settings.setPreferedOrientation(orientation);
+            }
+                break;
+            case R.id.filter_effects_list:
+            {
+                Settings.DisplayFilterMode mode = (Settings.DisplayFilterMode)parent.getItemAtPosition(position);
+                Settings.setDisplayFilterMode(mode);
             }
                 break;
         }

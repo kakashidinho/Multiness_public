@@ -52,6 +52,31 @@ namespace Nes {
 				
 				Impl *m_impl;
 			};
+
+			class RenderTargetTexture: public ITexture {
+			public:
+
+				RenderTargetTexture(unsigned int width, unsigned int height);
+				~RenderTargetTexture();
+
+				virtual void BindTexture() override;//this must be called after Unlock()
+				void SetActive(bool active);
+
+				uint32_t GetWidth() const { return m_width; }
+				uint32_t GetHeight() const { return m_height; }
+
+				void Invalidate();//this should be call when opengl context lost
+				bool IsInvalid() const;
+				void Reset();
+				void ResetIfInvalid();
+			private:
+				void Cleanup();
+
+				uint32_t m_width, m_height;
+				GLuint m_texture;
+				GLuint m_fbo;
+				bool m_fboComplete;
+			};
 		}
 	}
 }

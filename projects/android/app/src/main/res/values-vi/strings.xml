@@ -75,6 +75,7 @@
     <string name="screen_rotate_lbl">Hướng hiển thị màn hình game</string>
     <string name="ui_controls_visiable_lbl">Hiển thị nút điều khiển trên màn hình</string>
     <string name="game_fullscreen_lbl">Hiển thị game toàn màn hình</string>
+    <string name="display_filter_lbl">Hiệu ứng lọc</string>
     <string name="loading_fb_profile_msg">Đang tải facebook profile ...</string>
     <string name="loading_profile_err">Tải facebook profile bị lỗi</string>
     <string name="title_invitations">Danh sách lời mời</string>

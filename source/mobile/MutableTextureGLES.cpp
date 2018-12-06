@@ -40,12 +40,12 @@ namespace Nes
 	namespace Video {
 		namespace GL {
 			//helpers
-			static void defineTexture(GLuint texture, unsigned int width, unsigned int height)
+			static void defineTexture(GLuint texture, unsigned int width, unsigned int height, GLint filterMode)
 			{
 				glBindTexture(GL_TEXTURE_2D, texture);
 				
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filterMode);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filterMode);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 				
@@ -58,6 +58,11 @@ namespace Nes
 							 GL_RGBA,
 							 GL_UNSIGNED_BYTE,
 							 0);
+			}
+
+			static void defineTexture(GLuint texture, unsigned int width, unsigned int height)
+			{
+				defineTexture(texture, width, height, GL_NEAREST);
 			}
 			
 			//Impl
@@ -303,6 +308,83 @@ namespace Nes
 			void MutableTexture::Invalidate()
 			{
 				m_impl->Invalidate();
+			}
+
+			/*--------- RenderTargetTexture ---------------*/
+			RenderTargetTexture::RenderTargetTexture(unsigned int width, unsigned int height)
+					: m_width(width), m_height(height), m_texture(0), m_fbo(0),
+					  m_fboComplete(false)
+			{
+				Reset();
+			}
+
+			RenderTargetTexture::~RenderTargetTexture()
+			{
+				Cleanup();
+			}
+
+			void RenderTargetTexture::Cleanup() {
+				if (m_texture) {
+					glDeleteTextures(1, &m_texture);
+					m_texture = 0;
+				}
+				if (m_fbo) {
+					glDeleteFramebuffers(1, &m_fbo);
+					m_fbo = 0;
+				}
+				GL_ERR_CHECK
+			}
+
+			void RenderTargetTexture::BindTexture()//this must be called after Unlock()
+			{
+				glBindTexture(GL_TEXTURE_2D, m_texture);
+			}
+
+			void RenderTargetTexture::SetActive(bool active) {
+				if (IsInvalid())
+					return;
+
+				glBindFramebuffer(GL_FRAMEBUFFER, active ? m_fbo : 0);
+			}
+
+			void RenderTargetTexture::Invalidate()//this should be call when opengl context lost
+			{
+				m_texture = 0; m_fbo = 0;
+			}
+			bool RenderTargetTexture::IsInvalid() const {
+				return m_texture == 0 || m_fbo == 0 || !m_fboComplete;
+			}
+
+			void RenderTargetTexture::Reset() {
+				Cleanup();
+
+				//create GL texture
+				glGenTextures(1, &m_texture);
+				defineTexture(m_texture, m_width, m_height, GL_LINEAR);
+
+				// create FBO
+				glGenFramebuffers(1, &m_fbo);
+				glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+
+				// attach texture to FBO
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_texture, 0);
+
+				if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) {
+					m_fboComplete = true;
+
+					Core::Log() << "FBO complete\n";
+				}
+				else {
+					m_fboComplete = false;
+					Core::Log() << "Error: FBO incomplete\n";
+				}
+
+				glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			}
+
+			void RenderTargetTexture::ResetIfInvalid() {
+				if (IsInvalid())
+					Reset();
 			}
 		}
 	}

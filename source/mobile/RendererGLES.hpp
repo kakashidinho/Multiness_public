@@ -48,6 +48,8 @@ namespace Nes {
 
 				virtual void EnableFullScreenVideo(bool e) override ;
 
+				virtual bool SetFilterShader(const char* vshader, const char* fshader, float scaleX, float scaleY) override;
+
 				unsigned int GetVideoMinX() const { return m_videoX; }
 				unsigned int GetVideoMinY() const { return m_videoY; }
 				
@@ -57,9 +59,15 @@ namespace Nes {
 				virtual void PresentVideo() override;
 			private:
 				virtual void ResetImpl() override;
+
+				bool ResetFilterRenderProgram();
 				
 				void DrawRect(float x, float y, float width, float height);
+				void DrawRect(GLuint program, GLint transformUniformLoc, float x, float y, float width, float height);
 				void ApplyRectTransform(GLint uniformLoc, float x, float y, float width, float height);
+				void DoDrawRect(GLint transformUniformLoc, float x, float y, float width, float height);
+				void DoDrawFullscreenRect(GLint transformUniformLoc);
+				void DoDrawRectTransformed(); // assume transformation already applied
 
 				virtual bool VideoLock(Core::Video::Output& video) override;
 				virtual void VideoUnlock(Core::Video::Output& video) override;
@@ -68,10 +76,16 @@ namespace Nes {
 				float m_videoX, m_videoY, m_videoWidth, m_videoHeight;
 				
 				std::shared_ptr<MutableTexture> m_videoTexture;
-				
+				std::shared_ptr<RenderTargetTexture> m_offscreenTexture;
+
+				std::string m_filterVShader, m_filterFShader;
+
 				GLint m_renderTransformUniformLoc;
 				GLuint m_renderProgram;
 				GLuint m_renderVBO;
+
+				GLint m_filterRenderTransformUniformLoc;
+				GLuint m_filterRenderProgram;
 
 				GLint m_renderOutlineTransformUniformLoc, m_renderOutlineColorUniformLoc;
 				GLuint m_renderOutlineProgram;

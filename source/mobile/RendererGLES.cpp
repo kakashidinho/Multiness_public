@@ -91,6 +91,7 @@ namespace Nes
 			Renderer::Renderer(Core::Machine& emulator)
 			: m_videoTexture(nullptr),
 			  m_renderProgram(0), m_renderOutlineProgram(0),
+			  m_filterRenderProgram(0),
 			  m_renderVBO(0), m_renderOutlineVBO(0),
 			  m_esVersionMajor(2),
 			  m_videoFullscreen(false)
@@ -125,6 +126,13 @@ namespace Nes
 					GL_ERR_CHECK
 				}
 
+				if (m_filterRenderProgram) {
+					glDeleteProgram(m_filterRenderProgram);
+					m_filterRenderProgram = 0;
+
+					GL_ERR_CHECK
+				}
+
 				if (m_renderOutlineProgram) {
 					glDeleteProgram(m_renderOutlineProgram);
 					m_renderOutlineProgram = 0;
@@ -149,6 +157,7 @@ namespace Nes
 				}
 
 				m_videoTexture = nullptr;
+				m_offscreenTexture = nullptr;
 			}
 
 			void Renderer::Invalidate()
@@ -158,11 +167,53 @@ namespace Nes
 				if (m_videoTexture)
 					m_videoTexture->Invalidate();
 
+				if (m_offscreenTexture)
+					m_offscreenTexture->Invalidate();
+
 				m_renderProgram = 0;
 				m_renderVBO = 0;
+				m_filterRenderProgram = 0;
 
 				m_renderOutlineProgram = 0;
 				m_renderOutlineVBO = 0;
+			}
+
+			bool Renderer::ResetFilterRenderProgram() {
+				if (m_filterRenderProgram) {
+					glDeleteProgram(m_filterRenderProgram);
+					m_filterRenderProgram = 0;
+				}
+
+				if (m_filterVShader.size() == 0 || m_filterFShader.size() == 0) {
+					Core::Log() << "No filter shader created\n";
+					return false;
+				}
+
+				auto program = createProgram(m_filterVShader.c_str(), m_filterFShader.c_str());
+
+				if (program == 0)
+					return false;
+
+				glBindAttribLocation(program, POSITION_LOC, "position");
+				glBindAttribLocation(program, TEXCOORD_LOC, "texcoord");
+
+				glLinkProgram(program);
+
+				glUseProgram(program);
+
+				auto texLoc = glGetUniformLocation(program, "nestex");
+				glUniform1i(texLoc, 0);
+
+				auto texSizeLoc = glGetUniformLocation(program, "nestexSize");
+				glUniform2f(texSizeLoc, Core::Video::Output::WIDTH, Core::Video::Output::HEIGHT);
+
+				m_filterRenderTransformUniformLoc = glGetUniformLocation(program, "transform");
+
+				m_filterRenderProgram = program;
+
+				Core::Log() << "Renderer created filter shader program\n";
+
+				return true;
 			}
 
 			void Renderer::ResetImpl()
@@ -176,7 +227,15 @@ namespace Nes
 					Core::Log() << "Renderer created video texture\n";
 				}
 
+				if (m_offscreenTexture && m_offscreenTexture->IsInvalid()) {
+					m_offscreenTexture->Reset();
+					Core::Log() << "Renderer created offscreen texture\n";
+				}
+
 				//create shader program
+				if (m_filterRenderProgram == 0)
+					ResetFilterRenderProgram();
+
 				if (m_renderProgram == 0)
 				{
 					m_renderProgram = createProgram(vshader_src, fshader_src);
@@ -270,6 +329,28 @@ namespace Nes
 				m_videoFullscreen = e;
 			}
 
+			bool Renderer::SetFilterShader(const char* vshader, const char* fshader, float scaleX, float scaleY) {
+				uint32_t scaledW = (uint32_t)(scaleX * Core::Video::Output::WIDTH);
+				uint32_t scaledH = (uint32_t)(scaleY * Core::Video::Output::HEIGHT);
+
+				if (m_offscreenTexture == nullptr
+					|| m_offscreenTexture->GetWidth() != scaledW
+					|| m_offscreenTexture->GetHeight() != scaledH) {
+					m_offscreenTexture = std::make_shared<RenderTargetTexture>(scaledW, scaledH);
+
+					Core::Log() << "Created offscreen texture with size=(" << scaledW << " & " << scaledH << ")\n";
+				}
+
+				if (vshader && fshader) {
+					m_filterVShader = vshader;
+					m_filterFShader = fshader;
+				} else {
+					m_filterVShader.clear();
+					m_filterFShader.clear();
+				}
+				return ResetFilterRenderProgram();
+			}
+
 			void Renderer::ApplyRectTransform(GLint uniformLoc, float x, float y, float width, float height) {
 				auto wScale = 2.f / m_screenWidth;
 				auto hScale = 2.f / m_screenHeight;
@@ -281,21 +362,7 @@ namespace Nes
 				glUniform4f(uniformLoc, xNormalized, yNormalized, wScaled, hScaled);
 			}
 
-			void Renderer::DrawRect(ITexture& texture, float x, float y, float width, float height)
-			{
-				//bind texture
-				glActiveTexture(GL_TEXTURE0);
-				texture.BindTexture();
-
-				//draw rect
-				DrawRect(x, y, width, height);
-			}
-
-			void Renderer::DrawRect(float x, float y, float width, float height)
-			{
-				if (m_renderProgram == 0)
-					return;
-
+			void Renderer::DoDrawRectTransformed() {
 				//bind VBO
 				glBindBuffer(GL_ARRAY_BUFFER, m_renderVBO);
 
@@ -316,13 +383,46 @@ namespace Nes
 									  sizeof(VertexWithTexCoords),
 									  (void*)(2 * sizeof(float)));
 
-				//use program
-				glUseProgram(m_renderProgram);
-
-				ApplyRectTransform(m_renderTransformUniformLoc, x, y, width, height);
-
 				//draw
 				glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+			}
+
+			void Renderer::DoDrawRect(GLint transformUniformLoc, float x, float y, float width, float height) {
+				ApplyRectTransform(transformUniformLoc, x, y, width, height);
+
+				//draw
+				DoDrawRectTransformed();
+			}
+
+			void Renderer::DoDrawFullscreenRect(GLint transformUniformLoc) {
+				glUniform4f(transformUniformLoc, -1, -1, 2, 2);
+
+				//draw
+				DoDrawRectTransformed();
+			}
+
+			void Renderer::DrawRect(ITexture& texture, float x, float y, float width, float height)
+			{
+				//bind texture
+				glActiveTexture(GL_TEXTURE0);
+				texture.BindTexture();
+
+				//draw rect
+				DrawRect(x, y, width, height);
+			}
+
+			void Renderer::DrawRect(float x, float y, float width, float height) {
+				DrawRect(m_renderProgram, m_renderTransformUniformLoc, x, y, width, height);
+			}
+
+			void Renderer::DrawRect(GLuint program, GLint transformUniformLoc, float x, float y, float width, float height) {
+				if (program == 0)
+					return;
+
+				//use program
+				glUseProgram(program);
+
+				DoDrawRect(transformUniformLoc, x, y, width, height);
 			}
 
 			void Renderer::DrawOutlineRect(const Color& color, float size, float x, float y, float width, float height) {
@@ -364,6 +464,23 @@ namespace Nes
 				
 				glDisable(GL_BLEND);
 
+				if (m_filterRenderProgram && m_offscreenTexture && !m_offscreenTexture->IsInvalid()) {
+					// filter the video texture and render it to offscreen texture
+					m_offscreenTexture->SetActive(true);
+
+					glViewport(0, 0, m_offscreenTexture->GetWidth(), m_offscreenTexture->GetHeight());
+
+					glUseProgram(m_filterRenderProgram);
+					glUniform4f(m_filterRenderTransformUniformLoc, -1, 1, 2, -2);
+					DoDrawRectTransformed();
+
+					m_offscreenTexture->SetActive(false);
+					m_offscreenTexture->BindTexture();
+
+					glViewport(0, 0, m_screenWidth, m_screenHeight);
+				}
+
+				// draw the (filtered) video to the screen
 				if (m_videoFullscreen)
 					DrawRect(0, 0, m_screenWidth, m_screenHeight);
 				else

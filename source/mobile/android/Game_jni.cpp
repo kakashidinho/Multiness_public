@@ -1401,6 +1401,26 @@ extern "C" {
 		system->SwitchABTurboMode(enableATurbo, enableBTurbo);
 	}
 
+	JNIEXPORT jboolean JNICALL
+	Java_com_hqgame_networknes_GameSurfaceView_setFilteringShaderNative(JNIEnv *env, jobject thiz, jlong nativePtr, jstring vshader, jstring fshader, jfloat scale)
+	{
+		auto system = (NesSystem*)nativePtr;
+
+		const char* cvshader = vshader ? env->GetStringUTFChars(vshader, NULL) : NULL;
+		const char* cfshader = fshader ? env->GetStringUTFChars(fshader, NULL) : NULL;
+
+		// __android_log_print(ANDROID_LOG_DEBUG, "Nes", "setFilteringShaderNative(%s, %s)\n", cvshader ? cvshader : "null", cfshader ? cfshader : "null");
+
+		auto re = system->GetRenderer().SetFilterShader(cvshader, cfshader, scale, scale);
+
+		if (cvshader)
+			env->ReleaseStringUTFChars(vshader, cvshader);
+		if (cfshader)
+			env->ReleaseStringUTFChars(vshader, cfshader);
+
+		return re ? JNI_TRUE : JNI_FALSE;
+	}
+
 	JNIEXPORT jint JNICALL
 	Java_com_hqgame_networknes_GameSurfaceView_sendMessageToRemoteNative(JNIEnv *env, jobject thiz, jlong nativePtr, jlong id, jstring message)
 	{

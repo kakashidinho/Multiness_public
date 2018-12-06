@@ -312,6 +312,7 @@ public class GameSurfaceView extends GLSurfaceView {
                 enableUIButtonsNative(sNativeHandle, Settings.isUIButtonsEnbled());
                 enableFullScreenNative(sNativeHandle, Settings.isFullscreenEnabled());
                 switchABTurboModeNative(sNativeHandle, Settings.isBtnATurbo(), Settings.isBtnBTurbo());
+                applyFilteringShader();
 
                 // apply buttons layout settings
                 boolean portrait = mWidth < mHeight;
@@ -780,6 +781,38 @@ public class GameSurfaceView extends GLSurfaceView {
                 switchABTurboModeNative(sNativeHandle, enableATurbo, enableBTurbo);
             }
         });
+    }
+
+    private void applyFilteringShader() {
+        Settings.DisplayFilterMode filterMode = Settings.getDisplayFilterMode();
+
+        Activity activity = getActivity();
+        if (activity == null)
+            return;
+
+        String vshader = null, fshader = null;
+
+        if (filterMode != Settings.DisplayFilterMode.NONE) {
+            vshader = Utils.readTextAsset(activity, "shaders", filterMode.toString() + ".glslv");
+            fshader = Utils.readTextAsset(activity, "shaders", filterMode.toString() + ".glslf");
+
+            if (vshader != null && vshader.length() == 0)
+                vshader = null;
+            if (fshader != null && fshader.length() == 0)
+                fshader = null;
+        }
+
+        float scale = 1;
+        switch (filterMode) {
+            case HQ2X: case _2XBR:
+                scale = 2;
+                break;
+            case HQ4X: case _4XBR: case XBR_LV2:
+                scale = 4;
+                break;
+        }
+
+        setFilteringShaderNative(sNativeHandle, vshader, fshader, scale);
     }
 
     /*- hardware input ----*/
@@ -2063,6 +2096,7 @@ public class GameSurfaceView extends GLSurfaceView {
     private native void enableUIButtonsNative(long nativeHandle, boolean enable);
     private native void enableFullScreenNative(long nativeHandle, boolean enable);
     private native void switchABTurboModeNative(long nativeHandle, boolean enableATurbo, boolean enableBTurbo); // if set, the normal A/B will become auto A/B buttons
+    private native boolean setFilteringShaderNative(long nativeHandle, String vshader, String fshader, float scale);
 
     // UI buttons editor
     private native void setUIButtonRectNative(long nativeHandle, int buttonCode, float x, float y, float width, float height);
