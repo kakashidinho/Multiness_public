@@ -881,13 +881,13 @@ public class GameSurfaceView extends GLSurfaceView {
                         if (code.length() < 8)
                             code = code + "00";
                         if (!addGGCheatNative(sNativeHandle, code))
-                            invalidCheat = cheat.getName();
+                            invalidCheat = cheat.getCode();
                     }
                         break;
                     case PRO_ACTION_ROCKY:
                     {
                         if (!addPRCheatNative(sNativeHandle, cheat.getCode()))
-                            invalidCheat = cheat.getName();
+                            invalidCheat = cheat.getCode();
                     }
                         break;
                 }
