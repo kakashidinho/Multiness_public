@@ -37,6 +37,7 @@
 #include "Input.hpp"
 
 #include "../core/api/NstApiEmulator.hpp"
+#include "../core/api/NstApiCheats.hpp"
 #include "../core/api/NstApiUser.hpp"
 #include "../core/api/NstApiVideo.hpp"
 #include "../core/api/NstApiSound.hpp"
@@ -108,7 +109,7 @@ namespace  Nes {
 		
 		bool Loaded() const { return m_loaded; }
 		std::string LoadedFile() const { return m_loadedFile; }
-		std::string LoadedFileName() const;
+		std::string LoadedFileName();
 		
 		float GetScreenWidth() const { return m_renderer->GetScreenWidth(); }
 		float GetScreenHeight() const { return m_renderer->GetScreenHeight(); }
@@ -116,6 +117,10 @@ namespace  Nes {
 
 		// use negative number to slow down the execution speed by |speed| times
 		void SetSpeed(int speed);
+
+		void ClearCheats();
+		Result AddGGCheat(const char* code);
+		Result AddPRCheat(const char* code);
 		
 		Video::IRenderer& GetRenderer() { return *m_renderer; }
 		Input::IInput& GetInput() { return *m_input; }
@@ -149,6 +154,7 @@ namespace  Nes {
 
 		std::unique_ptr<Api::Emulator> m_pVerifierEmulator;//the emulator that is used only for verifying images
 		Api::Emulator m_emulator;
+		Api::Cheats m_cheats;
 		
 		bool m_loaded;
 

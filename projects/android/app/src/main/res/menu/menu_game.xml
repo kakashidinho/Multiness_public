@@ -48,6 +48,9 @@
                 </group>
             </menu>
         </item>
+
+        <item android:id="@+id/action_cheats" android:title="@string/cheats"
+            android:orderInCategory="100" app:showAsAction="never" />
     </group>
     <group android:id="@+id/menu_remote_control_group">
         <item android:id="@+id/action_chat"

@@ -155,6 +155,7 @@ namespace  Nes {
 		:	m_loaded(false),
 		 	m_speed(1),
 			m_emulator(),
+		 	m_cheats(m_emulator),
 			m_errCallback(errCallback),
 			m_vlogCallback(logCallback),
 			m_machineEventCallback(nullptr)
@@ -548,7 +549,10 @@ namespace  Nes {
 	}
 	
 	//get name of loaded rom file
-	std::string NesSystemWrapper::LoadedFileName() const {
+	std::string NesSystemWrapper::LoadedFileName() {
+		if (RemoteControlling())
+			return "";
+
 		auto slashPos = m_loadedFile.find_last_of('/');
 		if (slashPos == std::string::npos)
 			slashPos = m_loadedFile.find_last_of('\\');
@@ -657,6 +661,36 @@ namespace  Nes {
 	void NesSystemWrapper::SetSpeed(int speed) {
 		m_speed = speed;
 		m_delayUntilExecute = 0;
+	}
+
+	void NesSystemWrapper::ClearCheats() {
+		m_cheats.ClearCodes();
+	}
+
+	Result NesSystemWrapper::AddGGCheat(const char* codeStr) {
+		if (RemoteControlling()) {
+			return RESULT_OK; // ignore
+		}
+
+		Api::Cheats::Code code;
+		Result re = Api::Cheats::GameGenieDecode(codeStr, code);
+		if (NES_FAILED(re))
+			return re;
+
+		return m_cheats.SetCode(code);
+	}
+
+	Result NesSystemWrapper::AddPRCheat(const char* codeStr) {
+		if (RemoteControlling()) {
+			return RESULT_OK; // ignore
+		}
+
+		Api::Cheats::Code code;
+		Result re = Api::Cheats::ProActionRockyDecode(codeStr, code);
+		if (NES_FAILED(re))
+			return re;
+
+		return m_cheats.SetCode(code);
 	}
 	
 	void NesSystemWrapper::EnableUIButtons(bool e) {

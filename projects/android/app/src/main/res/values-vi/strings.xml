@@ -14,6 +14,8 @@
     <string name="ok">OK</string>
     <string name="reset">Reset</string>
     <string name="start">Start</string>
+    <string name="new_item">Thêm</string>
+    <string name="edit_item">Sửa</string>
     <string name="donate">Tắt quảng cáo</string>
     <string name="delete_invitation_msg">Bạn có muốn xóa lời mời này?</string>
     <string name="file_exist_title">File tồn tại</string>
@@ -150,6 +152,7 @@
     <string name="google_match_invite_postprocessing">Đang chờ người chơi thứ 2 ...</string>
     <string name="google_signing_in">Đang log in với Google ...</string>
     <string name="name_field">Tên:</string>
+    <string name="code_field">Mã:</string>
     <string name="wifi_direct_not_supported">Wifi Direct không được hỗ trợ trên thiết bị này.</string>
     <string name="wifi_direct_internal_err_msg">Wifi Direct gặp phải lỗi hệ thống driver.</string>
     <string name="wifi_direct_creating">Đang thiết lập Wifi Direct Server ...</string>
@@ -170,6 +173,9 @@
     <string name="enable_autosearch_on_resume">Tự động tìm game nếu danh sách Chọn Game rỗng</string>
     <string name="public_rooms_text">Public Server</string>
     <string name="game_speed">Tốc độ Game</string>
+    <string name="too_many_cheats_err">Bạn đã lưu trữ tối đa số lượng mã cheat cho một game.</string>
+    <string name="invalid_cheat_code_err">Mã cheat không hợp lệ.</string>
+    <string name="invalid_cheat_code_detailed_err">Mã cheat không hợp lệ %1$s.</string>
 
     <!--
     <string name="appwarp_connect_error_msg">Failed to connect to Game Server using Google Account. Error code=%1$d. Please try again later.</string>

@@ -692,6 +692,19 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
                     });
                 }
                 break;
+            case R.id.action_cheats:
+            {
+                if (mGameView != null) {
+                    mGameView.loadedGameName(new AsyncQuery<String>() {
+                        @Override
+                        public void run(String result) {
+                            if (result != null && result.length() > 0)
+                                openCheatsPage(result);
+                        }
+                    });
+                }//if (mGameView != null)
+            }
+                break;
             default:
                 handled = false;
                 break;
@@ -1164,6 +1177,16 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
         }
 
         return false;
+    }
+
+    /*----- load cheats ---*/
+    private void openCheatsPage(String gameName) {
+        Bundle settings = new Bundle();
+        settings.putString(CheatsPage.GAME_NAME_KEY, gameName);
+
+        BasePage cheatsPage = BasePage.create(CheatsPage.class);
+        cheatsPage.setExtras(settings);
+        goToPage(cheatsPage);
     }
 
     /*----- save/load ----*/

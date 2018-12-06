@@ -1429,6 +1429,44 @@ extern "C" {
 		system->SetSpeed(speed);
 	}
 
+	JNIEXPORT void JNICALL
+	Java_com_hqgame_networknes_GameSurfaceView_clearCheatsNative(JNIEnv *env, jobject thiz, jlong nativePtr)
+	{
+		__android_log_print(ANDROID_LOG_DEBUG, "Nes", "clearCheatsNative()\n");
+		auto system = (NesSystem*)nativePtr;
+		system->ClearCheats();
+	}
+
+	JNIEXPORT jboolean JNICALL
+	Java_com_hqgame_networknes_GameSurfaceView_addGGCheatNative(JNIEnv *env, jobject thiz, jlong nativePtr, jstring code)
+	{
+		auto ccode = code ? env->GetStringUTFChars(code, NULL) : NULL;
+		__android_log_print(ANDROID_LOG_DEBUG, "Nes", "addGGCheatNative(%s)\n", ccode);
+
+		auto system = (NesSystem*)nativePtr;
+		auto re = system->AddGGCheat(ccode);
+
+		if (ccode)
+			env->ReleaseStringUTFChars(code, ccode);
+
+		return NES_SUCCEEDED(re) ? JNI_TRUE : JNI_FALSE;
+	}
+
+	JNIEXPORT jboolean JNICALL
+	Java_com_hqgame_networknes_GameSurfaceView_addPRCheatNative(JNIEnv *env, jobject thiz, jlong nativePtr, jstring code)
+	{
+		auto ccode = code ? env->GetStringUTFChars(code, NULL) : NULL;
+		__android_log_print(ANDROID_LOG_DEBUG, "Nes", "addPRCheatNative(%s)\n", ccode);
+
+		auto system = (NesSystem*)nativePtr;
+		auto re = system->AddPRCheat(ccode);
+
+		if (ccode)
+			env->ReleaseStringUTFChars(code, ccode);
+
+		return NES_SUCCEEDED(re) ? JNI_TRUE : JNI_FALSE;
+	}
+
 	JNIEXPORT jint JNICALL
 	Java_com_hqgame_networknes_GameSurfaceView_sendMessageToRemoteNative(JNIEnv *env, jobject thiz, jlong nativePtr, jlong id, jstring message)
 	{

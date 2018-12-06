@@ -313,6 +313,7 @@ public class GameSurfaceView extends GLSurfaceView {
                 enableFullScreenNative(sNativeHandle, Settings.isFullscreenEnabled());
                 switchABTurboModeNative(sNativeHandle, Settings.isBtnATurbo(), Settings.isBtnBTurbo());
                 applyFilteringShader();
+                applyCheats();
 
                 // apply buttons layout settings
                 boolean portrait = mWidth < mHeight;
@@ -401,6 +402,17 @@ public class GameSurfaceView extends GLSurfaceView {
             public void run() {
                 initGameNativeIfNeeded();
                 String loadedGame = loadedGameNative(sNativeHandle);
+                resultCallback.run(loadedGame);
+            }
+        });
+    }
+
+    public void loadedGameName(final AsyncQuery<String> resultCallback) {
+        queueEvent(new Runnable() {
+            @Override
+            public void run() {
+                initGameNativeIfNeeded();
+                String loadedGame = loadedGameNameNative(sNativeHandle);
                 resultCallback.run(loadedGame);
             }
         });
@@ -847,6 +859,46 @@ public class GameSurfaceView extends GLSurfaceView {
         }
 
         setFilteringShaderNative(sNativeHandle, vshader, fshader, scale, linearSampling);
+    }
+
+    private void applyCheats() {
+        String gameName = loadedGameNameNative(sNativeHandle);
+        if (gameName == null || gameName.length() < 0)
+            return;
+
+        final BaseActivity activity = getActivity();
+        String invalidCheat = null;
+        try {
+            ArrayList<CheatsPage.Cheat> cheats = CheatsPage.loadCheats(activity, gameName);
+            if (cheats == null)
+                return;
+            clearCheatsNative(sNativeHandle);
+            for (CheatsPage.Cheat cheat: cheats) {
+                switch (cheat.getType()) {
+                    case GAME_GENIE:
+                    {
+                        String code = cheat.getCode();
+                        if (code.length() < 8)
+                            code = code + "00";
+                        if (!addGGCheatNative(sNativeHandle, code))
+                            invalidCheat = cheat.getName();
+                    }
+                        break;
+                    case PRO_ACTION_ROCKY:
+                    {
+                        if (!addPRCheatNative(sNativeHandle, cheat.getCode()))
+                            invalidCheat = cheat.getName();
+                    }
+                        break;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (invalidCheat != null && activity != null) {
+            errorMessage(String.format(activity.getString(R.string.invalid_cheat_code_detailed_err), invalidCheat));
+        }
     }
 
     /*- hardware input ----*/
@@ -2132,6 +2184,9 @@ public class GameSurfaceView extends GLSurfaceView {
     private native void switchABTurboModeNative(long nativeHandle, boolean enableATurbo, boolean enableBTurbo); // if set, the normal A/B will become auto A/B buttons
     private native boolean setFilteringShaderNative(long nativeHandle, String vshader, String fshader, float scale, boolean videoLinearSampling);
     private native void setSpeedNative(long nativeHandle, int speed);
+    private native void clearCheatsNative(long nativeHandle);
+    private native boolean addGGCheatNative(long nativeHandle, String code);
+    private native boolean addPRCheatNative(long nativeHandle, String code);
 
     // UI buttons editor
     private native void setUIButtonRectNative(long nativeHandle, int buttonCode, float x, float y, float width, float height);

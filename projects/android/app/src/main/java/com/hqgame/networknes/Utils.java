@@ -41,6 +41,7 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.text.Html;
@@ -53,6 +54,7 @@ import android.widget.TextView;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -106,6 +108,15 @@ public class Utils {
     public static String readTextAsset(Context context, String folder, String file) {
         try {
             InputStream is = context.getAssets().open(folder + "/" + file);
+            return readText(is);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static String readText(InputStream is) {
+        try {
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
             String line;
@@ -123,6 +134,40 @@ public class Utils {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public static File getAppPrivateFolder(Context context, String type) {
+        String path = null;
+        try {
+            File externalFile = context.getExternalFilesDir(null);
+            if (!externalFile.exists())
+                externalFile.mkdirs();
+
+            if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+                path = externalFile.getAbsolutePath();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (path == null) {
+            path = context.getFilesDir().getAbsolutePath(); // use private folder instead
+        }
+
+        File file = type != null ? new File(path, type) : new File(path);
+
+        try {
+            if (!file.exists())
+                file.mkdirs();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // last resort, use private folder's root
+        if (!file.exists())
+            file = context.getFilesDir();
+
+        return file;
     }
 
     public static String getHostIPAddress(Context context)
@@ -230,8 +275,6 @@ public class Utils {
 
     public static Dialog dialog(Context context, int iconResId, String title, CharSequence message, View addtionalView, int dialogPositiveBtnTextRes, final Runnable dialogPostitiveClickedCallback, final Runnable dialogClosedCallback) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context)
-                .setTitle(title)
-                .setMessage(message)
                 .setPositiveButton(dialogPositiveBtnTextRes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         if (dialogPostitiveClickedCallback != null)
@@ -239,6 +282,11 @@ public class Utils {
                     }
                 })
                 .setIcon(iconResId);
+
+        if (title != null)
+            builder.setTitle(title);
+        if (message != null)
+            builder.setMessage(message);
 
         if (dialogClosedCallback != null) {
             builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
