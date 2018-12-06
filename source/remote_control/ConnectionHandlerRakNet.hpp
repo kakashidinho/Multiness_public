@@ -70,6 +70,7 @@ namespace Nes {
 			//IConnectionHandler implementation
 			virtual bool connected() const override;
 			virtual bool isLimitedBySendingBandwidth() const override;
+			virtual bool setDscp(int dscp) override;
 
 			static uint64_t getIdForThisApp();
 

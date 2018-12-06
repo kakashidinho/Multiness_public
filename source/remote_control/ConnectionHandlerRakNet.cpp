@@ -270,6 +270,29 @@ namespace Nes {
 			return m_stats.isLimitedByCongestionControl;
 		}
 
+		bool ConnectionHandlerRakNet::setDscp(int dscp) {
+			if (!connected())
+				return false;
+
+			bool re = false;
+
+			for (unsigned int i = 0; i < m_raknetSockets.Size(); ++i) {
+				auto& socket = m_raknetSockets[i];
+				if (!socket->IsBerkleySocket())
+					continue;
+
+				auto bsdSocket = reinterpret_cast<RakNet::RNS2_Berkley*>(socket);
+				auto socketFd = bsdSocket->GetSocket();
+
+				auto err = HQRemote::SocketConnectionHandler::platformSetSocketDscp((HQRemote::socket_t)socketFd, dscp);
+				HQRemote::Log("ConnectionHandlerRakNet::setDscp(%d) --> platformSetSocketDscp() returned %d\n", dscp, err);
+
+				re = re || err == 0;
+			}
+
+			return re;
+		}
+
 		bool ConnectionHandlerRakNet::startImpl()
 		{
 			//create multicast socket
