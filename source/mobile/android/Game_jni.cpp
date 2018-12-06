@@ -1421,6 +1421,14 @@ extern "C" {
 		return re ? JNI_TRUE : JNI_FALSE;
 	}
 
+	JNIEXPORT void JNICALL
+	Java_com_hqgame_networknes_GameSurfaceView_setSpeedNative(JNIEnv *env, jobject thiz, jlong nativePtr, jint speed)
+	{
+		__android_log_print(ANDROID_LOG_DEBUG, "Nes", "setSpeedNative(%d)\n", (int)speed);
+		auto system = (NesSystem*)nativePtr;
+		system->SetSpeed(speed);
+	}
+
 	JNIEXPORT jint JNICALL
 	Java_com_hqgame_networknes_GameSurfaceView_sendMessageToRemoteNative(JNIEnv *env, jobject thiz, jlong nativePtr, jlong id, jstring message)
 	{

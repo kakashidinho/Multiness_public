@@ -169,6 +169,7 @@
     <string name="skip_autosearch_on_resume_msg">Bạn có muốn bỏ qua quá trình tự động tìm game mỗi khi vào trang chọn game này?</string>
     <string name="enable_autosearch_on_resume">Tự động tìm game nếu danh sách Chọn Game rỗng</string>
     <string name="public_rooms_text">Public Server</string>
+    <string name="game_speed">Tốc độ Game</string>
 
     <!--
     <string name="appwarp_connect_error_msg">Failed to connect to Game Server using Google Account. Error code=%1$d. Please try again later.</string>

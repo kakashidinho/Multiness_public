@@ -17,6 +17,37 @@
     <group android:id="@+id/menu_game_power_control_group">
         <item android:id="@+id/action_reset" android:title="@string/action_reset"
             android:orderInCategory="100" app:showAsAction="never" />
+        <item
+            android:id="@+id/action_game_speed"
+            android:title="@string/game_speed"
+            app:showAsAction="never"
+            android:orderInCategory="100" >
+            <menu>
+                <group
+                    android:checkableBehavior="single"
+                    android:visible="true"   >
+                    <item
+                        android:id="@+id/action_speed_quarter"
+                        android:title="0.25x" />
+                    <item
+                        android:id="@+id/action_speed_half"
+                        android:title="0.5x" />
+                    <item
+                        android:id="@+id/action_speed_default"
+                        android:checked="true"
+                        android:title="1x" />
+                    <item
+                        android:id="@+id/action_speed_2x"
+                        android:title="2x" />
+                    <item
+                        android:id="@+id/action_speed_4x"
+                        android:title="4x" />
+                    <item
+                        android:id="@+id/action_speed_8x"
+                        android:title="8x" />
+                </group>
+            </menu>
+        </item>
     </group>
     <group android:id="@+id/menu_remote_control_group">
         <item android:id="@+id/action_chat"

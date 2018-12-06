@@ -153,6 +153,7 @@ namespace  Nes {
 	//NesSystemWrapper
 	NesSystemWrapper::NesSystemWrapper(std::istream* dbStream, VLogCallback logCallback, ErrorCallback errCallback)
 		:	m_loaded(false),
+		 	m_speed(1),
 			m_emulator(),
 			m_errCallback(errCallback),
 			m_vlogCallback(logCallback),
@@ -604,8 +605,28 @@ namespace  Nes {
 		
 		if (m_input)
 			m_input->BeginFrame();
-		
-		m_emulator.Execute(skipRender ? NULL : &m_video, &m_sound, m_input.get(), &m_soundInput);
+
+		bool skipExecute = false;
+
+		if (!RemoteControlling()) {
+			if (m_speed > 1) {
+				for (int i = 0; i < m_speed - 1; ++i) {
+					m_emulator.Execute(NULL, NULL, m_input.get(), NULL);
+				}
+			} else if (m_speed < 0) {
+				if (m_delayUntilExecute) {
+					m_delayUntilExecute--;
+				}
+
+				if (m_delayUntilExecute == 0) {
+					m_delayUntilExecute = -m_speed;
+				} else
+					skipExecute = true;
+			}
+		} // if (!RemoteControlling())
+
+		if (!skipExecute)
+			m_emulator.Execute(skipRender ? NULL : &m_video, &m_sound, m_input.get(), &m_soundInput);
 		
 		m_renderer->PresentVideo();
 		
@@ -629,6 +650,13 @@ namespace  Nes {
 			m_loaded = false;
 			m_loadedFile.clear();
 		}
+
+		SetSpeed(1);
+	}
+
+	void NesSystemWrapper::SetSpeed(int speed) {
+		m_speed = speed;
+		m_delayUntilExecute = 0;
 	}
 	
 	void NesSystemWrapper::EnableUIButtons(bool e) {

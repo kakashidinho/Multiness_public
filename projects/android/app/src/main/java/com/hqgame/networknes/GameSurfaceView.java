@@ -783,6 +783,18 @@ public class GameSurfaceView extends GLSurfaceView {
         });
     }
 
+    // pass negative number to slowdown the execution by |speed| times
+    public void setSpeed(final int speed) {
+        queueEvent(new Runnable() {
+            @Override
+            public void run() {
+                initGameNativeIfNeeded();
+
+                setSpeedNative(sNativeHandle, speed);
+            }
+        });
+    }
+
     private void applyFilteringShader() {
         Settings.DisplayFilterMode filterMode = Settings.getDisplayFilterMode();
 
@@ -2119,6 +2131,7 @@ public class GameSurfaceView extends GLSurfaceView {
     private native void enableFullScreenNative(long nativeHandle, boolean enable);
     private native void switchABTurboModeNative(long nativeHandle, boolean enableATurbo, boolean enableBTurbo); // if set, the normal A/B will become auto A/B buttons
     private native boolean setFilteringShaderNative(long nativeHandle, String vshader, String fshader, float scale, boolean videoLinearSampling);
+    private native void setSpeedNative(long nativeHandle, int speed);
 
     // UI buttons editor
     private native void setUIButtonRectNative(long nativeHandle, int buttonCode, float x, float y, float width, float height);

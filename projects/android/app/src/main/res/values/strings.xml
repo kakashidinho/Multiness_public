@@ -179,6 +179,7 @@
     <string name="skip_autosearch_on_resume_msg">Do you want to skip the auto search process that would start whenever you enter this page?</string>
     <string name="enable_autosearch_on_resume">Start auto search if Select Game list is empty</string>
     <string name="public_rooms_text">Public Servers</string>
+    <string name="game_speed">Game Speed</string>
     <!--
     <string name="appwarp_connect_error_msg">Failed to connect to Game Server using Google Account. Error code=%1$d. Please try again later.</string>
     <string name="appwarp_auth_error_msg">Failed to connect to Game Server using Google Account. Probably you already logged in on another device. Please log out from that device first.</string>

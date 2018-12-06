@@ -1875,6 +1875,7 @@ namespace Nes
 					EnsureCorrectRemoteSoundSettings();
 
 					//capture video frame
+					if (video)
 					{
 #if PROFILE_EXECUTION_TIME
 						HQRemote::ScopedTimeProfiler profiler("captureAndSendFrame", avgFrameCaptureTime, frameCaptureWindowTime);
@@ -1883,6 +1884,7 @@ namespace Nes
 					}
 
 					//capture audio
+					if (sound)
 					{
 #if PROFILE_EXECUTION_TIME
 						HQRemote::ScopedTimeProfiler profiler("captureAndSendAudio", avgAudioCaptureTime, audioCaptureWindowTime);

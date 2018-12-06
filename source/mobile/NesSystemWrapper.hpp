@@ -113,6 +113,9 @@ namespace  Nes {
 		float GetScreenWidth() const { return m_renderer->GetScreenWidth(); }
 		float GetScreenHeight() const { return m_renderer->GetScreenHeight(); }
 		void EnableFullScreenVideo(bool e) { m_renderer->EnableFullScreenVideo(e); }
+
+		// use negative number to slow down the execution speed by |speed| times
+		void SetSpeed(int speed);
 		
 		Video::IRenderer& GetRenderer() { return *m_renderer; }
 		Input::IInput& GetInput() { return *m_input; }
@@ -148,6 +151,9 @@ namespace  Nes {
 		Api::Emulator m_emulator;
 		
 		bool m_loaded;
+
+		int m_speed;
+		uint32_t m_delayUntilExecute;
 		
 		Core::Video::Output m_video;
 		Core::Sound::Output m_sound;

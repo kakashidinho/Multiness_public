@@ -89,6 +89,8 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
     private File mPrivateDataPath = null;
     private Settings.RemoteControl mRemoteCtlType = Settings.RemoteControl.NO_REMOTE_CONTROL;
 
+    PersistenState mPersistentState = null;
+
     private InterstitialAd mInterstitialAd;
 
     @Override
@@ -163,12 +165,12 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
         mGameView.onParentPageViewCreated(this);
 
         // restore the states if the page has been recreated
-        PersistenState persistenState = ViewModelProviders.of(getActivity()).get(PersistenState.class);
-        boolean initialized = persistenState.isInitialized();
+        ensurePersistentStateAvailable();
+        boolean initialized = mPersistentState.isInitialized();
 
         if (initialized) {
             // restore remote controlling type's value
-            mRemoteCtlType = persistenState.getRemoteCtlType();
+            mRemoteCtlType = mPersistentState.getRemoteCtlType();
 
             // skip the initialization step
             System.out.println("--> GamePage.skipInitialize");
@@ -287,8 +289,8 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
         initialized = true;
 
         // save state persistently
-        persistenState.setInitialized(initialized);
-        persistenState.setRemoteCtlType(mRemoteCtlType);
+        mPersistentState.setInitialized(initialized);
+        mPersistentState.setRemoteCtlType(mRemoteCtlType);
 
         return mContentView;
     }
@@ -321,6 +323,8 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
     }
 
     private View recreateGameView(LayoutInflater inflater, ViewGroup container) {
+        ensurePersistentStateAvailable();
+
         View contentView = null;
         try {
             if (mGameView == null)
@@ -332,6 +336,8 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
                     mGameViewFrameContainer = null;
                 }
             }
+
+            mGameView.setSpeed(mPersistentState.getGameSpeed());
 
             /*----- config screen's layout ---------*/
             contentView = inflater.inflate(R.layout.page_game, container, false);
@@ -449,6 +455,9 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
         a_turbo_checkbox_item.setOnActionExpandListener(preventCollapse);
         b_turbo_checkbox_item.setOnActionExpandListener(preventCollapse);
 
+        // initialize game speed settings submenu
+        initGameSpeedMenu(menu);
+
         // ---------- set visibility of toolbar items ---------------
         // note: must do here after mRemoteCtlType is known
         Toolbar toolbar = (Toolbar)mContentView.findViewById(R.id.game_toolbar);
@@ -470,6 +479,38 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
         if (!isInvitingInternetHost)//if we are not internet host, disable invite button
             inviteBtn.setVisibility(View.INVISIBLE);
 
+    }
+
+    private void initGameSpeedMenu(Menu menu) {
+        ensurePersistentStateAvailable();
+
+        int subMenuItemId;
+        switch (mPersistentState.getGameSpeed()) {
+            case -4:
+                subMenuItemId = R.id.action_speed_quarter;
+                break;
+            case -2:
+                subMenuItemId = R.id.action_speed_half;
+                break;
+            case 2:
+                subMenuItemId = R.id.action_speed_2x;
+                break;
+            case 4:
+                subMenuItemId = R.id.action_speed_4x;
+                break;
+            case 8:
+                subMenuItemId = R.id.action_speed_8x;
+                break;
+            default:
+                subMenuItemId = R.id.action_speed_default;
+                break;
+        }
+
+        try {
+            menu.findItem(subMenuItemId).setChecked(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -495,6 +536,46 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
                     mGameView.switchABTurboMode(Settings.isBtnATurbo(), Settings.isBtnBTurbo());
                 Settings.saveGlobalSettings(getContext());
                 return false;
+            case R.id.action_speed_default:
+            case R.id.action_speed_quarter:
+            case R.id.action_speed_half:
+            case R.id.action_speed_2x:
+            case R.id.action_speed_4x:
+            case R.id.action_speed_8x:
+            {
+                item.setChecked(true);
+
+                if (mGameView == null)
+                    return true;
+
+                ensurePersistentStateAvailable();
+
+                int speed = 1;
+                switch (id) {
+                    case R.id.action_speed_default:
+                        speed = 1;
+                        break;
+                    case R.id.action_speed_quarter:
+                        speed = -4;
+                        break;
+                    case R.id.action_speed_half:
+                        speed = -2;
+                        break;
+                    case R.id.action_speed_2x:
+                        speed = 2;
+                        break;
+                    case R.id.action_speed_4x:
+                        speed = 4;
+                        break;
+                    case R.id.action_speed_8x:
+                        speed = 8;
+                        break;
+                }
+
+                mGameView.setSpeed(speed);
+                mPersistentState.setGameSpeed(speed);
+            }
+                return true;
         }
 
         // common actions shared between toolbar and menu
@@ -931,8 +1012,11 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
     @Override
     public void finish() {
         // invalidate persistent state
-        PersistenState persistenState = ViewModelProviders.of(getActivity()).get(PersistenState.class);
-        persistenState.setInitialized(false);
+        ensurePersistentStateAvailable();
+
+        // reset settings
+        mPersistentState.setInitialized(false);
+        mPersistentState.setGameSpeed(1);
 
         // exit
         super.finish();
@@ -1193,13 +1277,22 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
     }
 
     /*-------- persistent state -----------------*/
+    PersistenState ensurePersistentStateAvailable() {
+        if (mPersistentState == null)
+            mPersistentState = ViewModelProviders.of(getActivity()).get(PersistenState.class);
+
+        return mPersistentState;
+    }
+
     public static class PersistenState extends ViewModel {
         private MutableLiveData<Boolean> mInitialized = new MutableLiveData<Boolean>();
         private MutableLiveData<Settings.RemoteControl> mRemoteCtlType = new MutableLiveData<>();
+        private MutableLiveData<Integer> mGameSpeed = new MutableLiveData<>();
 
         public PersistenState() {
             mInitialized.setValue(false);
             mRemoteCtlType.setValue(Settings.RemoteControl.NO_REMOTE_CONTROL);
+            mGameSpeed.setValue(1);
         }
 
         public boolean isInitialized() {
@@ -1217,5 +1310,8 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
         public void setRemoteCtlType(Settings.RemoteControl type) {
             mRemoteCtlType.setValue(type);
         }
+
+        public void setGameSpeed(int speed) { mGameSpeed.setValue(speed); }
+        public int getGameSpeed() { return mGameSpeed.getValue(); }
     }
 }
