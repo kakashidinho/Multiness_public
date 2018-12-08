@@ -86,6 +86,8 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
     private ViewGroup mGameViewFrameContainer = null;
     private GameSurfaceView mGameView;
 
+    private Toolbar mToolbar = null;
+
     private File mPrivateDataPath = null;
     private Settings.RemoteControl mRemoteCtlType = Settings.RemoteControl.NO_REMOTE_CONTROL;
 
@@ -343,7 +345,7 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
             contentView = inflater.inflate(R.layout.page_game, container, false);
 
             mGameViewFrameContainer = (ViewGroup) contentView.findViewById(R.id.game_content_frame);
-            Toolbar toolbar = (Toolbar) contentView.findViewById(R.id.game_toolbar);
+            mToolbar = (Toolbar) contentView.findViewById(R.id.game_toolbar);
 
             if (mGameViewFrameContainer instanceof RelativeLayout)//this should be landscape layout
             {
@@ -351,7 +353,7 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
                 mGameViewFrameContainer.addView(mGameView, new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
 
                 //need to bring toolbar to front since GameSurfaceView is added after it
-                toolbar.bringToFront();
+                mToolbar.bringToFront();
 
                 ImageButton inviteBnt = (ImageButton)contentView.findViewById(R.id.btnInviteFriendIngame);
                 if (inviteBnt != null) {
@@ -364,7 +366,7 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
             }
 
             //set the Toolbar to act as the ActionBar for this Activity window.
-            getBaseActivity().setSupportActionBar(toolbar);
+            getBaseActivity().setSupportActionBar(mToolbar);
 
             //disable actionbar's title, icon and home
             getBaseActivity().getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -372,9 +374,9 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
             getBaseActivity().getSupportActionBar().setDisplayShowHomeEnabled(false);
 
             //register toolbar's buttons' listener
-            ImageButton quickSaveBtn = (ImageButton)toolbar.findViewById(R.id.btnQuickSave);
-            ImageButton quickLoadBtn = (ImageButton)toolbar.findViewById(R.id.btnQuickLoad);
-            ImageButton chatBtn = (ImageButton)toolbar.findViewById(R.id.btnChatRoom);
+            ImageButton quickSaveBtn = (ImageButton)mToolbar.findViewById(R.id.btnQuickSave);
+            ImageButton quickLoadBtn = (ImageButton)mToolbar.findViewById(R.id.btnQuickLoad);
+            ImageButton chatBtn = (ImageButton)mToolbar.findViewById(R.id.btnChatRoom);
             ImageButton inviteBtn = (ImageButton)contentView.findViewById(R.id.btnInviteFriendIngame);
 
             quickSaveBtn.setOnClickListener(new View.OnClickListener() {
@@ -460,11 +462,12 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
 
         // ---------- set visibility of toolbar items ---------------
         // note: must do here after mRemoteCtlType is known
-        Toolbar toolbar = (Toolbar)mContentView.findViewById(R.id.game_toolbar);
+        if (mToolbar == null)
+            mToolbar = (Toolbar)mContentView.findViewById(R.id.game_toolbar);
 
-        ImageButton quickSaveBtn = (ImageButton)toolbar.findViewById(R.id.btnQuickSave);
-        ImageButton quickLoadBtn = (ImageButton)toolbar.findViewById(R.id.btnQuickLoad);
-        ImageButton chatBtn = (ImageButton)toolbar.findViewById(R.id.btnChatRoom);
+        ImageButton quickSaveBtn = (ImageButton)mToolbar.findViewById(R.id.btnQuickSave);
+        ImageButton quickLoadBtn = (ImageButton)mToolbar.findViewById(R.id.btnQuickLoad);
+        ImageButton chatBtn = (ImageButton)mToolbar.findViewById(R.id.btnChatRoom);
         ImageButton inviteBtn = (ImageButton)mContentView.findViewById(R.id.btnInviteFriendIngame);
 
         if (!isGameOwner()) {
@@ -891,6 +894,18 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
                         break;
                     case QUICK_LOAD:
                         handleCommonMenuOrToolbarAction(null, R.id.action_quick_load);
+                        break;
+                    case MENU:
+                        try {
+                            if (mToolbar == null)
+                                mToolbar = (Toolbar)mContentView.findViewById(R.id.game_toolbar);
+                            mToolbar.showOverflowMenu();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    case EXIT:
+                        onBackPressed();
                         break;
                     default:
                         if (mGameView != null)

@@ -230,7 +230,10 @@ class Settings {
         AUTO_B,
 
         QUICK_SAVE,
-        QUICK_LOAD;
+        QUICK_LOAD,
+
+        MENU,
+        EXIT;
 
         public static final int NORMAL_BUTTONS = 5;
 
@@ -247,6 +250,10 @@ class Settings {
                     return "Quick Save";
                 case QUICK_LOAD:
                     return "Quick Load";
+                case MENU:
+                    return "Menu";
+                case EXIT:
+                    return "Exit";
                 default:
                     return name();
             }
@@ -518,5 +525,7 @@ class Settings {
         btn2KeyDefaultMap.put(Button.AB, KeyEvent.KEYCODE_UNKNOWN);
         btn2KeyDefaultMap.put(Button.QUICK_SAVE, KeyEvent.KEYCODE_UNKNOWN);
         btn2KeyDefaultMap.put(Button.QUICK_LOAD, KeyEvent.KEYCODE_UNKNOWN);
+        btn2KeyDefaultMap.put(Button.MENU, KeyEvent.KEYCODE_UNKNOWN);
+        btn2KeyDefaultMap.put(Button.EXIT, KeyEvent.KEYCODE_UNKNOWN);
     }
 }
