@@ -43,6 +43,7 @@
     <string name="select_player">Select Player</string>
     <string name="select_orientation">Select Orientation</string>
     <string name="err_no_network">No network connection</string>
+    <string name="unknown_ip" translatable="false">Unknown IP</string>
     <string name="host_game">Host New Game</string>
     <string name="host_lan_game_msg">Enter your network port</string>
     <string name="host_wifi_direct_game_msg">Enter your room name</string>

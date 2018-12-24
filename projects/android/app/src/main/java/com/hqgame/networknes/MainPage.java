@@ -493,9 +493,10 @@ public class MainPage extends BaseMenuPage implements PurchasesUpdatedListener {
         String ip = Utils.getHostIPAddress(getActivity());
         if (ip == null)
         {
-            Utils.alertDialog(context, "Error", getString(R.string.err_no_network), null);
+            ip = getString(R.string.unknown_ip);
         }//if (ip == null)
-        else {
+
+        {
             //load previous port
             SharedPreferences pref = context.getSharedPreferences(Settings.IMMEDIATE_PREF_FILE, Context.MODE_PRIVATE);
             int lastPort = pref.getInt(Settings.LAST_TYPED_PORT_KEY, Settings.DEFAULT_NETWORK_PORT);
