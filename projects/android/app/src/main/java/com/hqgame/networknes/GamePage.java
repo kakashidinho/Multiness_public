@@ -312,16 +312,15 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
     }
 
     private boolean isGameOwner() {
-        switch (mRemoteCtlType){
-            case CONNECT_LAN_REMOTE_CONTROL:
-            case JOIN_INTERNET_REMOTE_CONTROL_FB:
-            case JOIN_INTERNET_REMOTE_CONTROL_GOOGLE:
-            case JOIN_INTERNET_REMOTE_CONTROL_PUBLIC:
-            case QUICKJOIN_INTERNET_REMOTE_CONTROL_GOOGLE:
-                return false;
-            default:
-                return true;
-        }
+        if (mRemoteCtlType == null)
+            return false;
+        return mRemoteCtlType.isGameOwner();
+    }
+
+    private boolean is2ndPlayerInviteAllowed() {
+        if (mRemoteCtlType == null)
+            return false;
+        return mRemoteCtlType.is2ndPlayerInviteAllowed();
     }
 
     private View recreateGameView(LayoutInflater inflater, ViewGroup container) {
@@ -424,9 +423,7 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         System.out.println("GamePage.onCreateOptionsMenu()");
 
-        boolean isInvitingInternetHost =
-                mRemoteCtlType == Settings.RemoteControl.ENABLE_INTERNET_REMOTE_CONTROL_FB
-                || mRemoteCtlType == Settings.RemoteControl.ENABLE_INTERNET_REMOTE_CONTROL_GOOGLE;
+        boolean isInvitingInternetHost = is2ndPlayerInviteAllowed();
         // Inflate the menu; this adds items to the action bar if it is present.
 
         inflater.inflate(R.menu.menu_game, menu);
@@ -459,29 +456,6 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
 
         // initialize game speed settings submenu
         initGameSpeedMenu(menu);
-
-        // ---------- set visibility of toolbar items ---------------
-        // note: must do here after mRemoteCtlType is known
-        if (mToolbar == null)
-            mToolbar = (Toolbar)mContentView.findViewById(R.id.game_toolbar);
-
-        ImageButton quickSaveBtn = (ImageButton)mToolbar.findViewById(R.id.btnQuickSave);
-        ImageButton quickLoadBtn = (ImageButton)mToolbar.findViewById(R.id.btnQuickLoad);
-        ImageButton chatBtn = (ImageButton)mToolbar.findViewById(R.id.btnChatRoom);
-        ImageButton inviteBtn = (ImageButton)mContentView.findViewById(R.id.btnInviteFriendIngame);
-
-        if (!isGameOwner()) {
-            //if we are not game owner, then no save/load is allowed
-            quickSaveBtn.setVisibility(View.INVISIBLE);
-            quickLoadBtn.setVisibility(View.INVISIBLE);
-        }
-
-        if (mRemoteCtlType == Settings.RemoteControl.NO_REMOTE_CONTROL)//if not in remote control mode, disable chat feature
-            chatBtn.setVisibility(View.INVISIBLE);
-
-        if (!isInvitingInternetHost)//if we are not internet host, disable invite button
-            inviteBtn.setVisibility(View.INVISIBLE);
-
     }
 
     private void initGameSpeedMenu(Menu menu) {
@@ -514,6 +488,50 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void setupLayoutButtonsVisibility() {
+        System.out.println("GamePage.setupLayoutButtonsVisibility()");
+
+        if (mContentView == null)
+            return;
+
+        if (mToolbar == null)
+            mToolbar = (Toolbar)mContentView.findViewById(R.id.game_toolbar);
+
+        if (mToolbar == null)
+            return;
+
+        boolean isInvitingInternetHost = is2ndPlayerInviteAllowed();
+
+        ImageButton quickSaveBtn = (ImageButton)mToolbar.findViewById(R.id.btnQuickSave);
+        ImageButton quickLoadBtn = (ImageButton)mToolbar.findViewById(R.id.btnQuickLoad);
+        ImageButton chatBtn = (ImageButton)mToolbar.findViewById(R.id.btnChatRoom);
+        ImageButton inviteBtn = (ImageButton)mContentView.findViewById(R.id.btnInviteFriendIngame);
+
+        if (!isGameOwner() || !Settings.isUIButtonsEnbled()) {
+            //if we are not game owner, then no save/load is allowed
+            quickSaveBtn.setVisibility(View.INVISIBLE);
+            quickLoadBtn.setVisibility(View.INVISIBLE);
+        } else {
+            quickSaveBtn.setVisibility(View.VISIBLE);
+            quickLoadBtn.setVisibility(View.VISIBLE);
+        }
+
+        if (!mRemoteCtlType.isMultiplay() || !Settings.isUIButtonsEnbled())//if not in remote control mode, disable chat feature
+        {
+            chatBtn.setVisibility(View.INVISIBLE);
+        } else {
+            chatBtn.setVisibility(View.VISIBLE);
+        }
+
+        if (!isInvitingInternetHost || !Settings.isUIButtonsEnbled())//if we are not internet host, disable invite button
+        {
+            inviteBtn.setVisibility(View.INVISIBLE);
+        } else {
+            inviteBtn.setVisibility(View.VISIBLE);
+        }
+
     }
 
     @Override
@@ -729,6 +747,9 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
 
         mContentView.addView(recreateGameView(inflater, null));
 
+        // reset layout's buttons visibility
+        setupLayoutButtonsVisibility();
+
         mGameView.onResume();
     }
 
@@ -839,6 +860,9 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
         // resume view
         mGameView.onResume();
 
+        // reset buttons visibility in case user changed the UI settings
+        setupLayoutButtonsVisibility();
+
         mContentView.setFocusable(true);
         mContentView.setFocusableInTouchMode(true);
         mContentView.requestFocus();
@@ -906,6 +930,10 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
                         break;
                     case EXIT:
                         onBackPressed();
+                        break;
+                    case CHAT:
+                        if (mRemoteCtlType.isMultiplay())
+                            handleCommonMenuOrToolbarAction(null, R.id.action_chat);
                         break;
                     default:
                         if (mGameView != null)

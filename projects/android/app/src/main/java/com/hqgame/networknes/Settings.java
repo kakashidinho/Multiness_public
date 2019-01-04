@@ -131,6 +131,38 @@ class Settings {
         JOIN_INTERNET_REMOTE_CONTROL_GOOGLE,
         JOIN_INTERNET_REMOTE_CONTROL_PUBLIC,
         QUICKJOIN_INTERNET_REMOTE_CONTROL_GOOGLE,
+        ;
+
+        public boolean isGameOwner() {
+            switch (this){
+                case CONNECT_LAN_REMOTE_CONTROL:
+                case JOIN_INTERNET_REMOTE_CONTROL_FB:
+                case JOIN_INTERNET_REMOTE_CONTROL_GOOGLE:
+                case JOIN_INTERNET_REMOTE_CONTROL_PUBLIC:
+                case QUICKJOIN_INTERNET_REMOTE_CONTROL_GOOGLE:
+                    return false;
+                default:
+                    return true;
+            }
+        }
+
+        public boolean isHostingGame() {
+            return this.compareTo(NO_REMOTE_CONTROL) != 0 && isGameOwner();
+        }
+
+        public boolean isMultiplay() {
+            switch (this){
+                case NO_REMOTE_CONTROL:
+                    return false;
+                default:
+                    return true;
+            }
+        }
+
+        public boolean is2ndPlayerInviteAllowed() {
+            return this == Settings.RemoteControl.ENABLE_INTERNET_REMOTE_CONTROL_FB
+                    || this == Settings.RemoteControl.ENABLE_INTERNET_REMOTE_CONTROL_GOOGLE;
+        }
     }
 
     public static enum Orientation {
@@ -233,7 +265,8 @@ class Settings {
         QUICK_LOAD,
 
         MENU,
-        EXIT;
+        EXIT,
+        CHAT;
 
         public static final int NORMAL_BUTTONS = 5;
 
@@ -254,6 +287,8 @@ class Settings {
                     return "Menu";
                 case EXIT:
                     return "Exit";
+                case CHAT:
+                    return "Chat";
                 default:
                     return name();
             }
@@ -527,5 +562,6 @@ class Settings {
         btn2KeyDefaultMap.put(Button.QUICK_LOAD, KeyEvent.KEYCODE_UNKNOWN);
         btn2KeyDefaultMap.put(Button.MENU, KeyEvent.KEYCODE_UNKNOWN);
         btn2KeyDefaultMap.put(Button.EXIT, KeyEvent.KEYCODE_UNKNOWN);
+        btn2KeyDefaultMap.put(Button.CHAT, KeyEvent.KEYCODE_UNKNOWN);
     }
 }
