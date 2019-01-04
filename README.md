@@ -27,8 +27,9 @@ from continuing support them. So expect iOS, WinRT projects to be broken in late
 * So the p2p connection will be handled by RakNet, it will perform NAT punchthrough technique (this requires dediced server on the cloud) to find the public IP of 2 players and connect them.
 * I didn't use any standard video codec in the industry. Instead I defined my own streaming method and compression which currently work fine for this emulator.
 * The simple overview of this streaming method:
-    * Compress and send out only the deltas between current frame and a key frame before it. 
     * Frame is sent out as key frame at the start of each defined interval.
+    * Each key frame uses indexed colors. The most frequently used colors will be assigned smaller indices. So that the compressed frame will use less overall bits (this is byte level compression, i.e. one color index might use less than 8 bits).
+    * Within each interval, compress and send out only the deltas between current frame and a key frame before it. 
     * The system will detect the network condition and attempt to reduce the framerate/resolution of streaming if the condition is poor
 and try to increase framerate/resolution back to normal if the condition is good enough.
 
