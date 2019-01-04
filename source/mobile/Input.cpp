@@ -28,6 +28,8 @@
 #include "../core/NstLog.hpp"
 #include <sstream>
 
+#define DEBUG_HW_INPUT 0
+
 #ifndef max
 #	define max(a,b) ((a) > (b) ? (a) : (b))
 #endif
@@ -759,18 +761,31 @@ namespace Nes {
 			
 			float fake_touch_x = m_dPadRect.getMidX() + m_dPadRect.width * x * 0.5f;
 			float fake_touch_y = m_dPadRect.getMidY() + m_dPadRect.height * y * 0.5f;
-			
-#if 0
+
+#if DEBUG_HW_INPUT
 			std::stringstream ss;
-			
-			ss << "(" << x << ", " << y << ") -> (" << fake_touch_x << ", " << fake_touch_y << ")";
-			Core::Log() << ss.str().c_str();
+
+#if 1
+			if (fabs(x) > 0.3f || fabs(y) > 0.3f)
+#endif
+			{
+				ss << "(" << x << ", " << y << ") -> (" << fake_touch_x << ", " << fake_touch_y << ")";
+				Core::Log() << ss.str().c_str();
+			}
 #endif//debug log
 			
 			OnTouchDownEx(NULL, fake_touch_x, fake_touch_y, true, NULL);
 		}
 		
 		void InputDPad::OnUserHardwareButtonDownImpl(UserHardwareButton button) {
+#if DEBUG_HW_INPUT
+			Log() << "InputDPad::OnUserHardwareButtonDownImpl(" << button << ")";
+			Log() << "---> current dpad hardware states:";
+			for (auto hardwarePressed: m_hardwareDPadDirectionPressed) {
+				Log() << "------> " << hardwarePressed;
+			}
+#endif
+
 			BaseInputPad::OnUserHardwareButtonDownImpl(button);
 			
 			switch (button) {
@@ -790,6 +805,14 @@ namespace Nes {
 		}
 		
 		void InputDPad::OnUserHardwareButtonUpImpl(UserHardwareButton button) {
+#if DEBUG_HW_INPUT
+			Log() << "InputDPad::OnUserHardwareButtonUpImpl(" << button << ")";
+			Log() << "---> current dpad hardware states:";
+			for (auto hardwarePressed: m_hardwareDPadDirectionPressed) {
+				Log() << "------> " << hardwarePressed;
+			}
+#endif
+
 			BaseInputPad::OnUserHardwareButtonUpImpl(button);
 			
 			switch (button) {
@@ -840,9 +863,14 @@ namespace Nes {
 				isInDeadzone = true;//touch is inside deadzone
 			
 			bool reacted = false;
-			
-			auto vecFromDpadCenter = distVecFromDpadCenter.normalizedVec();
-			auto angle = Maths::Vec2::XAXIS.angle(vecFromDpadCenter);
+
+			float angle;
+			if (isInDeadzone) {
+				angle = 0; // doesn't matter
+			} else {
+				auto vecFromDpadCenter = distVecFromDpadCenter.normalizedVec();
+				angle = Maths::Vec2::XAXIS.angle(vecFromDpadCenter);
+			}
 			
 			//check if any direction button is touched
 			for (int i = 0; i < sizeof(m_dPadDirectionTouches) / sizeof(m_dPadDirectionTouches[0]); ++i)
@@ -859,7 +887,7 @@ namespace Nes {
 				{
 					if (isJoystick)
 					{
-						m_hardwareDPadDirectionPressed[i] = true;
+						m_hardwareDPadDirectionPressedViaJoystick[i] = true;
 					}//if (isJoystick)
 					else if (m_dPadDirectionTouches[i].find(id) == m_dPadDirectionTouches[i].end())
 					{	
@@ -871,7 +899,7 @@ namespace Nes {
 				else {
 					if (isJoystick)
 					{
-						m_hardwareDPadDirectionPressed[i] = false;
+						m_hardwareDPadDirectionPressedViaJoystick[i] = false;
 					}//if (isJoystick)
 					else {
 						auto ite = m_dPadDirectionTouches[i].find(id);
@@ -1015,6 +1043,7 @@ namespace Nes {
 
 				//reset hardware buttons' state
 				m_hardwareDPadDirectionPressed[i] = false;
+				m_hardwareDPadDirectionPressedViaJoystick[i] = false;
 			}
 		}
 
@@ -1080,8 +1109,24 @@ namespace Nes {
 			
 			for (int i = 0; i < sizeof(m_dPadDirectionTouches) / sizeof(m_dPadDirectionTouches[0]); ++i)
 			{
-				if (m_dPadDirectionTouches[i].size() || m_hardwareDPadDirectionPressed[i])
+				if (m_dPadDirectionTouches[i].size() || m_hardwareDPadDirectionPressed[i]
+						|| m_hardwareDPadDirectionPressedViaJoystick[i]) {
 					this->pad[0].buttons |= DPadCodes[i];
+
+#if DEBUG_HW_INPUT
+					Log() << "dpad direction " << i << " pressed";
+
+					Log() << "---> dpad hardware states:";
+					for (auto hardwarePressed: m_hardwareDPadDirectionPressed) {
+						Log() << "------> " << hardwarePressed;
+					}
+
+					Log() << "-----> dpad hardware states via joystick:";
+					for (auto hardwarePressed: m_hardwareDPadDirectionPressedViaJoystick) {
+						Log() << "--------> " << hardwarePressed;
+					}
+#endif // DEBUG_HW_INPUT
+				}
 			}
 		}
 		

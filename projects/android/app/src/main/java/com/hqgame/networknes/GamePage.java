@@ -40,6 +40,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
@@ -863,6 +864,9 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
         // reset buttons visibility in case user changed the UI settings
         setupLayoutButtonsVisibility();
 
+        // reset input state handler
+        resetInputEventHandler();
+
         mContentView.setFocusable(true);
         mContentView.setFocusableInTouchMode(true);
         mContentView.requestFocus();
@@ -883,9 +887,9 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
 
     /*------- hardware input's handler ---*/
 
-    private boolean onKeyDown(final Iterable<Settings.Button> mappedNesButtons, KeyEvent event) {
+    private boolean onKeyDown(final Iterable<Settings.Button> mappedNesButtons, @Nullable KeyEvent event) {
         try {
-            if (event.getRepeatCount() != 0)
+            if (event != null && event.getRepeatCount() != 0)
                 return mappedNesButtons.iterator().hasNext();//we ignore this but won't let default handler handle this event
         } catch (Exception e)
         {
@@ -907,7 +911,7 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
         return handled;
     }
 
-    private boolean onKeyUp(final Iterable<Settings.Button> mappedNesButtons, KeyEvent event) {
+    private boolean onKeyUp(final Iterable<Settings.Button> mappedNesButtons, @Nullable KeyEvent event) {
         boolean handled = false;
         if (mappedNesButtons != null) {
             for (Settings.Button button: mappedNesButtons) {
@@ -979,21 +983,25 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
         if (mGameView == null)
             return super.dispatchGenericMotionEvent(event);
 
-        if (((event.getSource() & InputDevice.SOURCE_JOYSTICK) == InputDevice.SOURCE_JOYSTICK)
-                || (event.getSource() & InputDevice.SOURCE_DPAD) == InputDevice.SOURCE_DPAD)
+        boolean joystickEvent = (event.getSource() & InputDevice.SOURCE_JOYSTICK) == InputDevice.SOURCE_JOYSTICK;
+        boolean dpadEvent = (event.getSource() & InputDevice.SOURCE_DPAD) == InputDevice.SOURCE_DPAD;
+        if (joystickEvent || dpadEvent)
         {
             // Process all historical movement samples in the batch
             final int historySize = event.getHistorySize();
+
 
             // Process the movements starting from the
             // earliest historical position in the batch
             for (int i = 0; i < historySize; i++) {
                 // Process the event at historical position i
                 processJoystickInput(event, i);
+                processDpadMotionInput(event, i);
             }
 
             // Process the current movement sample in the batch
             processJoystickInput(event, -1);
+            processDpadMotionInput(event, -1);
 
             return true;//stop default handler
         }
@@ -1033,9 +1041,6 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
         // the left control stick, hat axis, or the right control stick.
         float x = getJoystickInputAxis(event, inputDevice, MotionEvent.AXIS_X, historicalPos);
         if (x == 0) {
-            x = getJoystickInputAxis(event, inputDevice, MotionEvent.AXIS_HAT_X, historicalPos);
-        }
-        if (x == 0) {
             x = getJoystickInputAxis(event, inputDevice, MotionEvent.AXIS_Z, historicalPos);
         }
 
@@ -1044,13 +1049,86 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
         // the left control stick, hat switch, or the right control stick.
         float y = getJoystickInputAxis(event, inputDevice, MotionEvent.AXIS_Y, historicalPos);
         if (y == 0) {
-            y = getJoystickInputAxis(event, inputDevice, MotionEvent.AXIS_HAT_Y, historicalPos);
-        }
-        if (y == 0) {
             y = getJoystickInputAxis(event, inputDevice, MotionEvent.AXIS_RZ, historicalPos);
         }
 
         mGameView.onJoystickMoved(x, -y);
+    }
+
+    private static final int DPAD_LEFT_IDX = 0;
+    private static final int DPAD_RIGHT_IDX = 1;
+    private static final int DPAD_UP_IDX = 2;
+    private static final int DPAD_DOWN_IDX = 3;
+
+    private static final int[] DPAD_KEYCODES = new int[] {
+            KeyEvent.KEYCODE_DPAD_LEFT,
+            KeyEvent.KEYCODE_DPAD_RIGHT,
+            KeyEvent.KEYCODE_DPAD_UP,
+            KeyEvent.KEYCODE_DPAD_DOWN,
+    };
+
+    private boolean[] mDpadWasPressed = new boolean[] { false, false, false, false};
+
+    private void processDpadMotionInput(MotionEvent event, int historicalPos) {
+        float xaxis;
+        float yaxis;
+
+        if (historicalPos < 0) {
+            xaxis = event.getAxisValue(MotionEvent.AXIS_HAT_X);
+            yaxis = event.getAxisValue(MotionEvent.AXIS_HAT_Y);
+        } else {
+            xaxis = event.getHistoricalAxisValue(MotionEvent.AXIS_HAT_X, historicalPos);
+            yaxis = event.getHistoricalAxisValue(MotionEvent.AXIS_HAT_Y, historicalPos);
+        }
+
+        boolean[] dpadIsPressed = new boolean[] { false, false, false, false};
+
+        int xCompareZero = Float.compare(xaxis, 0.0f);
+        int yCompareZero = Float.compare(yaxis, 0.0f);
+
+        if (xCompareZero == 0) {
+            dpadIsPressed[DPAD_LEFT_IDX] = dpadIsPressed[DPAD_RIGHT_IDX] = false;
+        } else {
+            if (xCompareZero < 0) {
+                dpadIsPressed[DPAD_LEFT_IDX] = true;
+            } else {
+                dpadIsPressed[DPAD_RIGHT_IDX] = true;
+            }
+        }
+
+        if (yCompareZero == 0) {
+            dpadIsPressed[DPAD_UP_IDX] = dpadIsPressed[DPAD_DOWN_IDX] = false;
+        } else {
+            if (yCompareZero < 0) {
+                dpadIsPressed[DPAD_UP_IDX] = true;
+            } else {
+                dpadIsPressed[DPAD_DOWN_IDX] = true;
+            }
+        }
+
+        for (int i = 0; i < mDpadWasPressed.length; ++i) {
+            if (mDpadWasPressed[i] != dpadIsPressed[i]) {
+                Iterable<Settings.Button> mappedNesButtons = Settings.getMappedButton(DPAD_KEYCODES[i]);
+
+                mDpadWasPressed[i] = dpadIsPressed[i];
+
+                if (mDpadWasPressed[i])
+                    onKeyDown(mappedNesButtons, null);
+                else
+                    onKeyUp(mappedNesButtons, null);
+
+                if (Settings.DEBUG) {
+                    System.out.println("GamePage.processDpadMotionInput() detected dpad changed "
+                            + i + " pressed=" + mDpadWasPressed[i]);
+                }
+            }
+        }
+    }
+
+    private void resetInputEventHandler() {
+        for (int i = 0; i < mDpadWasPressed.length; ++i) {
+            mDpadWasPressed[i] = false;
+        }
     }
 
     /*-------------- handle the case when user accepted invitation on notificaton bar -------*/

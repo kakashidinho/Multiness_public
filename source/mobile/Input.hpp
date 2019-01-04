@@ -246,6 +246,7 @@ namespace Nes {
 			std::set<void*> m_dPadTouches;
 			std::set<void*> m_dPadDirectionTouches[4];
 			bool m_hardwareDPadDirectionPressed[4];//hardware button pressed
+			bool m_hardwareDPadDirectionPressedViaJoystick[4];
 			
 			float m_dPadDeadzoneRadiusSq;//squared radius of d-pad's deadzone
 			float m_dpadScale;
