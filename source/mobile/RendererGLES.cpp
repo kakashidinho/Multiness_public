@@ -54,8 +54,9 @@ namespace Nes
 			static const GLchar fshader_src[] =
 			"varying mediump vec2 outcoord;"
 			"uniform sampler2D nestex;"
+			"uniform lowp vec4 color;"
 			"void main() {"
-			"	gl_FragColor = texture2D(nestex, outcoord).zyxw;"
+			"	gl_FragColor = texture2D(nestex, outcoord).zyxw * color;"
 			"}";
 
 			static const GLchar vshader_color_src[] =
@@ -259,6 +260,7 @@ namespace Nes
 					glUniform1i(texLoc, 0);
 
 					m_renderTransformUniformLoc = glGetUniformLocation(m_renderProgram, "transform");
+					m_renderColorUniformLoc = glGetUniformLocation(m_renderProgram, "color");
 
 					Core::Log() << "Renderer created shader program\n";
 				}//if (m_renderProgram == 0)
@@ -420,28 +422,34 @@ namespace Nes
 				DoDrawRectTransformed();
 			}
 
-			void Renderer::DrawRect(ITexture& texture, float x, float y, float width, float height)
+			void Renderer::DrawRect(ITexture& texture, const Maths::Rect& rect, const Color& color)
 			{
 				//bind texture
 				glActiveTexture(GL_TEXTURE0);
 				texture.BindTexture();
 
-				//draw rect
-				DrawRect(x, y, width, height);
+				// draw rect
+				DrawRect(rect, color);
+			}
+
+			void Renderer::DrawRect(const Maths::Rect& rect, const Color& color) {
+				if (m_renderProgram == 0)
+					return;
+
+				// use program
+				glUseProgram(m_renderProgram);
+
+				// set color value
+				glUniform4f(m_renderColorUniformLoc, color.r, color.g, color.b, color.a);
+
+				// draw rect
+				DoDrawRect(m_renderTransformUniformLoc, rect.x, rect.y, rect.width, rect.height);
 			}
 
 			void Renderer::DrawRect(float x, float y, float width, float height) {
-				DrawRect(m_renderProgram, m_renderTransformUniformLoc, x, y, width, height);
-			}
+				Maths::Rect rect = {.x = x, .y = y, .width = width, .height = height};
 
-			void Renderer::DrawRect(GLuint program, GLint transformUniformLoc, float x, float y, float width, float height) {
-				if (program == 0)
-					return;
-
-				//use program
-				glUseProgram(program);
-
-				DoDrawRect(transformUniformLoc, x, y, width, height);
+				DrawRect(rect, Color::WHITE);
 			}
 
 			void Renderer::DrawOutlineRect(const Color& color, float size, float x, float y, float width, float height) {

@@ -334,6 +334,24 @@ namespace Nes {
 			m_uiEnabled = e;
 		}
 
+		void IInput::SetUIOpacity(float oo) {
+			std::lock_guard<std::mutex> lg(m_lock);
+
+			float o = oo;
+			// clamp the value
+			if (o > 1.f)
+				o = 1.f;
+			else if (o < 0.f)
+				o = 0.f;
+
+			// transform from [0-1] to [0.1-1]
+			const float minO = 0.1f;
+			o = minO + o * (1.f - minO);
+
+			m_uiOpacity.r = m_uiOpacity.g = m_uiOpacity.b = 1;
+			m_uiOpacity.a = o;
+		}
+
 		void IInput::SwitchABTurboMode(bool aIsTurbo, bool bIsTurbo) {
 			std::lock_guard<std::mutex> lg(m_lock);
 
@@ -698,7 +716,7 @@ namespace Nes {
 				if (m_buttonPressed[i])
 					renderer.DrawRect(*m_buttonHighlightTextures[i], m_buttonRects[i]);
 				else
-					renderer.DrawRect(*m_buttonTextures[i], m_buttonRects[i]);
+					renderer.DrawRect(*m_buttonTextures[i], m_buttonRects[i], m_uiOpacity);
 			}
 		}
 
@@ -1079,7 +1097,7 @@ namespace Nes {
 			}
 
 			//draw d-pad image
-			renderer.DrawRect(*m_dPadTexture, m_dPadRect);
+			renderer.DrawRect(*m_dPadTexture, m_dPadRect, m_uiOpacity);
 			
 			for (int i = 0; i < sizeof(m_dPadDirectionTouches) / sizeof(m_dPadDirectionTouches[0]); ++i)
 			{

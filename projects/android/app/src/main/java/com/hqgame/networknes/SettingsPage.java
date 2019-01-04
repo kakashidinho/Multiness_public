@@ -70,6 +70,7 @@ public class SettingsPage extends BasePage {
         CheckBox enableAutoSearchOnResumeCheckBox = (CheckBox)v.findViewById(R.id.enable_auto_search_on_resume_checkbox);
         Button controllerMapBtn = (Button)v.findViewById(R.id.controller_mapping_btn);
         Button uiButtonLayoutEdit = (Button) v.findViewById(R.id.ui_controls_layout_edit_btn);
+        SeekBar uiButtonsOpacityBar = v.findViewById(R.id.ui_controls_opacity_bar);
 
         //screen orientation settings
         Spinner orientationList = (Spinner)v.findViewById(R.id.screen_orientation_list);
@@ -92,6 +93,7 @@ public class SettingsPage extends BasePage {
         enableAutoSearchOnResumeCheckBox.setChecked(Settings.isAutoSearchGamesOnResumeEnabled());
         orientationList.setSelection(Settings.getPreferedOrientation().ordinal());
         filterModeList.setSelection(Settings.getDisplayFilterMode().ordinal());
+        uiButtonsOpacityBar.setProgress((int)(Settings.getUIButtonsOpacity() * uiButtonsOpacityBar.getMax()));
 
         //register callbacks
         SeekBar.OnSeekBarChangeListener seekBarListener = (new SeekBar.OnSeekBarChangeListener() {
@@ -112,6 +114,7 @@ public class SettingsPage extends BasePage {
         });
 
         audioBar.setOnSeekBarChangeListener(seekBarListener);
+        uiButtonsOpacityBar.setOnSeekBarChangeListener(seekBarListener);
 
         voiceCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -206,6 +209,9 @@ public class SettingsPage extends BasePage {
         switch (seekBar.getId()) {
             case R.id.sound_settings_bar:
                 Settings.setAudioVolume(percent);
+                break;
+            case R.id.ui_controls_opacity_bar:
+                Settings.setUIButtonsOpacity(percent);
                 break;
         }
 

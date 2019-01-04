@@ -79,6 +79,7 @@
     <string name="ui_controls_edit_lbl">Onscreen buttons\' layout</string>
     <string name="screen_rotate_lbl">In-game display orientation</string>
     <string name="ui_controls_visiable_lbl">Onscreen buttons\' visibility</string>
+    <string name="ui_controls_opacity_lbl">Onscreen buttons\' opacity</string>
     <string name="game_fullscreen_lbl">Fullscreen In-game display</string>
     <string name="display_filter_lbl">Filtering effect</string>
     <string name="sound_settings_lbl">Sound</string>

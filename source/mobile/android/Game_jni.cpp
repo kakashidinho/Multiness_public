@@ -1327,6 +1327,14 @@ extern "C" {
 	}
 
 	JNIEXPORT void JNICALL
+	Java_com_hqgame_networknes_GameSurfaceView_setUIButtonsOpacityNative(JNIEnv *env, jobject thiz, jlong nativePtr, jfloat opacity)
+	{
+		__android_log_print(ANDROID_LOG_DEBUG, "Nes", "setUIButtonsOpacityNative(%f)\n", (float)opacity);
+		auto system = (NesSystem*)nativePtr;
+		system->GetInput().SetUIOpacity(opacity);
+	}
+
+	JNIEXPORT void JNICALL
 	Java_com_hqgame_networknes_GameSurfaceView_setUIButtonRectNative(JNIEnv *env, jobject thiz, jlong nativePtr, jint buttonCode, float x, float y, float width, float height)
 	{
 		auto system = (NesSystem*)nativePtr;

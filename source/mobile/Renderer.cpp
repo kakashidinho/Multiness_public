@@ -28,6 +28,8 @@
 namespace Nes
 {
 	namespace Video {
+		const Color Color::WHITE = {.a = 1, .r = 1, .g = 1, .b = 1};
+
 		/*-------  IRenderer -----------*/
 		IRenderer::IRenderer()
 		: m_screenWidth(0), m_screenHeight(0)

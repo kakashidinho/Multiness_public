@@ -310,6 +310,7 @@ public class GameSurfaceView extends GLSurfaceView {
                 setAudioVolumeNative(sNativeHandle, Settings.getAudioVolume());
                 enableAudioInput(sNativeHandle, Settings.isVoiceChatEnabled());
                 enableUIButtonsNative(sNativeHandle, Settings.isUIButtonsEnbled());
+                setUIButtonsOpacityNative(sNativeHandle, Settings.getUIButtonsOpacity());
                 enableFullScreenNative(sNativeHandle, Settings.isFullscreenEnabled());
                 switchABTurboModeNative(sNativeHandle, Settings.isBtnATurbo(), Settings.isBtnBTurbo());
                 applyFilteringShader();
@@ -2180,6 +2181,7 @@ public class GameSurfaceView extends GLSurfaceView {
     private native void setAudioRecordPermissionChangedNative(long nativeHandle, boolean hasPermission);
     private native void enableAudioInput(long nativeHandle, boolean enable);
     private native void enableUIButtonsNative(long nativeHandle, boolean enable);
+    private native void setUIButtonsOpacityNative(long nativeHandle, float opacity);
     private native void enableFullScreenNative(long nativeHandle, boolean enable);
     private native void switchABTurboModeNative(long nativeHandle, boolean enableATurbo, boolean enableBTurbo); // if set, the normal A/B will become auto A/B buttons
     private native boolean setFilteringShaderNative(long nativeHandle, String vshader, String fshader, float scale, boolean videoLinearSampling);

@@ -52,8 +52,8 @@ namespace Nes {
 
 				unsigned int GetVideoMinX() const { return m_videoX; }
 				unsigned int GetVideoMinY() const { return m_videoY; }
-				
-				virtual void DrawRect(ITexture& texture, float x, float y, float width, float height) override;
+
+				virtual void DrawRect(ITexture& texture, const Maths::Rect& rect, const Color& color) override;
 				virtual void DrawOutlineRect(const Color& color, float size, float x, float y, float width, float height) override;
 
 				virtual void PresentVideo() override;
@@ -63,7 +63,7 @@ namespace Nes {
 				bool ResetFilterRenderProgram();
 				
 				void DrawRect(float x, float y, float width, float height);
-				void DrawRect(GLuint program, GLint transformUniformLoc, float x, float y, float width, float height);
+				void DrawRect(const Maths::Rect& rect, const Color& color);
 				void ApplyRectTransform(GLint uniformLoc, float x, float y, float width, float height);
 				void DoDrawRect(GLint transformUniformLoc, float x, float y, float width, float height);
 				void DoDrawFullscreenRect(GLint transformUniformLoc);
@@ -81,7 +81,7 @@ namespace Nes {
 
 				std::string m_filterVShader, m_filterFShader;
 
-				GLint m_renderTransformUniformLoc;
+				GLint m_renderTransformUniformLoc, m_renderColorUniformLoc;
 				GLuint m_renderProgram;
 				GLuint m_renderVBO;
 

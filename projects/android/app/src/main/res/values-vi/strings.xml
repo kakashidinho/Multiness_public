@@ -75,7 +75,8 @@
     <string name="controller_mapping_lbl">Cài đặt tay cầm</string>
     <string name="ui_controls_edit_lbl">Sửa vị trí nút ảo</string>
     <string name="screen_rotate_lbl">Hướng hiển thị màn hình game</string>
-    <string name="ui_controls_visiable_lbl">Hiển thị nút điều khiển trên màn hình</string>
+    <string name="ui_controls_visiable_lbl">Hiển thị nút ảo trên màn hình</string>
+    <string name="ui_controls_opacity_lbl">Mức độ trong suốt của nút ảo</string>
     <string name="game_fullscreen_lbl">Hiển thị game toàn màn hình</string>
     <string name="display_filter_lbl">Hiệu ứng lọc</string>
     <string name="sound_settings_lbl">Âm thanh</string>

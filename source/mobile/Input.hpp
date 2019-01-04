@@ -83,6 +83,9 @@ namespace Nes {
 			void EnableUI(bool e);//enable/disable UI buttons
 			// if enabled, normal A/B buttons will become auto A/B buttons
 			void SwitchABTurboMode(bool aIsTurbo, bool bIsTurbo);
+			void SetUIOpacity(float o);
+
+			float GetUIOpacity() const { return m_uiOpacity.a; }
 
 			bool IsUIEnabled() const { return m_uiEnabled; }
 			void SetButtonRect(Button::Id button, const Maths::Rect& rect, bool forPortrait);
@@ -142,6 +145,7 @@ namespace Nes {
 			bool m_currentDisplayIsPortrait;
 
 			float m_outlineSize;
+			Video::Color m_uiOpacity = Video::Color::WHITE;
 		};
 		
 		

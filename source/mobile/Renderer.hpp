@@ -36,6 +36,8 @@ namespace Nes {
 	namespace Video {
 		struct Color {
 			float r, g, b, a;
+
+			static const Color WHITE;
 		};
 
 		//base interface to draw a rect on the screen using specified texture
@@ -43,11 +45,15 @@ namespace Nes {
 		public:
 			virtual ~IRectRenderer() {}
 
-			void DrawRect(ITexture& texture, const Maths::Rect& rect) { DrawRect(texture, rect.x, rect.y , rect.width, rect.height); }
+			inline void DrawRect(ITexture& texture, const Maths::Rect& rect) { DrawRect(texture, rect, Color::WHITE); }
 			void DrawOutlineRect(const Color& color, float size, const Maths::Rect& rect)
 			{ DrawOutlineRect(color, size, rect.x, rect.y , rect.width, rect.height); }
 
-			virtual void DrawRect(ITexture& texture, float x, float y, float width, float height) = 0;
+			inline void DrawRect(ITexture& texture, float x, float y, float width, float height) {
+				Maths::Rect rect = {.x = x, .y = y, .width = width, .height = height};
+				DrawRect(texture, rect, Color::WHITE);
+			}
+			virtual void DrawRect(ITexture& texture, const Maths::Rect& rect, const Color& color) = 0;
 			virtual void DrawOutlineRect(const Color& color, float size, float x, float y, float width, float height) = 0;
 		};
 
@@ -88,7 +94,7 @@ namespace Nes {
 		class NullRectRenderer: public IRectRenderer
 		{
 		public:
-			virtual void DrawRect(ITexture& texture, float x, float y, float width, float height) override {}
+			virtual void DrawRect(ITexture& texture, const Maths::Rect& rect, const Color& color) override {}
 			virtual void DrawOutlineRect(const Color& color, float size, float x, float y, float width, float height) override {}
 		};
 	}
