@@ -423,6 +423,12 @@ namespace Nes {
 				m_buttonTextures[i] = nullptr;
 				m_buttonHighlightTextures[i] = nullptr;
 			}
+
+			// by default use landscape button settings
+			m_buttonRects = m_buttonRectsSettings[0];
+
+			// zeroize the button settings
+			memset(m_buttonRectsSettings, 0, sizeof(m_buttonRectsSettings));
 		}
 		BaseInputPad::~BaseInputPad() {
 			for (int i = 0; i < m_numButtons; ++i)
