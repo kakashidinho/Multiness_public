@@ -134,6 +134,9 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         System.out.println("GamePage.onCreateView()");
 
+        // hide system ui
+        Utils.hideSystemUI(getActivity());
+
         // cache private data path
         mPrivateDataPath = getContext().getFilesDir();
 
@@ -725,9 +728,15 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
                 if (mGameView != null) {
                     mGameView.loadedGameName(new AsyncQuery<String>() {
                         @Override
-                        public void run(String result) {
-                            if (result != null && result.length() > 0)
-                                openCheatsPage(result);
+                        public void run(final String result) {
+                            if (result != null && result.length() > 0) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        openCheatsPage(result);
+                                    }
+                                });
+                            }
                         }
                     });
                 }//if (mGameView != null)
@@ -765,7 +774,7 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
         System.out.println("GamePage.onWindowFocusChanged(" + hasFocus + ")");
 
         super.onWindowFocusChanged(hasFocus);
-        if (hasFocus) {
+        if (hasFocus && !isFinishing()) {
             Utils.hideSystemUI(getActivity());
         }
     }
@@ -855,6 +864,9 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
 
         // deactivate chat dialog's delegate
         getBaseActivity().setChatDialogDelegate(null);
+
+        // show system ui
+        Utils.showSystemUI(getActivity());
     }
 
     @Override
