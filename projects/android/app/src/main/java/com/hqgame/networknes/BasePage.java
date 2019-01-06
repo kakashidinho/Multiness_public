@@ -365,23 +365,17 @@ public class BasePage extends Fragment {
     if (_2ndTop != null)
       _2ndTop.onNavigatingTo(activity);
 
-    fm.popBackStack();
+    if (!fm.popBackStackImmediate()) {
+      activity.finish();
+      return;
+    }
 
-    new Handler(Looper.getMainLooper())
-            .post(new Runnable() {
-              @Override
-              public void run() {
-                // notify new top page about the result of previous top page
-                // need to obtain the page instance again since Android may recreate a new instance of Fragment
-                BaseActivity currentActivity = BaseActivity.getCurrentActivity();
-                if (currentActivity == null)
-                  currentActivity = activity; // get from outer method, this activity might be destroyed, but we have no choice
-                BasePage curTop = currentActivity.getTopFragmentAsPage();
-                if (requestCode != null && curTop != null) {
-                  curTop.onPageResult(requestCode, resultCode, data);
-                }
-              }
-            });
+    // notify new top page about the result of previous top page
+    // need to obtain the page instance again since Android may recreate a new instance of Fragment
+    _2ndTop = activity.getTopFragmentAsPage();
+    if (requestCode != null && _2ndTop != null) {
+      _2ndTop.onPageResult(requestCode, resultCode, data);
+    }
   }
 
   public boolean isFinishing() {
