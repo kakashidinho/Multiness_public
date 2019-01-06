@@ -89,6 +89,13 @@ public class GameChatDialog extends DialogFragment {
         return v;
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        ((Delegate)getActivity()).onChatDialogDestroyed();
+    }
+
     public void clearTypingText() {
         EditText typingMessageView = (EditText)getView().findViewById(R.id.typingChatMessageTxtView);
         typingMessageView.setText("");
@@ -243,5 +250,6 @@ public class GameChatDialog extends DialogFragment {
     public static interface Delegate {
         public ChatMessagesDatabaseViewAdapter getChatDatabaseViewAdapter();
         public void onSendButtonClicked(String message);
+        public void onChatDialogDestroyed();
     }
 }

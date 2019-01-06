@@ -116,6 +116,9 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
         }
 
         activity.setRequestedOrientation(request_orientation);
+
+        // immersive mode
+        Utils.hideSystemUI(activity);
     }
 
     @Override
@@ -617,6 +620,9 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
                 goToPage(BasePage.create(SettingsPage.class));
             }
             break;
+            case R.id.action_exit:
+                onBackPressed();
+                break;
             case R.id.action_reset:
                 if (mGameView != null)
                     mGameView.resetGame();
@@ -752,6 +758,16 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
         setupLayoutButtonsVisibility();
 
         mGameView.onResume();
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        System.out.println("GamePage.onWindowFocusChanged(" + hasFocus + ")");
+
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            Utils.hideSystemUI(getActivity());
+        }
     }
 
     @Override
@@ -1280,6 +1296,13 @@ public class GamePage extends BasePage implements GameChatDialog.Delegate {
                 });
             }
         });
+    }
+
+    @Override
+    public void onChatDialogDestroyed() {
+        System.out.println("GamePage.onChatDialogDestroyed()");
+
+        Utils.hideSystemUI(getActivity());
     }
 
     /*---------- AdMob -----*/

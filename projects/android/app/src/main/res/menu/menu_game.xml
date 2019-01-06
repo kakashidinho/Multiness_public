@@ -72,4 +72,7 @@
         <item android:id="@+id/action_quick_save" android:title="@string/action_quick_save"
             android:orderInCategory="100" app:showAsAction="never" />
     </group>
+
+    <item android:id="@+id/action_exit" android:title="@string/exit"
+        android:orderInCategory="100" app:showAsAction="never" />
 </menu>

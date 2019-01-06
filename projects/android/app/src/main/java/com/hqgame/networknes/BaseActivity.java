@@ -36,6 +36,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.NetworkInfo;
 import android.net.wifi.p2p.WifiP2pManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -391,6 +392,14 @@ public final class BaseActivity extends AppCompatActivity
         // now forward to delegates if there are any registered
         forwardActivityResultToRegisteredHandlers(requestCode, resultCode, data);
 
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        BasePage page = getTopFragmentAsPage();
+        if (page != null)
+            page.onWindowFocusChanged(hasFocus);
     }
 
     /* ---- permission request callback -----*/
@@ -2025,6 +2034,14 @@ public final class BaseActivity extends AppCompatActivity
         synchronized (this) {
             if (mChatDialogDelegate != null)
                 mChatDialogDelegate.onSendButtonClicked(message);
+        }
+    }
+
+    @Override
+    public void onChatDialogDestroyed() {
+        synchronized (this) {
+            if (mChatDialogDelegate != null)
+                mChatDialogDelegate.onChatDialogDestroyed();
         }
     }
 

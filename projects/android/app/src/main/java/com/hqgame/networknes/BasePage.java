@@ -326,12 +326,22 @@ public class BasePage extends Fragment {
 
   // called when the page is about to be navigated to
   protected void onNavigatingTo(Activity activity) {
-    // subclass should implement
+    System.out.println("BasePage.onNavigatingTo");
+
+    // subclass should implement if it wants different orientation
+
     // default orientation
     activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+
+    // by default show system ui
+    Utils.showSystemUI(activity);
   }
 
   /* ---- emulates Activity's methods ------*/
+  public void onWindowFocusChanged(boolean hasFocus) {
+    System.out.println("BasePage.onWindowFocusChanged(" + hasFocus + ")");
+  }
+
   public void onBackPressed() {
     //sub-class should implement if it want to overide default back key pressed event
     finish();
