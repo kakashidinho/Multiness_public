@@ -400,6 +400,7 @@ namespace Nes
 
 			this->hostEngine = std::make_shared<HQRemote::Engine>(connHandler, frameCapturer, audioCapturer, nullptr, REMOTE_FRAME_BUNDLE);
 			this->hostEngine->setDesc(hostInfo);
+			this->hostEngine->lockFrameCaptureRateToFrameInterval(false); // we will manually control the capture rate
 
 			// by default use zlib frame compressor
 			UseFrameCompressorType(FRAME_COMPRESSOR_TYPE_ZLIB);
@@ -422,6 +423,7 @@ namespace Nes
 
 			// reset timer
 			this->lastRemoteDataRateUpdateTime = 0;
+			this->renderedFramesSinceLastCapture = 0;
 
 			//reset color use count table
 			ppu.ResetColorUseCountTable();
@@ -1156,6 +1158,21 @@ namespace Nes
 					this->clientState++;
 			}
 				break;
+			case HQRemote::START_SEND_FRAME:
+			{
+				HQRemote::Log("Serve received START_SEND_FRAME");
+
+				// reset counter
+				renderedFramesSinceLastCapture = 0;
+
+				// fallthrough
+			}
+			case HQRemote::FRAME_INTERVAL:
+			{
+				// recalculate render to capture ratio
+				CalcFrameCaptureRate();
+			}
+				break;
 			case Remote::REMOTE_MODE:
 			{
 				SendModeToClient();
@@ -1314,6 +1331,34 @@ namespace Nes
 			catch (...)
 			{
 				return nullptr;
+			}
+		}
+
+		void Machine::CalcFrameCaptureRate() {
+			if (!hostEngine)
+				return;
+
+			int frameRate;
+			if (state & Api::Machine::NTSC)
+				frameRate = 60;
+			else
+				frameRate = 50;
+
+			renderToCaptureRatio = hostEngine->getFrameInterval() / (1.0 / frameRate);
+
+			HQRemote::Log("Server's render to capture ratio = %.3f", renderToCaptureRatio);
+		}
+
+		void Machine::RateControlledCaptureAndSendFrame() {
+			NST_ASSERT(hostEngine);
+
+			renderedFramesSinceLastCapture += 1;
+			if (renderedFramesSinceLastCapture >= renderToCaptureRatio) {
+				while ((renderedFramesSinceLastCapture >= renderToCaptureRatio)) {
+					renderedFramesSinceLastCapture -= renderToCaptureRatio;
+				}
+
+				hostEngine->captureAndSendFrame();
 			}
 		}
 
@@ -1880,7 +1925,7 @@ namespace Nes
 #if PROFILE_EXECUTION_TIME
 						HQRemote::ScopedTimeProfiler profiler("captureAndSendFrame", avgFrameCaptureTime, frameCaptureWindowTime);
 #endif
-						this->hostEngine->captureAndSendFrame();
+						RateControlledCaptureAndSendFrame();
 					}
 
 					//capture audio

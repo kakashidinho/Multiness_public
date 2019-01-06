@@ -169,6 +169,8 @@ namespace Nes
 
 			void HandleRemoteEventsAsServer();
 			bool HandleGenericRemoteEventAsServer();
+			void CalcFrameCaptureRate();
+			void RateControlledCaptureAndSendFrame();
 
 			void HandleCommonEvent(const HQRemote::Event& event);
 
@@ -214,6 +216,9 @@ namespace Nes
 			uint64_t lastSentInputId;
 			uint64_t lastSentInputTime;
 			uint lastSentInput;
+
+			double renderedFramesSinceLastCapture = 0;
+			double renderToCaptureRatio = 1;
 
 			Sound::Input* currentInputAudio;
 
