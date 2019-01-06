@@ -67,6 +67,9 @@ public class ButtonsLayoutPage extends BasePage implements View.OnTouchListener 
         }
 
         activity.setRequestedOrientation(request_orientation);
+
+        // immersive mode
+        Utils.hideSystemUI(activity);
     }
 
     @Override
@@ -90,6 +93,16 @@ public class ButtonsLayoutPage extends BasePage implements View.OnTouchListener 
         mRootView.addView(recreateContentView(inflater, mRootView));
 
         return mRootView;
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        System.out.println("ButtonsLayoutPage.onWindowFocusChanged(" + hasFocus + ")");
+
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            Utils.hideSystemUI(getActivity());
+        }
     }
 
     private View recreateContentView(LayoutInflater inflater, ViewGroup container) {
