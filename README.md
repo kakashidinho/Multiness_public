@@ -31,7 +31,7 @@ from continuing support them. So expect iOS, WinRT projects to be broken in late
     * Each key frame uses indexed colors. The most frequently used colors will be assigned smaller indices. So that the compressed frame will use less overall bits (this is byte level compression, i.e. one color index might use less than 8 bits).
     * Within each interval, compress and send out only the deltas between current frame and a key frame before it. 
     * The system will detect the network condition and attempt to reduce the framerate/resolution of streaming if the condition is poor
-and try to increase framerate/resolution back to normal if the condition is good enough.
+~and try to increase framerate/resolution back to normal if the condition is good enough~. The adaptive dynamic resolution mechanism was not working well in practice. It has been removed. The current mechanism is actually measuring the bandwidth at the start of the game, and adjust the framerate and resolution accordingly. The framerate and resolution once adjusted, won't change during the gameplay.
 
 ## License
 * __Multiness__: This program is free software: you can redistribute it and/or modify
